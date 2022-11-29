@@ -91,4 +91,24 @@ public class ProductRepository implements IProductRepository {
             return new ArrayList<>();
         }
     }
+
+    @Override
+    public Product getByName(String name) {
+        try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
+            return session.get(Product.class, name);
+        } catch (HibernateException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public List<Product> getByCategory(String category) {
+        try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
+            return session.createQuery("from Product p where p.category= :p", Product.class).setParameter("p", category).list();
+        } catch (HibernateException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
 }
