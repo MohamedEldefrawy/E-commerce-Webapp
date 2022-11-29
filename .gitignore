@@ -45,3 +45,7 @@ build/
 /apache-tomcat-*/
 
 ### Config file ###
+
+
+### database.properties ###
+/src/main/resources/database.properties
