@@ -7,6 +7,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.sql.Date;
 import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "orders")
@@ -15,6 +16,7 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @ManyToOne
@@ -27,7 +29,7 @@ public class Order {
     @Setter
     private Date date;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order" ,cascade = CascadeType.ALL)
     @Getter
     Set<OrderItem> orderItems = new HashSet<>();
 

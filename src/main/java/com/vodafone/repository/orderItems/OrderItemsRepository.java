@@ -1,0 +1,80 @@
+package com.vodafone.repository.orderItems;
+
+import com.vodafone.config.HibernateConfig;
+import com.vodafone.model.OrderItem;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.query.Query;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class OrderItemsRepository implements IOrderItemsRepository{
+
+    private final HibernateConfig hibernateConfig;
+
+    public OrderItemsRepository(HibernateConfig hibernateConfig) {
+        this.hibernateConfig = hibernateConfig;
+    }
+
+    @Override
+    public boolean save(OrderItem orderItem) {
+        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
+            Transaction tx = session.beginTransaction();
+            session.persist(orderItem);
+            tx.commit();
+            return true;
+        }
+        catch (HibernateException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public List<OrderItem> findAll() {
+        List<OrderItem> list;
+        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
+            list = session.createQuery("from orderItems", OrderItem.class)
+                    .list();
+        }
+        catch (HibernateException e){
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+        return list;
+    }
+
+    @Override
+    public OrderItem findOne(int id) {
+        OrderItem orderItem = null;
+        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
+            orderItem = session.get(OrderItem.class,id);
+            session.close();
+        }
+        catch (HibernateException e){
+            e.printStackTrace();
+            return null;
+        }
+        return orderItem;
+    }
+
+    @Override
+    public boolean deleteOne(int id) {
+        int modifications = 0;
+        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
+            Transaction tx = session.beginTransaction();
+            Query query = session.createQuery(
+                    "delete orderItems oi where oi.id=" + id
+            );
+            modifications = query.executeUpdate();
+            tx.commit();
+        }
+        catch (HibernateException e){
+            e.printStackTrace();
+            return false;
+        }
+        return modifications > 0;
+    }
+}
