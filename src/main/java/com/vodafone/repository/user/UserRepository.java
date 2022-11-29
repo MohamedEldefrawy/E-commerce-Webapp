@@ -5,9 +5,12 @@ import com.vodafone.model.Role;
 import com.vodafone.model.User;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+
+import java.util.HashMap;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,18 +24,32 @@ public class UserRepository implements IUserRepository {
          * Admin-panel: if role == admin
          * home page: if role == customer
          * */
-        SessionFactory factory = config.getSessionFactory();
-        Session session = factory.openSession();
-        Query query = session.createQuery("SELECT DISTINCT user FROM User user where user.email=:email and user.password =:password", User.class);
-        query.setParameter("email", email);
-        query.setParameter("password", password);
-
-        User user = (User) query.uniqueResult();
-
-        session.close();
+        User user = validateRegister(email, password);
+        if (user == null) {
+            //todo: display error message
+            return "login"; //reject request, user is not registered
+        }
         if (user.getRole() == Role.Admin) {
             return "redirect:/admin-panel.htm";
         } else
             return "redirect:/home.htm";
+    }
+
+    @Override
+    public User validateRegister(String email, String password) {
+        SessionFactory factory = config.getSessionFactory();
+        User user;
+        try (Session session = factory.openSession()) {
+            //add queries criteria
+            HashMap<String, String> queries = new HashMap<>();
+            queries.put("email", email);
+            queries.put("password", password);
+            user = session.get(User.class, queries);
+            session.close();
+        }catch (HibernateException e){
+            e.printStackTrace(); //todo: fix exception message
+            return null;
+        }
+        return user;
     }
 }
