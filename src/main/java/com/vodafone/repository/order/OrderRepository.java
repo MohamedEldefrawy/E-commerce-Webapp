@@ -1,6 +1,7 @@
 package com.vodafone.repository.order;
 
 import com.vodafone.config.HibernateConfig;
+import com.vodafone.model.Admin;
 import com.vodafone.model.Order;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -23,10 +24,11 @@ public class OrderRepository implements IOrderRepository {
     }
 
     @Override
-    public List<Order> findAll(int customerId) {
+    public List<Order> getAll() {
         List<Order> list;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            list = session.createQuery("from orders where o.customerId= " + customerId, Order.class)
+            //list = session.createQuery("From orders where o.customerId= " + customerId, Order.class)
+            list = session.createQuery("From orders", Order.class)
                     .list();
         }
         catch (HibernateException e){
@@ -37,7 +39,7 @@ public class OrderRepository implements IOrderRepository {
     }
 
     @Override
-    public Order findOne(int orderId) {
+    public Order get(Long orderId) {
         Order order = null;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
@@ -55,7 +57,7 @@ public class OrderRepository implements IOrderRepository {
     }
 
     @Override
-    public boolean save(Order order) {
+    public boolean create(Order order) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
             session.persist(order);
@@ -70,12 +72,27 @@ public class OrderRepository implements IOrderRepository {
     }
 
     @Override
-    public boolean updateOne(int orderId, Order order) {
-        return false;
+    public boolean update(Long orderId, Order updatedEntity) {
+        Order order = get(orderId);
+        if (order == null)
+            return false;
+
+        try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
+            //doesnt update order items set
+            Transaction tx  = session.beginTransaction();
+            order.setCustomer(updatedEntity.getCustomer());
+            order.setDate(updatedEntity.getDate());
+            session.persist(order);
+            tx.commit();
+            return true;
+        } catch (HibernateException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
-    public boolean deleteOne(int orderId) {
+    public boolean delete(Long orderId) {
         int modifications = 0;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
