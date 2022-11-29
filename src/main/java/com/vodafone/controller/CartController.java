@@ -10,25 +10,29 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/carts")
 public class CartController {
     CartService cartService;
-    public String addItem(CartItem item){
-        return cartService.addItem(item);
+
+    //todo: add mappings
+    public String addItem(Long cartId, CartItem item) {
+        return cartService.addItem(cartId,item);
     }
 
-    public String removeItem(CartItem item){
-        return cartService.removeItem(item);
+    public String removeItem(Long cartId, Long itemId) {
+        return cartService.removeItem(cartId,itemId);
     }
 
-    public String getCartByCustomerId(Long id){
+    public String getCartByCustomerId(Long id) {
         return cartService.getCartByCustomerId(id);
     }
 
-    public String clearCart(){
-        return cartService.clearCart();
+    public String clearCart(Long cartId) {
+        return cartService.clearCart(cartId);
     }
 
-    public String submitFinalOrder(){
-        return cartService.submitFinalOrder();
+    public String submitFinalOrder(Long cartId) {
+        return cartService.submitFinalOrder(cartId);
     }
 
-    public String getCartItems(){return cartService.getCartItems();}
+    public String getCartItems(Long cartId) {
+        return cartService.getCartItems(cartId);
+    }
 }

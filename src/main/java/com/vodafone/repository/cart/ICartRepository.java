@@ -1,15 +1,15 @@
 package com.vodafone.repository.cart;
 
 public interface ICartRepository {
-    String removeItem(CartItem item);
+    String removeItem(Long cartId, Long itemId);
 
     String getCartByCustomerId(Long id);
 
-    String clearCart();
+    String clearCart(Long cartId);
 
-    String submitFinalOrder();
+    String submitFinalOrder(Long cartId);
 
-    String addItem(CartItem item);
+    String addItem(Long cartId, CartItem item);
 
-    String getCartItem();
+    String getCartItem(Long cartId);
 }

@@ -10,27 +10,27 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class CartService {
     ICartRepository cartRepository;
-    public String removeItem(CartItem item) {
-       return cartRepository.removeItem(item);
+    public String removeItem(Long cartId, Long itemId) {
+       return cartRepository.removeItem(cartId,itemId);
     }
 
     public String getCartByCustomerId(Long id) {
         return cartRepository.getCartByCustomerId(id);
     }
 
-    public String clearCart() {
-        return cartRepository.clearCart();
+    public String clearCart(Long cartId) {
+        return cartRepository.clearCart(cartId);
     }
 
-    public String submitFinalOrder() {
-        return cartRepository.submitFinalOrder();
+    public String submitFinalOrder(Long cartId) {
+        return cartRepository.submitFinalOrder(cartId);
     }
 
-    public String addItem(CartItem item) {
-        return cartRepository.addItem(item);
+    public String addItem(Long cartId, CartItem item) {
+        return cartRepository.addItem(cartId,item);
     }
 
-    public String getCartItems() {
+    public String getCartItems(Long cartId) {
         return cartRepository.getCartItem();
     }
 }
