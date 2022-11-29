@@ -1,5 +1,6 @@
 package com.vodafone.controller;
 
+import com.vodafone.model.CartItem;
 import com.vodafone.service.CartService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -13,22 +14,22 @@ public class CartController {
 
     //todo: add mappings
     public String addItem(Long cartId, CartItem item) {
-        return cartService.addItem(cartId,item);
+        return null;
     }
 
     public String removeItem(Long cartId, Long itemId) {
-        return cartService.removeItem(cartId,itemId);
+        return null;
     }
 
     public String clearCart(Long cartId) {
-        return cartService.clearCart(cartId);
+        return null;
     }
 
     public String submitFinalOrder(Long cartId) {
-        return cartService.submitFinalOrder(cartId);
+        return null;
     }
 
     public String getCartItems(Long cartId) {
-        return cartService.getCartItems(cartId);
+        return null;
     }
 }
