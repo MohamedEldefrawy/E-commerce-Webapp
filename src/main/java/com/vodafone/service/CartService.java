@@ -14,10 +14,6 @@ public class CartService {
        return cartRepository.removeItem(cartId,itemId);
     }
 
-    public String getCartByCustomerId(Long id) {
-        return cartRepository.getCartByCustomerId(id);
-    }
-
     public String clearCart(Long cartId) {
         return cartRepository.clearCart(cartId);
     }
@@ -31,6 +27,6 @@ public class CartService {
     }
 
     public String getCartItems(Long cartId) {
-        return cartRepository.getCartItem();
+        return cartRepository.getCartItems();
     }
 }

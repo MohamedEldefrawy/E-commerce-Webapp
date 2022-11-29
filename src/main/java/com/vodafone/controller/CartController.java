@@ -20,10 +20,6 @@ public class CartController {
         return cartService.removeItem(cartId,itemId);
     }
 
-    public String getCartByCustomerId(Long id) {
-        return cartService.getCartByCustomerId(id);
-    }
-
     public String clearCart(Long cartId) {
         return cartService.clearCart(cartId);
     }
