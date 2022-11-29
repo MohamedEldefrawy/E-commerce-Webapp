@@ -1,32 +1,33 @@
-package com.vodafone.repository.order;
+package com.vodafone.repository.admin;
 
 import com.vodafone.config.HibernateConfig;
+import com.vodafone.model.Admin;
 import com.vodafone.model.Order;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Repository
-public class OrderRepository implements IOrderRepository {
+public class AdminRepository implements IAdminRepository{
 
     private final HibernateConfig hibernateConfig;
 
-
-    public OrderRepository(HibernateConfig hibernateConfig) {
+    public AdminRepository(HibernateConfig hibernateConfig) {
         this.hibernateConfig = hibernateConfig;
     }
 
     @Override
-    public List<Order> findAll(int customerId) {
-        List<Order> list;
+    public List<Admin> findAll() {
+        List<Admin> list;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            list = session.createQuery("from orders where o.customerId= " + customerId, Order.class)
+            list = session.createQuery("from admins", Admin.class)
                     .list();
         }
         catch (HibernateException e){
@@ -37,50 +38,26 @@ public class OrderRepository implements IOrderRepository {
     }
 
     @Override
-    public Order findOne(int orderId) {
-        Order order = null;
+    public Admin findOne(int id) {
+        Admin admin = null;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            Transaction tx = session.beginTransaction();
-            Query query = session.createQuery(
-                    "From orders o where o.id=" +orderId
-            );
-            order = (Order) query.uniqueResult();
-            tx.commit();
+            admin = session.get(Admin.class,id);
+            session.close();
         }
         catch (HibernateException e){
             e.printStackTrace();
             return null;
         }
-        return order;
+        return admin;
     }
 
     @Override
-    public boolean save(Order order) {
-        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            Transaction tx = session.beginTransaction();
-            session.persist(order);
-            tx.commit();
-            return true;
-        }
-        catch (HibernateException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-    }
-
-    @Override
-    public boolean updateOne(int orderId, Order order) {
-        return false;
-    }
-
-    @Override
-    public boolean deleteOne(int orderId) {
+    public boolean deleteOne(int id) {
         int modifications = 0;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
             Query query = session.createQuery(
-                    "delete orders o where o.id= " + orderId
+                    "delete admins a where a.id=" + id
             );
             modifications = query.executeUpdate();
             tx.commit();
@@ -91,4 +68,19 @@ public class OrderRepository implements IOrderRepository {
         }
         return modifications > 0;
     }
+
+    @Override
+    public boolean save(Admin admin) {
+        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
+            Transaction tx = session.beginTransaction();
+            session.persist(admin);
+            tx.commit();
+            return true;
+        }
+        catch (HibernateException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }
