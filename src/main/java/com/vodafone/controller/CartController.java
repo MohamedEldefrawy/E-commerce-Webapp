@@ -29,4 +29,6 @@ public class CartController {
     public String submitFinalOrder(){
         return cartService.submitFinalOrder();
     }
+
+    public String getCartItems(){return cartService.getCartItems();}
 }

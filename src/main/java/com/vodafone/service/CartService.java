@@ -29,4 +29,8 @@ public class CartService {
     public String addItem(CartItem item) {
         return cartRepository.addItem(item);
     }
+
+    public String getCartItems() {
+        return cartRepository.getCartItem();
+    }
 }
