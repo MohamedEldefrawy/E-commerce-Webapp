@@ -49,3 +49,5 @@ build/
 
 ### database.properties ###
 /src/main/resources/database.properties
+### database.properties ###
+/src/main/resources/database.properties
