@@ -3,6 +3,7 @@ package com.vodafone.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "carts")
@@ -18,6 +19,6 @@ public class Cart {
     @OneToOne
     @JoinColumn(name = "customer_id")
     Customer customer;
-    @ManyToMany(cascade = CascadeType.REMOVE)
+    @OneToMany
     List<CartItem> items;
 }
