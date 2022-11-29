@@ -22,6 +22,7 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "customerId")
     @Setter
+    @Getter
     private Customer customer;
 
     @Column
@@ -39,4 +40,8 @@ public class Order {
         this.orderItems = orderItems;
     }
 
+    public Order(Customer customer, Date date) {
+        this.customer = customer;
+        this.date = date;
+    }
 }

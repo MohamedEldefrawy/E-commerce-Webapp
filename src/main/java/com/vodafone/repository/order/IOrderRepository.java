@@ -5,11 +5,6 @@ import com.vodafone.repository.Repository;
 
 import java.util.List;
 
-public interface IOrderRepository extends Repository {
+public interface IOrderRepository extends Repository<Order> {
 
-    public List<Order> findAll(int customerId);
-    public Order findOne(int orderId);
-    public boolean save(Order order);
-    public boolean updateOne(int orderId,Order order);
-    public boolean deleteOne(int orderId);
 }
