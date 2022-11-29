@@ -17,12 +17,11 @@ public abstract class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     String userName;
+    @Column(unique = true)
     String email;
+    @Column(nullable = false)
     String password;
     Role role;
-
-    public boolean login(User user){
-        return false;
-    }
 }
