@@ -22,5 +22,7 @@ public abstract class User {
     String password;
     Role role;
 
-    public abstract boolean login(User user);
+    public boolean login(User user){
+        return false;
+    }
 }
