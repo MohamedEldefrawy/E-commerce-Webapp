@@ -47,7 +47,6 @@ build/
 ### Config file ###
 
 
-### database.properties ###
-/src/main/resources/database.properties
+
 ### database.properties ###
 /src/main/resources/database.properties
