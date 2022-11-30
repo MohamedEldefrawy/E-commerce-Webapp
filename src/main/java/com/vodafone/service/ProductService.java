@@ -1,16 +1,16 @@
 package com.vodafone.service;
 
 import com.vodafone.model.Product;
-import com.vodafone.repository.product.IProductRepository;
+import com.vodafone.repository.product.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class ProductService {
-    private final IProductRepository productRepository;
+    private final ProductRepository productRepository;
 
-    public ProductService(IProductRepository productRepository) {
+    public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
 
