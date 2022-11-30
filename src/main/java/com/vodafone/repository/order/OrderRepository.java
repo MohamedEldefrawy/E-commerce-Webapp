@@ -1,7 +1,6 @@
 package com.vodafone.repository.order;
 
 import com.vodafone.config.HibernateConfig;
-import com.vodafone.model.Admin;
 import com.vodafone.model.Order;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -40,7 +39,7 @@ public class OrderRepository implements IOrderRepository {
 
     @Override
     public Order get(Long orderId) {
-        Order order = null;
+        Order order ;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
             Query query = session.createQuery(
@@ -107,5 +106,19 @@ public class OrderRepository implements IOrderRepository {
             return false;
         }
         return modifications > 0;
+    }
+
+    @Override
+    public List<Order> getByCustomerId(Long customerId) {
+        List<Order> list;
+        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
+            list = session.createQuery("From orders where o.customerId= " + customerId, Order.class)
+                    .list();
+        }
+        catch (HibernateException e){
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+        return list;
     }
 }
