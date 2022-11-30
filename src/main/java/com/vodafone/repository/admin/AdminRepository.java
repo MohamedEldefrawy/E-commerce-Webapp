@@ -28,7 +28,7 @@ public class AdminRepository implements IAdminRepository{
     public List<Admin> getAll() {
         List<Admin> list;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            list = session.createQuery("from admins", Admin.class)
+            list = session.createQuery("from Admin", Admin.class)
                     .list();
         }
         catch (HibernateException e){

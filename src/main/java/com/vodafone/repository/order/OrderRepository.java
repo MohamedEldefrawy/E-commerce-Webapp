@@ -27,7 +27,7 @@ public class OrderRepository implements IOrderRepository {
         List<Order> list;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             //list = session.createQuery("From orders where o.customerId= " + customerId, Order.class)
-            list = session.createQuery("From orders", Order.class)
+            list = session.createQuery("From Order", Order.class)
                     .list();
         }
         catch (HibernateException e){
