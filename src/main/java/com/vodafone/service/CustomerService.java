@@ -2,9 +2,10 @@ package com.vodafone.service;
 
 import com.vodafone.model.Customer;
 import com.vodafone.repository.customer.CustomerRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Service
 public class CustomerService {
     CustomerRepository customerRepository;
 
