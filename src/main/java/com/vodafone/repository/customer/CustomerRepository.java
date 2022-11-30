@@ -6,7 +6,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
-
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -89,8 +89,14 @@ public class CustomerRepository implements ICustomerRepository{
         }
         return customer;
     }
+
     @Override
     public List<Customer> getAll() {
-        return null;
+        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
+          return   session.createQuery("From customers",Customer.class).list();
+        } catch (HibernateException hibernateException){
+            hibernateException.printStackTrace();
+            return new ArrayList<Customer>();
+        }
     }
 }
