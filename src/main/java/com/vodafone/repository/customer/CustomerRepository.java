@@ -69,9 +69,14 @@ public class CustomerRepository implements ICustomerRepository{
 
     @Override
     public Customer get(Long id) {
-        return null;
+        Customer customer = null;
+        try(Session session = hibernateConfig.getSessionFactory().openSession()) {
+           customer = session.get(Customer.class,id);
+        }catch (HibernateException hibernateException){
+            hibernateException.printStackTrace();
+        }
+        return customer;
     }
-
     @Override
     public List<Customer> getAll() {
         return null;
