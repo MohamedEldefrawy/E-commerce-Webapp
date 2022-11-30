@@ -2,12 +2,11 @@ package com.vodafone.repository.customer;
 
 import com.vodafone.config.HibernateConfig;
 import com.vodafone.model.Customer;
-import com.vodafone.model.Order;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -33,8 +32,16 @@ public class CustomerRepository implements ICustomerRepository{
 
 
     @Override
-    public boolean create(Customer entity) {
-        return false;
+    public boolean create(Customer customer) {
+        try(Session session = hibernateConfig.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            session.persist(customer);
+            transaction.commit();
+            return true;
+        }catch (HibernateException hibernateException){
+            hibernateException.printStackTrace();
+            return false;
+        }
     }
 
     @Override
