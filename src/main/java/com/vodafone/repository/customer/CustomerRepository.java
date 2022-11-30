@@ -45,8 +45,21 @@ public class CustomerRepository implements ICustomerRepository{
     }
 
     @Override
-    public boolean update(Long id, Customer updatedEntity) {
-        return false;
+    public boolean update(Long id, Customer updatedCustomer) {
+        try (Session session = hibernateConfig.getSessionFactory().openSession()){
+            Transaction transaction = session.beginTransaction();
+            Customer customer = session.get(Customer.class,id);
+            if(customer==null){
+                return  false;
+            }else {
+                session.update(updatedCustomer);
+                return true;
+            }
+        } catch (HibernateException hibernateException){
+            hibernateException.printStackTrace();
+            return false;
+        }
+
     }
 
     @Override
