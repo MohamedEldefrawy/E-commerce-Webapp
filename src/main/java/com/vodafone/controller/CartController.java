@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,48 +18,70 @@ import java.util.List;
 public class CartController {
     CartService cartService;
 
-    //todo: add mappings
-    public String addItem(Long cartId, CartItem item) {
+    @PostMapping("{cartId}")
+    public String addItem(@PathVariable Long cartId, @RequestBody CartItem item) {
+        cartService.addItem(cartId, item);
         return null;
     }
 
-    public String removeItem(Long cartId, Long itemId) {
+    @PutMapping("{cartId}/{itemId}")
+    public String removeItem(@PathVariable Long cartId, @PathVariable Long itemId) {
+        cartService.removeItem(cartId, itemId);
         return null;
     }
 
-    public String clearCart(Long cartId) {
+    @PutMapping("{cartId}/clear")
+    public String clearCart(@PathVariable Long cartId) {
+        cartService.clearCart(cartId);
         return null;
     }
 
-    public String submitFinalOrder(Long cartId) {
+    @PostMapping("{cartId}/submit")
+    public String submitFinalOrder(@PathVariable Long cartId) {
+        cartService.submitFinalOrder(cartId);
         return null;
     }
 
-    public String getCartItems(Long cartId) {
+    @GetMapping("{cartId}/order")
+    public String showFinalOrder(@PathVariable Long cartId) {
+        cartService.showFinalOrder(cartId);
         return null;
     }
 
-    public String createCart(Cart entity) {
+    @GetMapping("{cartId}/items")
+    public String getCartItems(@PathVariable Long cartId) {
+        cartService.getCartItems(cartId);
         return null;
     }
 
-
-    public String updateCart(Long id, Cart updatedEntity) {
+    @PostMapping
+    public String create(@RequestBody Cart entity) {
+        cartService.create(entity);
         return null;
     }
 
-
-    public String deleteCart(Long id) {
+    @PutMapping("{id}")
+    public String update(@PathVariable Long id, @RequestBody Cart updatedEntity) {
+        cartService.update(id, updatedEntity);
         return null;
     }
 
-
-    public String getCart(Long id) {
+    @DeleteMapping("{id}")
+    public String delete(@PathVariable Long id) {
+        cartService.delete(id);
         return null;
-
     }
 
-    public String getAllCarts() {
+    @GetMapping("{id}")
+    public String get(@PathVariable Long id) {
+        cartService.get(id);
+        return null;
+    }
+
+    @GetMapping
+    public String getAll() {
+
+        cartService.getAll();
         return null;
     }
 }

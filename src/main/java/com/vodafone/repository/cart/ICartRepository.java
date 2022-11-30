@@ -14,6 +14,8 @@ public interface ICartRepository extends Repository<Cart> {
 
     Order submitFinalOrder(Long cartId);
 
+    Order showFinalOrder(Long cartId);
+
     boolean addItem(Long cartId, CartItem item);
 
     List<CartItem> getCartItems(Long cartId);

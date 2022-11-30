@@ -16,7 +16,7 @@ import java.util.List;
 
 
 @Repository
-public class AdminRepository implements IAdminRepository{
+public class AdminRepository implements IAdminRepository {
 
     private final HibernateConfig hibernateConfig;
 
@@ -30,8 +30,7 @@ public class AdminRepository implements IAdminRepository{
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             list = session.createQuery("from Admin", Admin.class)
                     .list();
-        }
-        catch (HibernateException e){
+        } catch (HibernateException e) {
             e.printStackTrace();
             return new ArrayList<>();
         }
@@ -42,9 +41,8 @@ public class AdminRepository implements IAdminRepository{
     public Admin get(Long id) {
         Admin admin = null;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            admin = session.get(Admin.class,id);
-        }
-        catch (HibernateException e){
+            admin = session.get(Admin.class, id);
+        } catch (HibernateException e) {
             e.printStackTrace();
             return null;
         }
@@ -53,20 +51,19 @@ public class AdminRepository implements IAdminRepository{
 
     @Override
     public boolean delete(Long id) {
-        int modifications = 0;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
-            Query query = session.createQuery(
-                    "delete admins a where a.id=" + id
-            );
-            modifications = query.executeUpdate();
-            tx.commit();
-        }
-        catch (HibernateException e){
+            Admin admin = get(id);
+            if (admin != null) {
+                session.delete(admin);
+                tx.commit();
+                return true;
+            }
+        } catch (HibernateException e) {
             e.printStackTrace();
             return false;
         }
-        return modifications > 0;
+        return false;
     }
 
     @Override
@@ -76,8 +73,7 @@ public class AdminRepository implements IAdminRepository{
             session.persist(admin);
             tx.commit();
             return true;
-        }
-        catch (HibernateException e) {
+        } catch (HibernateException e) {
             e.printStackTrace();
             return false;
         }
@@ -91,7 +87,7 @@ public class AdminRepository implements IAdminRepository{
 
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
             //doesnt update password or role
-            Transaction tx  = session.beginTransaction();
+            Transaction tx = session.beginTransaction();
             admin.setEmail(updatedEntity.getEmail());
             admin.setUserName(updatedEntity.getUserName());
             session.persist(admin);

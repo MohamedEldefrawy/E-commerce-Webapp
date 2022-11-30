@@ -30,6 +30,11 @@ public class Order {
     @Setter
     private Date date;
 
+    @Column
+    @Getter
+    @Setter
+    private float total;
+    
     @OneToMany(mappedBy = "order" ,cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @Getter
     @Setter
