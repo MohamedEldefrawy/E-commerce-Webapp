@@ -20,4 +20,5 @@ public class Product {
     private String category;
     private float rate;
     private double price;
+    private int inStock;
 }
