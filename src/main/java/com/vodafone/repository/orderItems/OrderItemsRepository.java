@@ -38,7 +38,7 @@ public class OrderItemsRepository implements IOrderItemsRepository{
     public List<OrderItem> getAll() {
         List<OrderItem> list;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            list = session.createQuery("from orderItems", OrderItem.class)
+            list = session.createQuery("from OrderItem", OrderItem.class)
                     .list();
         }
         catch (HibernateException e){

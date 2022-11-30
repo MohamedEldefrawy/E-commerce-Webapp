@@ -30,7 +30,7 @@ public class Order {
     @Setter
     private Date date;
 
-    @OneToMany(mappedBy = "order" ,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order" ,cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @Getter
     @Setter
     Set<OrderItem> orderItems = new HashSet<>();
