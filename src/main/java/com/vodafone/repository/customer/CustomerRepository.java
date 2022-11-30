@@ -1,5 +1,6 @@
 package com.vodafone.repository.customer;
 
+import com.vodafone.config.HibernateConfig;
 import com.vodafone.model.Customer;
 import com.vodafone.model.Order;
 import org.hibernate.HibernateException;
@@ -12,11 +13,10 @@ import java.util.List;
 @Repository
 public class CustomerRepository implements ICustomerRepository{
 
+    private final HibernateConfig hibernateConfig;
 
-    private final Customer customer;
-    @Autowired
-    public CustomerRepository(Customer customer) {
-        this.customer = customer;
+    public CustomerRepository(HibernateConfig hibernateConfig) {
+        this.hibernateConfig = hibernateConfig;
     }
 
     /*
@@ -30,14 +30,7 @@ public class CustomerRepository implements ICustomerRepository{
 
         +submitFinalOrder():
      */
-    public List<Order> reviewOrderListHistory(){
-       try (Session session = factory.openSession()){
-           return session.createQuery("select c.orders from customers c ").list();
-       }catch (HibernateException hibernateException){
-           hibernateException.printStackTrace();
-       }
-       return new ArrayList<Order>();
-    }
+
 
     @Override
     public boolean create(Customer entity) {
