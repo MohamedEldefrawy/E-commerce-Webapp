@@ -21,7 +21,7 @@ public class CustomerController {
         return customerService.create(customer);
     }
 
-    @PostMapping
+    @PutMapping
     public boolean update(Long id, Customer updatedCustomer){
         return customerService.update(id,updatedCustomer);
     }
