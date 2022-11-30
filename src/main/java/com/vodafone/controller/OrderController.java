@@ -21,8 +21,8 @@ public class OrderController {
         return orderService.getAll();
     }
 
-    @GetMapping
-    public Order get(@RequestParam("id") Long orderId){
+    @GetMapping("{id}")
+    public Order get(@PathVariable("id") Long orderId){
         return orderService.get(orderId);
     }
 

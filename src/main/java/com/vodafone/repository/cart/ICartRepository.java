@@ -1,13 +1,20 @@
 package com.vodafone.repository.cart;
 
-public interface ICartRepository {
-    String removeItem(Long cartId, Long itemId);
+import com.vodafone.model.Cart;
+import com.vodafone.model.CartItem;
+import com.vodafone.model.Order;
+import com.vodafone.repository.Repository;
 
-    String clearCart(Long cartId);
+import java.util.List;
 
-    String submitFinalOrder(Long cartId);
+public interface ICartRepository extends Repository<Cart> {
+    boolean removeItem(Long cartId, Long itemId);
 
-    String addItem(Long cartId, CartItem item);
+    boolean clearCart(Long cartId);
 
-    String getCartItems(Long cartId);
+    Order submitFinalOrder(Long cartId);
+
+    boolean addItem(Long cartId, CartItem item);
+
+    List<CartItem> getCartItems(Long cartId);
 }

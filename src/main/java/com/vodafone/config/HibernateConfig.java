@@ -1,7 +1,6 @@
 package com.vodafone.config;
 
-import com.vodafone.model.Product;
-import com.vodafone.model.User;
+import com.vodafone.model.*;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Environment;
@@ -40,6 +39,12 @@ public class HibernateConfig {
                 configuration.setProperties(settings);
                 configuration.addAnnotatedClass(User.class);
                 configuration.addAnnotatedClass(Product.class);
+                configuration.addAnnotatedClass(Cart.class);
+                configuration.addAnnotatedClass(CartItem.class);
+                configuration.addAnnotatedClass(Order.class);
+                configuration.addAnnotatedClass(Admin.class);
+                configuration.addAnnotatedClass(Customer.class);
+                configuration.addAnnotatedClass(OrderItem.class);
 
                 ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                         .applySettings(configuration.getProperties()).build();
