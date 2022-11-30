@@ -64,7 +64,19 @@ public class CustomerRepository implements ICustomerRepository{
 
     @Override
     public boolean delete(Long id) {
-        return false;
+        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
+            Customer deletedCustomer = session.get(Customer.class,id);
+            if(deletedCustomer==null){
+                return false;
+            }else {
+                Transaction transaction = session.beginTransaction();
+                session.delete(deletedCustomer);
+                return true;
+            }
+        }catch (HibernateException hibernateException){
+            hibernateException.printStackTrace();
+            return false;
+        }
     }
 
     @Override
