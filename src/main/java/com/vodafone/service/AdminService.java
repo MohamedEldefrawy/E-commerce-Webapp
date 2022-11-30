@@ -15,19 +15,23 @@ public class AdminService {
         this.adminRepository = adminRepository;
     }
 
-    public List<Admin> findAll(){
-        return adminRepository.findAll();
+    public List<Admin> getAll(){
+        return adminRepository.getAll();
     }
 
-    public Admin findOne(int id){
-        return adminRepository.findOne(id);
+    public Admin get(Long id){
+        return adminRepository.get(id);
     }
 
-    public boolean deleteOne(int id){
-        return adminRepository.deleteOne(id);
+    public boolean delete(Long id){
+        return adminRepository.delete(id);
     }
 
-    public boolean save(Admin admin){
-        return adminRepository.save(admin);
+    public boolean create(Admin admin){
+        return adminRepository.create(admin);
+    }
+
+    public boolean update(Long id, Admin admin){
+        return adminRepository.update(id,admin);
     }
 }

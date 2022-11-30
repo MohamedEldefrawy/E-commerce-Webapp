@@ -14,19 +14,19 @@ public class OrderService{
         this.orderRepository = orderRepository;
     }
 
-    public List<Order> findAll(int customerId){
-        return orderRepository.findAll(customerId);
+    public List<Order> getAll(){
+        return orderRepository.getAll();
     }
-    public Order findOne(int orderId){
-        return orderRepository.findOne(orderId);
+    public Order get(Long orderId){
+        return orderRepository.get(orderId);
     }
-    public boolean save(Order order){
-        return orderRepository.save(order);
+    public boolean create(Order order){
+        return orderRepository.create(order);
     }
-    public boolean updateOne(int orderId,Order order){
-        return orderRepository.updateOne(orderId,order);
+    public boolean update(Long orderId,Order order){
+        return orderRepository.update(orderId,order);
     }
-    public boolean deleteOne(int orderId){
-        return orderRepository.deleteOne(orderId);
+    public boolean delete(Long orderId){
+        return orderRepository.delete(orderId);
     }
 }
