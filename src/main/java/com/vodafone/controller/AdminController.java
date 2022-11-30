@@ -3,11 +3,13 @@ package com.vodafone.controller;
 import com.vodafone.model.Admin;
 import com.vodafone.model.Product;
 import com.vodafone.model.Role;
+
 import com.vodafone.model.User;
 import com.vodafone.service.AdminService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -15,7 +17,9 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
+
 @RequestMapping("/admins")
+
 public class AdminController {
     AdminService adminService;
 
@@ -29,7 +33,9 @@ public class AdminController {
         adminService.create(admin);
     }
 
+
     @GetMapping("/admins.htm")
+
     public String getAll(Model model) {
         List<Admin> adminList = this.adminService.getAll();
         model.addAttribute("admins", adminList);
