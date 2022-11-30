@@ -3,15 +3,23 @@ package com.vodafone.controller;
 import com.vodafone.model.Admin;
 import com.vodafone.model.Product;
 import com.vodafone.model.Role;
+
+import com.vodafone.model.User;
 import com.vodafone.service.AdminService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 @Controller
-@RequestMapping("/admins.htm")
+
+@RequestMapping("/admins")
+
 public class AdminController {
     AdminService adminService;
 
@@ -25,7 +33,9 @@ public class AdminController {
         adminService.create(admin);
     }
 
-    @GetMapping()
+
+    @GetMapping("/admins.htm")
+
     public String getAll(Model model) {
         List<Admin> adminList = this.adminService.getAll();
         model.addAttribute("admins", adminList);
@@ -33,23 +43,40 @@ public class AdminController {
 
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/admins.htm/{id}")
     public Admin get(@PathVariable("id") Long id) {
         return adminService.get(id);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/admins.htm/{id}")
     public boolean delete(@RequestParam("id") Long id) {
         return adminService.delete(id);
     }
 
-    @PutMapping
+    /*@PutMapping("/admins.htm")
     public boolean create(Admin admin) {
         return adminService.create(admin);
-    }
+    }*/
 
-    @PostMapping
+    @PostMapping("/admins.htm")
     public boolean update(Long id, Admin admin) {
         return adminService.update(id, admin);
+    }
+    @GetMapping("/createAdmin.htm")
+    public String getCreateAdminPage(Model model) {
+        List<Admin> adminList = this.adminService.getAll();
+        model.addAttribute("admins", adminList);
+        return "createAdmin";
+
+    }
+    @PutMapping("/createAdmin.htm")
+    public String addUser(@Valid @ModelAttribute("admin") Admin admin, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            Map<String, Object> model = bindingResult.getModel();
+            System.out.println(model);
+            return "createAdmin";
+        }
+        adminService.create(admin);
+        return "redirect:/admins.htm";
     }
 }
