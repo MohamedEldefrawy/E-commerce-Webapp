@@ -12,11 +12,14 @@
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome -->
-    <%--    <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">--%>
     <link href="<c:url value="/resources/static/css/all.min.css" />" rel="stylesheet">
 
+    <!-- DataTables -->
+    <link href="<c:url value="/resources/static/css/dataTables.bootstrap4.min.css" />" rel="stylesheet">
+    <link href="<c:url value="/resources/static/css/responsive.bootstrap4.min.css" />" rel="stylesheet">
+    <link href="<c:url value="/resources/static/css/buttons.bootstrap4.min.css" />" rel="stylesheet">
+
     <!-- Theme style -->
-    <%--    <link rel="stylesheet" href="../../dist/css/adminlte.min.css">--%>
     <link href="<c:url value="/resources/static/css/adminlte.min.css" />" rel="stylesheet">
 
 </head>
@@ -30,7 +33,7 @@
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
         <section class="content-header">
-
+            We Move The World
         </section>
 
         <!-- Main content -->
@@ -58,20 +61,29 @@
 <!-- ./wrapper -->
 
 <!-- jQuery -->
-<%--<script src="../../plugins/jquery/jquery.min.js"></script>--%>
 <script src="<c:url value="/resources/static/js/jquery.min.js" />"></script>
 
 <!-- Bootstrap 4 -->
-<%--<script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>--%>
 <script src="<c:url value="/resources/static/js/bootstrap.bundle.min.js" />"></script>
 
-<!-- AdminLTE App -->
-<%--<script src="../../dist/js/adminlte.min.js"></script>--%>
-<script src="<c:url value="/resources/static/js/adminlte.min.js" />"></script>
+<script src="<c:url value="/resources/static/js/jquery.dataTables.min.js" />"></script>
+<script src="<c:url value="/resources/static/js/dataTables.bootstrap4.min.js" />"></script>
+<script src="<c:url value="/resources/static/js/dataTables.responsive.min.js" />"></script>
+<script src="<c:url value="/resources/static/js/responsive.bootstrap4.min.js" />"></script>
+<script src="<c:url value="/resources/static/js/dataTables.buttons.min.js" />"></script>
+<script src="<c:url value="/resources/static/js/buttons.bootstrap4.min.js" />"></script>
+<script src="<c:url value="/resources/static/js/jszip.min.js" />"></script>
+<script src="<c:url value="/resources/static/js/pdfmake.min.js" />"></script>
+<script src="<c:url value="/resources/static/js/vfs_fonts.js" />"></script>
+<script src="<c:url value="/resources/static/js/buttons.html5.min.js" />"></script>
+<script src="<c:url value="/resources/static/js/buttons.print.min.js" />"></script>
+<script src="<c:url value="/resources/static/js/buttons.colVis.min.js" />"></script>
 
 <!-- AdminLTE for demo purposes -->
-<%--<script src="../../dist/js/demo.js"></script>--%>
 <script src="<c:url value="/resources/static/js/demo.js" />"></script>
+
+<!-- AdminLTE App -->
+<script src="<c:url value="/resources/static/js/adminlte.min.js" />"></script>
 
 </body>
 </html>
