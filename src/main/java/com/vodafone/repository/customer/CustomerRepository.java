@@ -93,7 +93,7 @@ public class CustomerRepository implements ICustomerRepository{
     @Override
     public List<Customer> getAll() {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-          return   session.createQuery("From customers",Customer.class).list();
+          return   session.createQuery("From Customer",Customer.class).list();
         } catch (HibernateException hibernateException){
             hibernateException.printStackTrace();
             return new ArrayList<Customer>();

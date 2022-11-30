@@ -112,4 +112,34 @@ public class ProductRepository implements IProductRepository {
             return new ArrayList<>();
         }
     }
+
+    @Override
+    public List<Product> getByPrice(double price) {
+        try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
+            return session.createQuery("from Product p where p.price= :p", Product.class).setParameter("p", price).list();
+        } catch (HibernateException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<Product> getByPriceRange(double low, double high) {
+        try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
+            return session.createQuery("from Product p where p.price in(:l,:h)", Product.class).setParameter("l", low).setParameter("h", high).list();
+        } catch (HibernateException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<Product> getByRate(float rate) {
+        try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
+            return session.createQuery("from Product p where p.rate= :r", Product.class).setParameter("r", rate).list();
+        } catch (HibernateException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
 }

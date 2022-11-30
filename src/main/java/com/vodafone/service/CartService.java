@@ -1,10 +1,14 @@
 package com.vodafone.service;
 
+import com.vodafone.model.Cart;
 import com.vodafone.model.CartItem;
 import com.vodafone.model.Order;
 import com.vodafone.repository.cart.ICartRepository;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,8 +18,35 @@ import java.util.List;
 @AllArgsConstructor
 public class CartService {
     ICartRepository cartRepository;
+
+
+    public boolean create(Cart entity) {
+        return cartRepository.create(entity);
+    }
+
+
+    public boolean update(Long id, Cart updatedEntity) {
+        return cartRepository.update(id, updatedEntity);
+    }
+
+
+    public boolean delete(Long id) {
+        return cartRepository.delete(id);
+    }
+
+
+    public Cart get(Long id) {
+        return cartRepository.get(id);
+    }
+
+
+    public List<Cart> getAll() {
+        return cartRepository.getAll();
+    }
+
+
     public boolean removeItem(Long cartId, Long itemId) {
-       return cartRepository.removeItem(cartId,itemId);
+        return cartRepository.removeItem(cartId, itemId);
     }
 
     public boolean clearCart(Long cartId) {
@@ -26,8 +57,12 @@ public class CartService {
         return cartRepository.submitFinalOrder(cartId);
     }
 
+    public Order showFinalOrder(Long cartId) {
+        return cartRepository.showFinalOrder(cartId);
+    }
+
     public boolean addItem(Long cartId, CartItem item) {
-        return cartRepository.addItem(cartId,item);
+        return cartRepository.addItem(cartId, item);
     }
 
     public List<CartItem> getCartItems(Long cartId) {

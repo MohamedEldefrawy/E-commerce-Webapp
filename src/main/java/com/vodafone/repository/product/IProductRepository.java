@@ -9,4 +9,10 @@ public interface IProductRepository extends Repository<Product> {
     Product getByName(String name);
 
     List<Product> getByCategory(String category);
+
+    List<Product> getByPrice(double price);
+
+    List<Product> getByPriceRange(double low, double high);
+
+    List<Product> getByRate(float rate);
 }
