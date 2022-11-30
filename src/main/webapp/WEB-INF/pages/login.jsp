@@ -22,9 +22,9 @@
         <link rel="stylesheet" href="<c:url value="/resources/static/css/adminlte.min.css"/>">
     </head>
     <body class="hold-transition sidebar-mini">
-        <div class="pt-5">
+        <div class="container pt-5">
             <!-- Horizontal Form -->
-            <div class="card card-info w-75 m-auto">
+            <div class="card card-info w-75 m-auto ">
                 <div class="bg-white m-3 ">
                     <h2 class="text-center p-4">Login</h2>
                 </div>
@@ -33,19 +33,19 @@
                 <form class="form-horizontal">
                     <div class="card-body">
                         <div class="form-group row">
-                            <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
-                            <div class="col-sm-10">
+                            <label for="inputEmail3" class="col-sm-3 col-form-label">Email</label>
+                            <div class="col-sm-9">
                                 <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="inputPassword3" class="col-sm-2 col-form-label">Password</label>
-                            <div class="col-sm-10">
+                            <label for="inputPassword3" class="col-sm-3 col-form-label">Password</label>
+                            <div class="col-sm-9">
                                 <input type="password" class="form-control" id="inputPassword3" placeholder="Password">
                             </div>
                         </div>
                         <div class="form-group row">
-                            <div class="offset-sm-2 col-sm-10">
+                            <div class="offset-sm-3 col-sm-9">
                                 <div class="form-check">
                                     <input type="checkbox" class="form-check-input" id="exampleCheck2">
                                     <label class="form-check-label" for="exampleCheck2">login as admin</label>
@@ -54,7 +54,7 @@
                         </div>
                     </div>
                     <!-- /.card-body -->
-                    <div class="card-footer d-flex justify-content-center">
+                    <div class="card-footer d-flex justify-content-center mb-3 bg-white">
                         <button type="submit" class="btn btn-info mr-2 w-25 ">Sign in</button>
                         <button type="submit" class="btn btn-default w-25 ">Sign Up</button>
                     </div>
