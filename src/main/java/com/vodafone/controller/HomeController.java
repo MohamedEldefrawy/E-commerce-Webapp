@@ -17,10 +17,9 @@ public class HomeController {
     private final ProductService productService;
 
     @GetMapping("home.htm")
-    public String registration(Model model) {
+    public String home(Model model) {
         List<Product> productList = this.productService.getAll();
         model.addAttribute("products", productList);
         return "home";
     }
-
 }

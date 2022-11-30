@@ -33,7 +33,7 @@ public class HibernateConfig {
                 settings.put(Environment.URL, this.CONNECTION_STRING);
                 settings.put(Environment.USER, this.USER_NAME);
                 settings.put(Environment.PASS, this.PASSWORD);
-                settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL5Dialect");
+                settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL8Dialect");
                 settings.put(Environment.SHOW_SQL, "true");
                 settings.put(Environment.HBM2DDL_AUTO, "create-drop");
                 configuration.setProperties(settings);
