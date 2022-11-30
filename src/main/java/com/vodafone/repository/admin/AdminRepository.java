@@ -43,7 +43,6 @@ public class AdminRepository implements IAdminRepository{
         Admin admin = null;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             admin = session.get(Admin.class,id);
-            session.close();
         }
         catch (HibernateException e){
             e.printStackTrace();
