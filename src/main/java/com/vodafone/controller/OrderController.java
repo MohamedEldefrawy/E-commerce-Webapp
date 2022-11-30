@@ -17,27 +17,27 @@ public class OrderController {
     }
 
     @GetMapping
-    public List<Order> findAll(int customerId){
-        return orderService.findAll(customerId);
+    public List<Order> getAll(){
+        return orderService.getAll();
     }
 
     @GetMapping
-    public Order findOne(@RequestParam("id") int orderId){
-        return orderService.findOne(orderId);
+    public Order get(@RequestParam("id") Long orderId){
+        return orderService.get(orderId);
     }
 
     @PutMapping
-    public boolean save(Order order){
-        return orderService.save(order);
+    public boolean create(Order order){
+        return orderService.create(order);
     }
 
     @PostMapping
-    public boolean updateOne(int orderId,Order order){
-        return orderService.updateOne(orderId,order);
+    public boolean updateOne(Long orderId,Order order){
+        return orderService.update(orderId,order);
     }
 
     @DeleteMapping
-    public boolean deleteOne(int orderId){
-        return orderService.deleteOne(orderId);
+    public boolean delete(Long orderId){
+        return orderService.delete(orderId);
     }
 }

@@ -16,21 +16,26 @@ public class AdminController {
         this.adminService = adminService;
     }
     @GetMapping
-    public List<Admin> findAll(){
-        return adminService.findAll();
+    public List<Admin> getAll(){
+        return adminService.getAll();
     }
     @GetMapping
-    public Admin findOne(@RequestParam("id") int id){
-        return adminService.findOne(id);
+    public Admin get(@RequestParam("id") Long id){
+        return adminService.get(id);
     }
 
     @DeleteMapping
-    public boolean deleteOne(@RequestParam("id") int id){
-        return adminService.deleteOne(id);
+    public boolean delete(@RequestParam("id") Long id){
+        return adminService.delete(id);
     }
 
     @PutMapping
-    public boolean save(Admin admin){
-        return adminService.save(admin);
+    public boolean create(Admin admin){
+        return adminService.create(admin);
+    }
+
+    @PostMapping
+    public boolean update(Long id, Admin admin){
+        return adminService.update(id,admin);
     }
 }
