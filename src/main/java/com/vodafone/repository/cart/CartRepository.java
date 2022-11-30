@@ -134,19 +134,41 @@ public class CartRepository implements ICartRepository {
 
     @Override
     public Order submitFinalOrder(Long cartId) {
+        Order order = showFinalOrder(cartId); //calculate total and transform CartItem to OrderItem
+        clearCart(cartId); //submit and clear the cart
+        return order;
+    }
+
+    @Override
+    public Order showFinalOrder(Long cartId) {
         Set<OrderItem> orderItems = new HashSet<>();
         Cart cart = get(cartId);
         Order order = new Order();
         order.setCustomer(cart.getCustomer());
         order.setDate(Date.valueOf(LocalDate.now()));
         //iterate over each cart item to transform it to order item.
+        float total = 0f;
         for (CartItem cartItem : cart.getItems()) {
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);
-            orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setProduct(cartItem.getProduct());
-            //Todo: complete transformation validation -> validate item is available in stock
+            //check available quantity in stock
+            int quantity = cartItem.getQuantity();
+            int availableInStock = cartItem.getProduct().getInStock();
+            if (quantity <= availableInStock) {
+                //set product in Order
+                orderItem.setQuantity(quantity);
+                orderItem.setProduct(cartItem.getProduct());
+                //add sub-total
+                total = (float) (orderItem.getProduct().getPrice() * quantity);
+                //decrement product inStock variable
+                cartItem.getProduct().setInStock(availableInStock - quantity);
+            } else {
+                //Todo("Handle unavailable product exception");
+                System.out.println("Product hasn't enough instances in stock");
+                break;
+            }
         }
+        order.setTotal(total);
         order.setOrderItems(orderItems);
         return order;
     }
