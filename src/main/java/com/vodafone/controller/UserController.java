@@ -8,8 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,26 +21,37 @@ public class UserController {
 
     @GetMapping("login.htm")
     public String login(String email, String password) {
+        userService.login(email, password);
         return null;
     }
 
-    public String create(User user) {
+    @PostMapping
+    public String create(@RequestBody User user) {
+        userService.create(user);
         return null;
     }
 
-    public String update(Long id, User updatedEntity) {
+    @PutMapping("{id}")
+    public String update(@PathVariable Long id, @RequestBody User updatedEntity) {
+        userService.update(id, updatedEntity);
         return null;
     }
 
-    public String delete(Long id) {
+    @DeleteMapping("{id}")
+    public String delete(@PathVariable Long id) {
+        userService.delete(id);
         return null;
     }
 
-    public String get(Long id) {
+    @GetMapping("{id}")
+    public String get(@PathVariable Long id) {
+        userService.get(id);
         return null;
     }
 
+    @GetMapping
     public String getAll() {
+        userService.getAll();
         return null;
     }
 }
