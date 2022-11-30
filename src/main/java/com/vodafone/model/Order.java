@@ -32,6 +32,7 @@ public class Order {
 
     @OneToMany(mappedBy = "order" ,cascade = CascadeType.ALL)
     @Getter
+    @Setter
     Set<OrderItem> orderItems = new HashSet<>();
 
     public Order(Customer customer, Date date, Set<OrderItem> orderItems) {

@@ -39,8 +39,11 @@ public class HibernateConfig {
                 configuration.setProperties(settings);
                 configuration.addAnnotatedClass(User.class);
                 configuration.addAnnotatedClass(Product.class);
-                configuration.addAnnotatedClass(Admin.class);
+                configuration.addAnnotatedClass(Cart.class);
+                configuration.addAnnotatedClass(CartItem.class);
                 configuration.addAnnotatedClass(Order.class);
+                configuration.addAnnotatedClass(Admin.class);
+                configuration.addAnnotatedClass(Customer.class);
                 configuration.addAnnotatedClass(OrderItem.class);
 
                 ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
