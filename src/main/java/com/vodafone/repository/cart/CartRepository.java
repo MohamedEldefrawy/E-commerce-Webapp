@@ -14,9 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Repository
 @NoArgsConstructor
@@ -136,19 +134,20 @@ public class CartRepository implements ICartRepository {
 
     @Override
     public Order submitFinalOrder(Long cartId) {
-        List<OrderItem> orderItems = new ArrayList<>();
+        Set<OrderItem> orderItems = new HashSet<>();
         Cart cart = get(cartId);
+        Order order = new Order();
+        order.setCustomer(cart.getCustomer());
+        order.setDate(Date.valueOf(LocalDate.now()));
         //iterate over each cart item to transform it to order item.
         for (CartItem cartItem : cart.getItems()) {
             OrderItem orderItem = new OrderItem();
-            //add product from cartItem to orderItem
-            //add quantity
-            //Todo: complete transformation validation -> waiting for Miand to add setters for OrderItem
+            orderItem.setOrder(order);
+            orderItem.setQuantity(cartItem.getQuantity());
+            orderItem.setProduct(cartItem.getProduct());
+            //Todo: complete transformation validation -> validate item is available in stock
         }
-        Order order = new Order();
-        order.setDate(Date.valueOf(LocalDate.now()));
-        order.setCustomer(cart.getCustomer());
-        //todo: set orderItems list to Order
+        order.setOrderItems(orderItems);
         return order;
     }
 
