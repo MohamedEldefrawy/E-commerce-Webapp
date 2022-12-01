@@ -9,7 +9,7 @@
         <h3 class="card-title">Create Product</h3>
     </div>
     <div class="card-body">
-        <form:form modelAttribute="product" method="post">
+        <form:form modelAttribute="product" method="post" enctype="multipart/form-data">
             <div class="input-group mb-3">
                 <label for="Category" class="col-sm-2 col-form-label">Category</label>
                 <form:input id="Category" class="form-control" path="category"/>
@@ -20,7 +20,7 @@
             </div>
             <div class="input-group mb-3">
                 <label for="Image" class="col-sm-2 col-form-label">Image</label>
-                <form:input id="Image" class="form-control" path="image"/>
+                <input id="Image" name="image" class="form-control" type="file"/>
             </div>
             <div class="input-group mb-3">
                 <label for="Price" class="col-sm-2 col-form-label">Price</label>

@@ -17,9 +17,6 @@ public class CreateProduct {
     private String description;
     @NotNull
     @NotBlank
-    private String image;
-    @NotNull
-    @NotBlank
     private String category;
     @NotBlank
     @Min(value = 1)
