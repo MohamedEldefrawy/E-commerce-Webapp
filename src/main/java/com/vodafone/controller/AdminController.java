@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@NoArgsConstructor
-@AllArgsConstructor
 @RequestMapping("/admins")
 
 public class AdminController {
@@ -37,7 +35,7 @@ public class AdminController {
         admin.setPassword("1234");
         admin.setRole(Role.Admin);
         admin.setUserName("admoona");
-        adminService.create(admin);
+        this.adminService.create(admin);
     }
 
 

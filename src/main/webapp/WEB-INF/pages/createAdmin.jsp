@@ -27,4 +27,4 @@
     <!-- /.card-body -->
 </div>
 </rapid:override>
-<%@ include file="/WEB-INF/pages/home.jsp" %>
+<jsp:include page="./shared/home.jsp"/>
