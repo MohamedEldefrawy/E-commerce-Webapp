@@ -67,7 +67,10 @@
 
 <!-- Bootstrap 4 -->
 <script src="<c:url value="/resources/static/js/bootstrap.bundle.min.js" />"></script>
+<%--Fontawesome--%>
+<script src="<c:url value="/resources/static/js/all.min.js" />"></script>
 
+<%--Data Table--%>
 <script src="<c:url value="/resources/static/js/jquery.dataTables.min.js" />"></script>
 <script src="<c:url value="/resources/static/js/dataTables.bootstrap4.min.js" />"></script>
 <script src="<c:url value="/resources/static/js/dataTables.responsive.min.js" />"></script>
