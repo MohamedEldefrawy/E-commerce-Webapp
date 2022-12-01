@@ -1,6 +1,7 @@
 package com.vodafone.service;
 
 import com.vodafone.model.Customer;
+import com.vodafone.model.Email;
 import com.vodafone.repository.customer.CustomerRepository;
 import org.springframework.stereotype.Service;
 
@@ -33,4 +34,8 @@ public class CustomerService {
     }
 
     public boolean resetPassword(String email, String password){ return customerRepository.resetPassword(email,password); }
+
+    public Email requestResetPassword(String email){ return customerRepository.requestResetPassword(email); }
+
+    public Email sendActivationEmail(String email, String OTP){ return customerRepository.sendActivationEmail(email, OTP); }
 }
