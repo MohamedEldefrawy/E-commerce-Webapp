@@ -6,7 +6,11 @@ import com.vodafone.model.Role;
 
 import com.vodafone.model.User;
 import com.vodafone.service.AdminService;
+import com.vodafone.service.ProductService;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Repository;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 
@@ -17,11 +21,13 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-
+@NoArgsConstructor
+@AllArgsConstructor
 @RequestMapping("/admins")
 
 public class AdminController {
     AdminService adminService;
+    ProductService productService;
 
     public AdminController(AdminService adminService) {
         this.adminService = adminService;
@@ -62,6 +68,7 @@ public class AdminController {
     public boolean update(Long id, Admin admin) {
         return adminService.update(id, admin);
     }
+
     @GetMapping("/createAdmin.htm")
     public String getCreateAdminPage(Model model) {
         List<Admin> adminList = this.adminService.getAll();
@@ -69,6 +76,7 @@ public class AdminController {
         return "createAdmin";
 
     }
+
     @PutMapping("/createAdmin.htm")
     public String addUser(@Valid @ModelAttribute("admin") Admin admin, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -78,5 +86,35 @@ public class AdminController {
         }
         adminService.create(admin);
         return "redirect:/admins.htm";
+    }
+
+    @GetMapping("/products")
+    public String getAllProducts() {
+        List<Product> products = productService.getAll();
+        return null;
+    }
+
+    @GetMapping("/products/{productId}")
+    public String getProductById(@PathVariable Long productId) {
+        Product product = productService.get(productId);
+        return null;
+    }
+
+    @PostMapping("/products")
+    public String addProduct(@RequestBody Product product) {
+        productService.create(product);
+        return null;
+    }
+
+    @PutMapping("/products/{productId}")
+    public String updateProduct(@PathVariable Long productId, @RequestBody Product product) {
+        productService.update(productId, product);
+        return null;
+    }
+
+    @DeleteMapping("/products/{productId}")
+    public String deleteProduct(@PathVariable Long productId) {
+        productService.delete(productId);
+        return null;
     }
 }
