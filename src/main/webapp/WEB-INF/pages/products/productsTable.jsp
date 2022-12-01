@@ -30,8 +30,6 @@
         </c:forEach>
         </tbody>
     </table>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
-
     <script>
         $(function () {
             $('#products').DataTable({
@@ -47,4 +45,4 @@
     </script>
 </rapid:override>
 
-<%@ include file="/WEB-INF/pages/home.jsp" %>
+<jsp:include page="../shared/home.jsp"/>
