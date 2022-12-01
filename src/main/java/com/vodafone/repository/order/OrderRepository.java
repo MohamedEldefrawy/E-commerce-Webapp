@@ -26,11 +26,9 @@ public class OrderRepository implements IOrderRepository {
     public List<Order> getAll() {
         List<Order> list;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            //list = session.createQuery("From orders where o.customerId= " + customerId, Order.class)
             list = session.createQuery("From Order", Order.class)
                     .list();
-        }
-        catch (HibernateException e){
+        } catch (HibernateException e) {
             e.printStackTrace();
             return new ArrayList<>();
         }
@@ -39,16 +37,15 @@ public class OrderRepository implements IOrderRepository {
 
     @Override
     public Order get(Long orderId) {
-        Order order ;
+        Order order;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
             Query query = session.createQuery(
-                    "From orders o where o.id=" +orderId
+                    "From Order o where o.id=" + orderId
             );
             order = (Order) query.uniqueResult();
             tx.commit();
-        }
-        catch (HibernateException e){
+        } catch (HibernateException e) {
             e.printStackTrace();
             return null;
         }
@@ -62,8 +59,7 @@ public class OrderRepository implements IOrderRepository {
             session.persist(order);
             tx.commit();
             return true;
-        }
-        catch (HibernateException e) {
+        } catch (HibernateException e) {
             e.printStackTrace();
             return false;
         }
@@ -78,7 +74,7 @@ public class OrderRepository implements IOrderRepository {
 
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
             //doesnt update order items set
-            Transaction tx  = session.beginTransaction();
+            Transaction tx = session.beginTransaction();
             order.setCustomer(updatedEntity.getCustomer());
             order.setDate(updatedEntity.getDate());
             session.persist(order);
@@ -96,12 +92,11 @@ public class OrderRepository implements IOrderRepository {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
             Query query = session.createQuery(
-                    "delete orders o where o.id= " + orderId
+                    "delete Order o where o.id= " + orderId
             );
             modifications = query.executeUpdate();
             tx.commit();
-        }
-        catch (HibernateException e){
+        } catch (HibernateException e) {
             e.printStackTrace();
             return false;
         }
@@ -112,10 +107,10 @@ public class OrderRepository implements IOrderRepository {
     public List<Order> getByCustomerId(Long customerId) {
         List<Order> list;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            list = session.createQuery("From orders where o.customerId= " + customerId, Order.class)
-                    .list();
-        }
-        catch (HibernateException e){
+            Query query = session.createQuery("SELECT o from Order o where o.customer.id=:id order by o.date desc", Order.class);
+            query.setParameter("id", customerId);
+            list = query.getResultList();
+        } catch (HibernateException e) {
             e.printStackTrace();
             return new ArrayList<>();
         }

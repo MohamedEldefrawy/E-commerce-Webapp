@@ -29,6 +29,7 @@ public class ProductService {
     public Product get(Long id) {
         return this.productRepository.get(id);
     }
+    public boolean delete(Long id) { return this.productRepository.delete(id); }
 
     public Product getByName(String name){ return this.productRepository.getByName(name); }
     public List<Product> getByCategory(String category){ return this.productRepository.getByCategory(category); }

@@ -29,4 +29,6 @@ public class OrderService{
     public boolean delete(Long orderId){
         return orderRepository.delete(orderId);
     }
+    public List<Order> getByCustomerId(Long customerId) { return orderRepository.getByCustomerId(customerId); }
+
 }
