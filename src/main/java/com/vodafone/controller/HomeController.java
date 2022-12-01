@@ -20,6 +20,6 @@ public class HomeController {
     public String home(Model model) {
         List<Product> productList = this.productService.getAll();
         model.addAttribute("products", productList);
-        return "home";
+        return "shared/home";
     }
 }
