@@ -1,6 +1,7 @@
 package com.vodafone.controller;
 
 import com.vodafone.model.Customer;
+import com.vodafone.model.Order;
 import com.vodafone.model.Product;
 import com.vodafone.model.dto.CreateUser;
 import com.vodafone.service.CartService;
@@ -85,6 +86,12 @@ public class CustomerController {
     @GetMapping("products/category")
     public String getProductsByCategory(String category) {
         List<Product> products = productService.getByCategory(category);
+        return null;
+    }
+
+    @GetMapping("{customerId}/orders")
+    public String getCustomerOrders(@PathVariable Long customerId){
+        List<Order> orders = orderService.getByCustomerId(customerId);
         return null;
     }
 }
