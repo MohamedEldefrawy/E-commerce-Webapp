@@ -1,8 +1,6 @@
 package com.vodafone.controller;
 
-import com.vodafone.model.Customer;
-import com.vodafone.model.Order;
-import com.vodafone.model.Product;
+import com.vodafone.model.*;
 import com.vodafone.model.dto.CreateUser;
 import com.vodafone.service.CartService;
 import com.vodafone.service.CustomerService;
@@ -90,8 +88,49 @@ public class CustomerController {
     }
 
     @GetMapping("{customerId}/orders")
-    public String getCustomerOrders(@PathVariable Long customerId){
+    public String getCustomerOrders(@PathVariable Long customerId) {
         List<Order> orders = orderService.getByCustomerId(customerId);
+        return null;
+    }
+
+    @GetMapping("{customerId}/finalOrder")
+    public String showFinalOrder(@PathVariable Long customerId) {
+        Cart customerCart = customerService.get(customerId).getCart();
+        Order finalOrder = cartService.showFinalOrder(customerCart.getId());
+        return null;
+    }
+
+    @PostMapping("{customerId}/finalOrder")
+    public String submitFinalOrder(@PathVariable Long customerId) {
+        Cart customerCart = customerService.get(customerId).getCart();
+        Order submittedOrder = cartService.submitFinalOrder(customerCart.getId());
+        return null;
+    }
+
+    @GetMapping("{customerId}/cart")
+    public String showCustomerCart(@PathVariable Long customerId) {
+        Cart customerCart = customerService.get(customerId).getCart();
+        return null;
+    }
+
+    @PostMapping("{customerId}/cart")
+    public String addItemToCart(@PathVariable Long customerId, @RequestBody CartItem item) {
+        Cart customerCart = customerService.get(customerId).getCart();
+        cartService.addItem(customerCart.getId(), item);
+        return null;
+    }
+
+    @PostMapping("{customerId}/cart/{itemId}")
+    public String removeItemFromCart(@PathVariable Long customerId, @PathVariable Long itemId) {
+        Cart customerCart = customerService.get(customerId).getCart();
+        cartService.removeItem(customerCart.getId(), itemId);
+        return null;
+    }
+
+    @PutMapping("{customerId}/cart/clear")
+    public String clearCustomerCart(@PathVariable Long customerId) {
+        Cart customerCart = customerService.get(customerId).getCart();
+        cartService.clearCart(customerCart.getId());
         return null;
     }
 }
