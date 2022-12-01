@@ -31,4 +31,6 @@ public class CustomerService {
     public List<Customer> getAll(){
         return customerRepository.getAll();
     }
+
+    public boolean resetPassword(String email, String password){ return customerRepository.resetPassword(email,password); }
 }

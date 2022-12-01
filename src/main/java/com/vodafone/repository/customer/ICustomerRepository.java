@@ -7,5 +7,5 @@ import com.vodafone.repository.Repository;
 import java.util.List;
 
 public interface ICustomerRepository extends Repository<Customer> {
-
+    boolean resetPassword(String email, String password);
 }
