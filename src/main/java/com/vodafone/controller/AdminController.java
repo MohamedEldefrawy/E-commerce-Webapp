@@ -5,6 +5,7 @@ import com.vodafone.model.Product;
 import com.vodafone.model.Role;
 
 import com.vodafone.model.User;
+import com.vodafone.model.dto.CreateAdmin;
 import com.vodafone.service.AdminService;
 import com.vodafone.service.ProductService;
 import lombok.AllArgsConstructor;
@@ -45,7 +46,7 @@ public class AdminController {
     public String getAll(Model model) {
         List<Admin> adminList = this.adminService.getAll();
         model.addAttribute("admins", adminList);
-        return "viewAllAdmins";
+        return "viewAllAdmins2";
 
     }
 
@@ -54,9 +55,18 @@ public class AdminController {
         return adminService.get(id);
     }
 
-    @DeleteMapping("/admins.htm/{id}")
-    public boolean delete(@RequestParam("id") Long id) {
-        return adminService.delete(id);
+//    @DeleteMapping("/admins.htm")
+//    public String delete(@RequestParam("id") Long id) {
+//        boolean deleted = adminService.delete(id);
+//        return "redirect:/admins/admins.htm";
+//
+//    }
+    @DeleteMapping("/admins.htm")
+    public String delete(@RequestParam(required = false) Long id) {
+        boolean deleted = adminService.delete(id);
+        System.out.println(deleted);
+        return "redirect:/admins/admins.htm";
+
     }
 
     /*@PutMapping("/admins.htm")
@@ -64,28 +74,32 @@ public class AdminController {
         return adminService.create(admin);
     }*/
 
-    @PostMapping("/admins.htm")
+    @PutMapping("/admins.htm")
     public boolean update(Long id, Admin admin) {
         return adminService.update(id, admin);
     }
 
     @GetMapping("/createAdmin.htm")
     public String getCreateAdminPage(Model model) {
-        List<Admin> adminList = this.adminService.getAll();
-        model.addAttribute("admins", adminList);
+        model.addAttribute("admin", new CreateAdmin());
         return "createAdmin";
 
     }
 
-    @PutMapping("/createAdmin.htm")
-    public String addUser(@Valid @ModelAttribute("admin") Admin admin, BindingResult bindingResult) {
+    @PostMapping("/createAdmin.htm")
+    public String addUser(@Valid @ModelAttribute("admin") CreateAdmin createAdmin, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             Map<String, Object> model = bindingResult.getModel();
             System.out.println(model);
             return "createAdmin";
         }
+        Admin admin = new Admin();
+        admin.setUserName(createAdmin.getUsername());
+        admin.setRole(Role.Admin);
+        admin.setEmail(createAdmin.getEmail());
+        admin.setPassword("123456");
         adminService.create(admin);
-        return "redirect:/admins.htm";
+        return "redirect:/admins/admins.htm";
     }
 
     @GetMapping("/products")
