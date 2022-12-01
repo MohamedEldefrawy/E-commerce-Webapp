@@ -58,16 +58,31 @@
             });
         })
 
+        // function deleteSomething(id) {
+        //     console.log(id);
+        //   fetch('?id=' + id,  {
+        //     method: 'DELETE'
+        //   })
+        // }
         function deleteSomething(id) {
-            console.log(id);
-          fetch('?id=' + id,  {
-            method: 'DELETE'
-          })
+            $.ajax({
+                type: "DELETE",
+                url: "?id=" + id,
+                success: function(response) {
+                    console.log("success")
+                    window.location.reload()
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr);
+                    if(xhr.status===500) {
+                        window.location.reload()
+                    }
+                    //alert('Error: ' + error.message);
+                },
+            });
         }
     </script>
 </rapid:override>
-<script>
-    document.getElementById("myForm").style.display = "block";
-</script>
+
 
 <%@ include file="/WEB-INF/pages/home.jsp" %>

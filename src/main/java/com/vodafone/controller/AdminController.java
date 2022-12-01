@@ -49,11 +49,18 @@ public class AdminController {
         return adminService.get(id);
     }
 
+//    @DeleteMapping("/admins.htm")
+//    public String delete(@RequestParam("id") Long id) {
+//        boolean deleted = adminService.delete(id);
+//        return "redirect:/admins/admins.htm";
+//
+//    }
     @DeleteMapping("/admins.htm")
-    public String delete(@RequestParam("id") Long id) {
-        System.out.println("deleting" + id);
-        adminService.delete(id);
+    public String delete(@RequestParam(required = false) Long id) {
+        boolean deleted = adminService.delete(id);
+        System.out.println(deleted);
         return "redirect:/admins/admins.htm";
+
     }
 
     /*@PutMapping("/admins.htm")
