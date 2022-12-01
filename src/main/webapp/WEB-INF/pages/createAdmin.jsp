@@ -6,7 +6,7 @@
 <rapid:override name="content">
 <div class="card card-info">
     <div class="card-header">
-        <h3 class="card-title">Create Product</h3>
+        <h3 class="card-title">Create Admin</h3>
     </div>
     <div class="card-body">
         <form:form modelAttribute="admin" method="post">

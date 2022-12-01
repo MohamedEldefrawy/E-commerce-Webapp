@@ -40,7 +40,7 @@ public class AdminController {
     public String getAll(Model model) {
         List<Admin> adminList = this.adminService.getAll();
         model.addAttribute("admins", adminList);
-        return "viewAllAdmins";
+        return "viewAllAdmins2";
 
     }
 
@@ -49,9 +49,11 @@ public class AdminController {
         return adminService.get(id);
     }
 
-    @DeleteMapping("/admins.htm/{id}")
-    public boolean delete(@RequestParam("id") Long id) {
-        return adminService.delete(id);
+    @DeleteMapping("/admins.htm")
+    public String delete(@RequestParam("id") Long id) {
+        System.out.println("deleting" + id);
+        adminService.delete(id);
+        return "redirect:/admins/admins.htm";
     }
 
     /*@PutMapping("/admins.htm")
