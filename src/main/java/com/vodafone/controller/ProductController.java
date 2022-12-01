@@ -42,7 +42,7 @@ public class ProductController {
         System.out.println(image.getStorageDescription());
         System.out.println(image.getOriginalFilename());
         byte[] imageData = image.getBytes();
-        String path = session.getServletContext().getRealPath("/resources/static/images/" + image.getOriginalFilename());
+        String path = session.getServletContext().getRealPath("/") + "resources/static/images/" + image.getOriginalFilename();
         System.out.println(path);
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(path);

@@ -41,9 +41,6 @@ public class MvcConfig implements WebMvcConfigurer, WebApplicationInitializer {
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**")
                 .addResourceLocations("/resources/");
-
-        registry.addResourceHandler("/images/**")
-                .addResourceLocations("/resources/images/");
     }
 
     @Override
