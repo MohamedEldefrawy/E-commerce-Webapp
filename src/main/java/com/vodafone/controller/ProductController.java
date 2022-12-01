@@ -27,7 +27,7 @@ public class ProductController {
     @GetMapping("create.htm")
     public String create(Model model) {
         model.addAttribute("product", new CreateProduct());
-        return "createProduct";
+        return "products/createProduct";
     }
 
     @PostMapping("create.htm")
@@ -37,13 +37,10 @@ public class ProductController {
                        HttpSession session) {
         if (bindingResult.hasErrors()) {
             Map<String, Object> model = bindingResult.getModel();
-            return "createProduct";
+            return "products/createProduct";
         }
-        System.out.println(image.getStorageDescription());
-        System.out.println(image.getOriginalFilename());
         byte[] imageData = image.getBytes();
         String path = session.getServletContext().getRealPath("/") + "resources/static/images/" + image.getOriginalFilename();
-        System.out.println(path);
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(path);
             fileOutputStream.write(imageData);
@@ -64,7 +61,7 @@ public class ProductController {
 
     @GetMapping("show.htm")
     public ModelAndView show() {
-        ModelAndView model = new ModelAndView("productsTable");
+        ModelAndView model = new ModelAndView("products/productsTable");
         model.addObject("products", this.productService.getAll());
         return model;
     }
