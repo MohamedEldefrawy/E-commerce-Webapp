@@ -28,8 +28,9 @@ public class AdminController {
     AdminService adminService;
     ProductService productService;
 
-    public AdminController(AdminService adminService) {
+    public AdminController(AdminService adminService, ProductService productService) {
         this.adminService = adminService;
+        this.productService = productService;
         Admin admin = new Admin();
         admin.setEmail("admin@gmail.com");
         admin.setPassword("1234");
