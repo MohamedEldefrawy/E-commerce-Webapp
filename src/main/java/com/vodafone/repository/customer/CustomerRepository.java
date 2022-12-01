@@ -110,6 +110,11 @@ public class CustomerRepository implements ICustomerRepository {
     public boolean resetPassword(String email, String password) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Customer customer = session.get(Customer.class, email); //get customer by email
+            if(customer == null)
+            {
+                System.out.println("Customer not found in DB");
+                return false;
+            }
             //update customer's password
             customer.setPassword(password);
             //update customer's status to activated
