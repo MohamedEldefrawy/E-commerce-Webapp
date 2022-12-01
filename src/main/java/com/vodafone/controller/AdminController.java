@@ -5,6 +5,7 @@ import com.vodafone.model.Product;
 import com.vodafone.model.Role;
 
 import com.vodafone.model.User;
+import com.vodafone.model.dto.CreateAdmin;
 import com.vodafone.service.AdminService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -58,25 +59,29 @@ public class AdminController {
         return adminService.create(admin);
     }*/
 
-    @PostMapping("/admins.htm")
+    @PutMapping("/admins.htm")
     public boolean update(Long id, Admin admin) {
         return adminService.update(id, admin);
     }
     @GetMapping("/createAdmin.htm")
     public String getCreateAdminPage(Model model) {
-        List<Admin> adminList = this.adminService.getAll();
-        model.addAttribute("admins", adminList);
+        model.addAttribute("admin", new CreateAdmin());
         return "createAdmin";
 
     }
-    @PutMapping("/createAdmin.htm")
-    public String addUser(@Valid @ModelAttribute("admin") Admin admin, BindingResult bindingResult) {
+    @PostMapping("/createAdmin.htm")
+    public String addUser(@Valid @ModelAttribute("admin") CreateAdmin createAdmin, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             Map<String, Object> model = bindingResult.getModel();
             System.out.println(model);
             return "createAdmin";
         }
+        Admin admin = new Admin();
+        admin.setUserName(createAdmin.getUsername());
+        admin.setRole(Role.Admin);
+        admin.setEmail(createAdmin.getEmail());
+        admin.setPassword("123456");
         adminService.create(admin);
-        return "redirect:/admins.htm";
+        return "redirect:/admins/admins.htm";
     }
 }
