@@ -20,7 +20,8 @@
             <tr>
                 <td><c:out value="${product.getId()}"/></td>
                 <td><c:out value="${product.getDescription()}"/></td>
-                <td><c:out value="${product.getImage()}"/></td>
+                <td><img class="image img-thumbnail  img-circle h-50 w-50"
+                         src="<c:url value="/resources/static/images/${product.getImage()}"/>"></td>
                 <td><c:out value="${product.getCategory()}"/></td>
                 <td><c:out value="${product.getRate()}"/></td>
                 <td><c:out value="${product.getPrice()}"/></td>

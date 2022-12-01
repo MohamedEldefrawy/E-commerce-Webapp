@@ -7,13 +7,14 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Map;
 
 @Controller
@@ -30,16 +31,32 @@ public class ProductController {
     }
 
     @PostMapping("create.htm")
-    public String save(@Valid @ModelAttribute("product") CreateProduct product, BindingResult bindingResult) {
+    public String save(@Valid @ModelAttribute("product") CreateProduct product,
+                       BindingResult bindingResult,
+                       @RequestParam("image") CommonsMultipartFile image,
+                       HttpSession session) {
         if (bindingResult.hasErrors()) {
             Map<String, Object> model = bindingResult.getModel();
             return "createProduct";
         }
+        System.out.println(image.getStorageDescription());
+        System.out.println(image.getOriginalFilename());
+        byte[] imageData = image.getBytes();
+        String path = session.getServletContext().getRealPath("/") + "resources/static/images/" + image.getOriginalFilename();
+        System.out.println(path);
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(path);
+            fileOutputStream.write(imageData);
+            fileOutputStream.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
 
         Product newProduct = new Product();
         newProduct.setDescription(product.getDescription());
         newProduct.setCategory(product.getCategory());
-        newProduct.setImage(product.getImage());
+        newProduct.setImage(image.getOriginalFilename());
         newProduct.setPrice(product.getPrice());
         this.productService.create(newProduct);
         return "redirect:/product/show.htm";
