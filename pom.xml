@@ -69,7 +69,6 @@
             <artifactId>rapid-core</artifactId>
             <version>4.0.5</version>
         </dependency>
-
     </dependencies>
 
     <build>
