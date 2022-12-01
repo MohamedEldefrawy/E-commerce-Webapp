@@ -22,22 +22,21 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@NoArgsConstructor
-@AllArgsConstructor
 @RequestMapping("/admins")
 
 public class AdminController {
     AdminService adminService;
     ProductService productService;
 
-    public AdminController(AdminService adminService) {
+    public AdminController(AdminService adminService, ProductService productService) {
         this.adminService = adminService;
+        this.productService = productService;
         Admin admin = new Admin();
         admin.setEmail("admin@gmail.com");
         admin.setPassword("1234");
         admin.setRole(Role.Admin);
         admin.setUserName("admoona");
-        adminService.create(admin);
+        this.adminService.create(admin);
     }
 
 

@@ -47,6 +47,14 @@
                         </p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="<c:url value="/admins/admins.htm"/>" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        <p>
+                            Admins
+                        </p>
+                    </a>
+                </li>
             </ul>
         </nav>
         <!-- /.sidebar-menu -->
