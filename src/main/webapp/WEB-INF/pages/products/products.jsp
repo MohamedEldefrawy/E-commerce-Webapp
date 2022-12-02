@@ -5,7 +5,7 @@
 
 <rapid:override name="content">
     <div class="d-flex justify-content-center align-items-center">
-        <a href="<c:url value="/product/create.htm"/>" class="btn btn-success"><i class="fas fa-plus"></i></a>
+        <a href="<c:url value="/admins/products/create.htm"/>" class="btn btn-success"><i class="fas fa-plus"></i></a>
     </div>
     <table id="products" class="table table-bordered table-hover">
         <thead>
@@ -33,7 +33,7 @@
                 <td><c:out value="${product.getPrice()}"/></td>
                 <td>
                     <div class="d-flex justify-content-center align-items-center">
-                        <a href="<c:url value="/product/update.htm?id=${product.getId()}"/>"
+                        <a href="<c:url value="/admins/products/update.htm?id=${product.getId()}"/>"
                            class="btn btn-warning mr-2"><i
                                 class="far fa-edit"></i></a>
 
