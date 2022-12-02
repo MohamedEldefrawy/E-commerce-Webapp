@@ -54,6 +54,7 @@ public class ProductController {
         newProduct.setCategory(product.getCategory());
         newProduct.setImage(image.getOriginalFilename());
         newProduct.setPrice(product.getPrice());
+        newProduct.setName(product.getName());
         this.productService.create(newProduct);
         return "redirect:/product/show.htm";
     }
@@ -105,6 +106,7 @@ public class ProductController {
         updatedProduct.setCategory(product.getCategory());
         updatedProduct.setImage(image.getOriginalFilename());
         updatedProduct.setPrice(product.getPrice());
+        updatedProduct.setName(product.getName());
         boolean result = this.productService.update(id, updatedProduct);
         if (result)
             return "redirect:/product/show.htm";

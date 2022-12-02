@@ -16,6 +16,10 @@
                 <input type="number" id="ID" class="form-control" disabled value="${product.getId()}"/>
             </div>
             <div class="input-group mb-3">
+                <label for="Name" class="col-sm-2 col-form-label">Name</label>
+                <form:input id="Name" class="form-control" path="name" value="${product.getName()}"/>
+            </div>
+            <div class="input-group mb-3">
                 <label for="Category" class="col-sm-2 col-form-label">Category</label>
                 <form:input id="Category" class="form-control" path="category" value="${product.getCategory()}"/>
             </div>
