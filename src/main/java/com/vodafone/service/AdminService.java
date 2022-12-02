@@ -36,4 +36,6 @@ public class AdminService {
     }
 
     public boolean updatePassword(Long id, String newPassword){return adminRepository.updatePassword(id,newPassword);}
+
+    public void setFirstLoginFlag(Long id){ adminRepository.setFirstLoginFlag(id); }
 }
