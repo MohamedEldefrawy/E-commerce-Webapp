@@ -8,5 +8,5 @@ import java.util.List;
 
 
 public interface IAdminRepository extends Repository<Admin> {
-
+    void setFirstLoginFlag(Long id);
 }

@@ -2,15 +2,11 @@ package com.vodafone.repository.admin;
 
 import com.vodafone.config.HibernateConfig;
 import com.vodafone.model.Admin;
-import com.vodafone.model.Order;
-import com.vodafone.model.Product;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,7 +64,7 @@ public class AdminRepository implements IAdminRepository {
 
     @Override
     public boolean create(Admin admin) {
-        if(admin.getPassword()==null)
+        if (admin.getPassword() == null)
             admin.setPassword(getAlphaNumericString(8));
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
@@ -100,7 +96,8 @@ public class AdminRepository implements IAdminRepository {
             return false;
         }
     }
-    public boolean updatePassword(Long id, String newPassword){
+
+    public boolean updatePassword(Long id, String newPassword) {
         Admin admin = get(id);
         if (admin == null)
             return false;
@@ -118,22 +115,35 @@ public class AdminRepository implements IAdminRepository {
         }
     }
 
-    private String getAlphaNumericString(int n)
-    {
+    private String getAlphaNumericString(int n) {
         String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 + "0123456789"
                 + "abcdefghijklmnopqrstuvxyz"
-                +"_&%";
+                + "_&%";
 
         StringBuilder sb = new StringBuilder(n);
 
         for (int i = 0; i < n; i++) {
             int index
-                    = (int)(AlphaNumericString.length()
+                    = (int) (AlphaNumericString.length()
                     * Math.random());
             sb.append(AlphaNumericString
                     .charAt(index));
         }
         return sb.toString();
+    }
+
+    @Override
+    public void setFirstLoginFlag(Long id) {
+        try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
+            //doesnt update password or role
+            Transaction tx = session.beginTransaction();
+            Admin admin = session.get(Admin.class, id);
+            admin.setFirstLogin(true);
+            session.update(admin);
+            tx.commit();
+        } catch (HibernateException e) {
+            e.printStackTrace();
+        }
     }
 }
