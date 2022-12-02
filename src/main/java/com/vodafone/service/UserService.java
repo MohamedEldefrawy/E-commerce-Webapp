@@ -1,6 +1,8 @@
 package com.vodafone.service;
 
 import com.vodafone.model.User;
+import com.vodafone.model.dto.CreateUser;
+import com.vodafone.model.dto.LoginDTO;
 import com.vodafone.repository.user.IUserRepository;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -14,8 +16,8 @@ import java.util.List;
 public class UserService {
     IUserRepository userRepository;
 
-    public User login(String email, String password) {
-        return userRepository.login(email, password);
+    public LoginDTO login(String email, String password) {
+        return userRepository.login(email,password);
     }
 
     public boolean create(User user) {

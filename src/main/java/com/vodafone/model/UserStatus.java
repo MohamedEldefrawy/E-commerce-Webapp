@@ -3,5 +3,7 @@ package com.vodafone.model;
 public enum UserStatus {
     ACTIVATED,
     DEACTIVATED,
-    SUSPENDED
+    SUSPENDED,
+    ADMIN,
+    NOT_REGISTERED
 }
