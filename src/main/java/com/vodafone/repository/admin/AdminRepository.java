@@ -2,9 +2,6 @@ package com.vodafone.repository.admin;
 
 import com.vodafone.config.HibernateConfig;
 import com.vodafone.model.Admin;
-import com.vodafone.model.Order;
-import com.vodafone.model.Product;
-import com.vodafone.model.User;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -71,7 +68,7 @@ public class AdminRepository implements IAdminRepository {
 
     @Override
     public boolean create(Admin admin) {
-        if(admin.getPassword()==null)
+        if (admin.getPassword() == null)
             admin.setPassword(getAlphaNumericString(8));
         if(getByUsername(admin.getUserName())==null && getByEmail(admin.getEmail())==null) {
             try (Session session = hibernateConfig.getSessionFactory().openSession()) {
@@ -123,55 +120,36 @@ public class AdminRepository implements IAdminRepository {
             return false;
         }
     }
-    public Admin getByUsername(String username){
-        List<Admin> admins= getAll().stream()
-                .filter(a ->a.getUserName().equals(username))
-                .collect(Collectors.toList());
-        if(admins.isEmpty()) return null;
-        else{
-            return admins.get(0);
-        }
-    }
-    public Admin getByEmail(String email){
-        List<Admin> admins= getAll().stream()
-                .filter(a ->a.getEmail().equals(email))
-                .collect(Collectors.toList());
-        if(admins.isEmpty()) return null;
-        else{
-            return admins.get(0);
-        }
-    }
-    /*public List<Object> getByEmail(String email){
-        List<Object> list;
-        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            Transaction tx = session.beginTransaction();
-            list = session.createQuery(
-                    "From Admin a where a.email=" +email
-            ).list();
-            tx.commit();
-        } catch (HibernateException e) {
-            e.printStackTrace();
-            return null;
-        }
-        return list;
-    }*/
 
-    private String getAlphaNumericString(int n)
-    {
+    private String getAlphaNumericString(int n) {
         String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 + "0123456789"
                 + "abcdefghijklmnopqrstuvxyz"
-                +"_&%";
+                + "_&%";
 
         StringBuilder sb = new StringBuilder(n);
 
         for (int i = 0; i < n; i++) {
             int index
-                    = (int)(AlphaNumericString.length()
+                    = (int) (AlphaNumericString.length()
                     * Math.random());
             sb.append(AlphaNumericString
                     .charAt(index));
         }
         return sb.toString();
+    }
+
+    @Override
+    public void setFirstLoginFlag(Long id) {
+        try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
+            //doesnt update password or role
+            Transaction tx = session.beginTransaction();
+            Admin admin = session.get(Admin.class, id);
+            admin.setFirstLogin(false);
+            session.update(admin);
+            tx.commit();
+        } catch (HibernateException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -39,7 +39,7 @@
                 <!-- Add icons to the links using the .nav-icon class
                      with font-awesome or any other icon font library -->
                 <li class="nav-item">
-                    <a href="<c:url value="/product/show.htm"/>" class="nav-link">
+                    <a href="<c:url value="/admins/products/show.htm"/>" class="nav-link">
                         <%--                        <i class="nav-icon fas fa-tachometer-alt"></i>--%>
                         <i class="fas fa-store"></i>
                         <p>

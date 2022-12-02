@@ -68,4 +68,10 @@ public class CartService {
     public List<CartItem> getCartItems(Long cartId) {
         return cartRepository.getCartItems(cartId);
     }
+
+    public int setProductQuantity(Long cartId, Long itemId, int newQuantity){ return cartRepository.setProductQuantity(cartId, itemId, newQuantity); }
+
+    public int incrementProductQuantity(Long cartId, Long itemId){ return cartRepository.incrementProductQuantity(cartId, itemId); }
+
+    public int decrementProductQuantity(Long cartId, Long itemId){ return cartRepository.decrementProductQuantity(cartId, itemId); }
 }

@@ -14,6 +14,9 @@ import javax.validation.constraints.NotNull;
 public class CreateProduct {
     @NotNull
     @NotBlank
+    private String name;
+    @NotNull
+    @NotBlank
     private String description;
     @NotNull
     @NotBlank

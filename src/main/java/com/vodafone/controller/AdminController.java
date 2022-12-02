@@ -3,21 +3,20 @@ package com.vodafone.controller;
 import com.vodafone.model.Admin;
 import com.vodafone.model.Product;
 import com.vodafone.model.Role;
-
-import com.vodafone.model.User;
 import com.vodafone.model.dto.CreateAdmin;
+import com.vodafone.model.dto.CreateProduct;
 import com.vodafone.service.AdminService;
 import com.vodafone.service.ProductService;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Repository;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -56,7 +55,7 @@ public class AdminController {
         return adminService.get(id);
     }
 
-//    @DeleteMapping("/admins.htm")
+    //    @DeleteMapping("/admins.htm")
 //    public String delete(@RequestParam("id") Long id) {
 //        boolean deleted = adminService.delete(id);
 //        return "redirect:/admins/admins.htm";
@@ -108,35 +107,104 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/products")
-    public String getAllProducts() {
-        List<Product> products = productService.getAll();
-        return null;
+    //    Products End Points
+    @GetMapping("/products/show.htm")
+    public String show(Model model) {
+        model.addAttribute("products", this.productService.getAll());
+        model.addAttribute("id", 0L);
+        return "products/products";
     }
 
-    @GetMapping("/products/{productId}")
-    public String getProductById(@PathVariable Long productId) {
-        Product product = productService.get(productId);
-        return null;
+    @GetMapping("/products/update.htm")
+    public String update(Model model, @RequestParam Long id) {
+        Product selectedProduct = this.productService.get(id);
+        model.addAttribute("product", selectedProduct);
+        return "products/update";
     }
 
-    @PostMapping("/products")
-    public String addProduct(@RequestBody Product product) {
-        productService.create(product);
-        return null;
+
+    @PostMapping("/products/update.htm")
+    public String submit(@Valid @ModelAttribute("product") CreateProduct product,
+                         BindingResult bindingResult,
+                         @RequestParam("image") CommonsMultipartFile image,
+                         HttpSession session,
+                         @RequestParam Long id) {
+        if (bindingResult.hasErrors()) {
+            return "products/update";
+        }
+        byte[] imageData = image.getBytes();
+        System.out.println(image.getOriginalFilename());
+        String path = session.getServletContext().getRealPath("/") + "resources/static/images/" + image.getOriginalFilename();
+        try {
+            if (imageData.length > 0) {
+                FileOutputStream fileOutputStream = new FileOutputStream(path);
+                fileOutputStream.write(imageData);
+                fileOutputStream.close();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        Product updatedProduct = new Product();
+        updatedProduct.setDescription(product.getDescription());
+        updatedProduct.setCategory(product.getCategory());
+        updatedProduct.setImage(image.getOriginalFilename());
+        updatedProduct.setPrice(product.getPrice());
+        updatedProduct.setName(product.getName());
+        boolean result = this.productService.update(id, updatedProduct);
+        if (result)
+            return "redirect:/product/show.htm";
+        return "products/update";
     }
 
-    @PutMapping("/products/{productId}")
-    public String updateProduct(@PathVariable Long productId, @RequestBody Product product) {
-        productService.update(productId, product);
-        return null;
+    @GetMapping("/products/create.htm")
+    public String create(Model model) {
+        model.addAttribute("product", new CreateProduct());
+        return "products/create";
     }
 
-    @DeleteMapping("/products/{productId}")
-    public String deleteProduct(@PathVariable Long productId) {
-        productService.delete(productId);
-        return null;
+    @PostMapping("/products/create.htm")
+    public String save(@Valid @ModelAttribute("product") CreateProduct product,
+                       BindingResult bindingResult,
+                       @RequestParam("image") CommonsMultipartFile image,
+                       HttpSession session) {
+        if (bindingResult.hasErrors()) {
+            Map<String, Object> model = bindingResult.getModel();
+            return "products/createProduct";
+        }
+        byte[] imageData = image.getBytes();
+        String path = session.getServletContext().getRealPath("/") + "resources/static/images/" + image.getOriginalFilename();
+        try {
+            if (imageData.length > 0) {
+                FileOutputStream fileOutputStream = new FileOutputStream(path);
+                fileOutputStream.write(imageData);
+                fileOutputStream.close();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        Product newProduct = new Product();
+        newProduct.setDescription(product.getDescription());
+        newProduct.setCategory(product.getCategory());
+        newProduct.setImage(image.getOriginalFilename());
+        newProduct.setPrice(product.getPrice());
+        newProduct.setName(product.getName());
+        this.productService.create(newProduct);
+        return "redirect:/admins/products/show.htm";
     }
+
+
+    @DeleteMapping("/products/show.htm")
+    @ResponseBody
+    public String deleteProduct(@RequestParam(required = false) Long id) {
+        boolean result = this.productService.delete(id);
+        if (result)
+            return "true";
+        return "false";
+    }
+
     @PutMapping("/{id]/resetPassword.htm")
     public String updatePassword(@PathVariable Long id, @Valid @ModelAttribute("password") String newPassword, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -145,13 +213,11 @@ public class AdminController {
             //if input has error forward to same page
             return "/{id]/resetPassword.htm";
         }
-        if(adminService.updatePassword(id, newPassword)){
+        if (adminService.updatePassword(id, newPassword)) {
             //todo forward to admin home page
             return null;
         }
         //todo forward to admin home page
         return null;
-
     }
-
 }

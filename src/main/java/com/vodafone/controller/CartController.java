@@ -84,4 +84,22 @@ public class CartController {
         cartService.getAll();
         return null;
     }
+
+    @PutMapping("{cartId}/{itemId}/{quantity}")
+    public String setProductQuantity(@PathVariable Long cartId, @PathVariable Long itemId, @PathVariable int quantity) {
+        cartService.setProductQuantity(cartId, itemId, quantity);
+        return null;
+    }
+
+    @PutMapping("{cartId}/{itemId}/increment")
+    public String incrementProductQuantity(@PathVariable Long cartId, @PathVariable Long itemId) {
+        cartService.incrementProductQuantity(cartId, itemId);
+        return null;
+    }
+
+    @PutMapping("{cartId}/{itemId}/decrement")
+    public String decrementProductQuantity(@PathVariable Long cartId, @PathVariable Long itemId) {
+        cartService.decrementProductQuantity(cartId, itemId);
+        return null;
+    }
 }
