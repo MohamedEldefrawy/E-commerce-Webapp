@@ -193,4 +193,68 @@ public class CartRepository implements ICartRepository {
     public List<CartItem> getCartItems(Long cartId) {
         return get(cartId).getItems();
     }
+
+    @Override
+    public int setProductQuantity(Long cartId, Long itemId, int newQuantity) {
+        try (Session session = config.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Cart cart = get(cartId);
+            for (CartItem item : cart.getItems()) {
+                if (item.getId().equals(itemId))
+                    item.setQuantity(newQuantity);
+            }
+            session.update(cart); //update cart
+            transaction.commit();
+            session.close();
+            return newQuantity;
+        } catch (HibernateException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    @Override
+    public int incrementProductQuantity(Long cartId, Long itemId) {
+        try (Session session = config.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Cart cart = get(cartId);
+            int newQuantity = 0;
+            for (CartItem item : cart.getItems()) {
+                if (item.getId().equals(itemId)) {
+                    newQuantity = item.getQuantity() + 1;
+                    item.setQuantity(newQuantity);
+                }
+            }
+            session.update(cart); //update cart
+            transaction.commit();
+            session.close();
+            return newQuantity;
+        } catch (HibernateException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    @Override
+    public int decrementProductQuantity(Long cartId, Long itemId) {
+        try (Session session = config.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Cart cart = get(cartId);
+            int newQuantity = 0;
+            for (CartItem item : cart.getItems()) {
+                if (item.getId().equals(itemId)) {
+                    newQuantity = item.getQuantity() - 1;
+                    if (newQuantity < 0) //to prevent negative quantities
+                        item.setQuantity(newQuantity);
+                }
+            }
+            session.update(cart); //update cart
+            transaction.commit();
+            session.close();
+            return newQuantity;
+        } catch (HibernateException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
 }
