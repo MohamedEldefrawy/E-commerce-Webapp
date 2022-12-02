@@ -85,4 +85,4 @@
 </rapid:override>
 
 
-<jsp:include page="./shared/home.jsp"/>
+<jsp:include page="../shared/home.jsp"/>
