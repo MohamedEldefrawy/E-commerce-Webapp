@@ -19,4 +19,10 @@ public interface ICartRepository extends Repository<Cart> {
     boolean addItem(Long cartId, CartItem item);
 
     List<CartItem> getCartItems(Long cartId);
+
+    int setProductQuantity(Long cartId, Long itemId, int newQuantity);
+
+    int incrementProductQuantity(Long cartId, Long itemId);
+
+    int decrementProductQuantity(Long cartId, Long itemId);
 }
