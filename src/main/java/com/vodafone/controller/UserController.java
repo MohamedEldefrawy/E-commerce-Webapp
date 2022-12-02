@@ -1,7 +1,9 @@
 package com.vodafone.controller;
 
+import com.vodafone.model.LoginResponse;
 import com.vodafone.model.User;
 import com.vodafone.model.dto.CreateUser;
+import com.vodafone.model.dto.LoginDTO;
 import com.vodafone.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -21,7 +23,23 @@ public class UserController {
 
     @GetMapping("login.htm")
     public String login(String email, String password) {
-        userService.login(email, password);
+        LoginDTO loginDTO = userService.login(email, password);
+        if(loginDTO == null) //exception occurred
+        {
+            System.out.println("Error occurred while logging in....");
+        }else {
+            if(loginDTO.getResponse() == LoginResponse.ADMIN && loginDTO.isCredentialsValid()) {
+                //todo: redirect to admin panel
+            }else if(loginDTO.getResponse() == LoginResponse.ACTIVATED && loginDTO.isCredentialsValid()){
+                return "redirect:/home.htm";
+            }else if(loginDTO.getResponse() == LoginResponse.SUSPENDED){
+                return "redirect:/resetPassword.htm";
+            }else if(loginDTO.getResponse() == LoginResponse.DEACTIVATED){
+                //todo: redirect to verify email page
+            }else if(loginDTO.getResponse() == LoginResponse.NOT_REGISTERED){
+                return "redirect:/registration.htm";
+            }
+        }
         return null;
     }
 
