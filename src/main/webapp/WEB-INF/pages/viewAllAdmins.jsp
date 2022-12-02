@@ -13,7 +13,6 @@
 <a href="./createAdmin.htm" class="btn btn-primary float-right"><i class="fas fa-plus"></i>Add Admin</a>
 </div><br/>
 
-<rapid:override name="content">
 
     <table class="table">
         <thead class="table table-dark">
