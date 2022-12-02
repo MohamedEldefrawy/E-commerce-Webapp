@@ -21,27 +21,27 @@
   <!-- Theme style -->
   <link rel="stylesheet" href="<c:url value="/resources/static/css/adminlte.min.css"/>">
 </head>
-<body class="hold-transition sidebar-mini">
-<div class="container pt-5">
+<body cssClass="hold-transition sidebar-mini">
+<div cssClass="container pt-5">
   <!-- Horizontal Form -->
-  <div class="card card-info w-75 m-auto ">
-    <div class="bg-white m-3 ">
-      <h2 class="text-center p-4">Verification</h2>
+  <div cssClass="card card-info w-75 m-auto ">
+    <div cssClass="bg-white m-3 ">
+      <h2 cssClass="text-center p-4">Verification</h2>
     </div>
     <!-- /.card-header -->
     <!-- form start -->
-    <form:form class="form-horizontal">
-      <div class="card-body">
-        <div class="form-group row m-auto">
-          <label for="inputVerificationCode" class="col-sm-3 col-form-label">Verification Code</label>
-          <div class="col-sm-7">
-            <form:input type="text" class="form-control" id="inputVerificationCode" name="verificationCode" placeholder="Verification Code"/>
+    <form:form cssClass="form-horizontal">
+      <div cssClass="card-body">
+        <div cssClass="form-group row m-auto">
+          <label for="inputVerificationCode" clcssClassass="col-sm-3 col-form-label">Verification Code</label>
+          <div cssClass="col-sm-7">
+            <form:input type="text" cssClass="form-control" id="inputVerificationCode" name="verificationCode" placeholder="Verification Code"/>
           </div>
         </div>
       </div>
       <!-- /.card-body -->
-      <div class="card-footer d-flex justify-content-center mb-3 bg-white">
-        <button type="submit" class="btn btn-info w-25 " value="verify">Verify</button>
+      <div cssClass="card-footer d-flex justify-content-center mb-3 bg-white">
+        <button type="submit" cssClass="btn btn-info w-25 " value="verify">Verify</button>
       </div>
       <!-- /.card-footer -->
     </form:form>
