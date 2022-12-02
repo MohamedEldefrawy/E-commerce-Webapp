@@ -32,6 +32,8 @@ public class UserController {
                 //todo: redirect to admin panel
             }else if(loginDTO.getResponse() == LoginResponse.ACTIVATED && loginDTO.isCredentialsValid()){
                 return "redirect:/home.htm";
+            }if((loginDTO.getResponse() == LoginResponse.ADMIN || loginDTO.getResponse() == LoginResponse.ACTIVATED )&& !loginDTO.isCredentialsValid()) {
+                //todo: display 'incorrect email or password is entered' message
             }else if(loginDTO.getResponse() == LoginResponse.SUSPENDED){
                 return "redirect:/resetPassword.htm";
             }else if(loginDTO.getResponse() == LoginResponse.DEACTIVATED){
