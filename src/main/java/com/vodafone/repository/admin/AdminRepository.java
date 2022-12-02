@@ -4,6 +4,7 @@ import com.vodafone.config.HibernateConfig;
 import com.vodafone.model.Admin;
 import com.vodafone.model.Order;
 import com.vodafone.model.Product;
+import com.vodafone.model.User;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -12,7 +13,9 @@ import org.springframework.stereotype.Repository;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Repository
@@ -70,15 +73,17 @@ public class AdminRepository implements IAdminRepository {
     public boolean create(Admin admin) {
         if(admin.getPassword()==null)
             admin.setPassword(getAlphaNumericString(8));
-        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            Transaction tx = session.beginTransaction();
-            session.persist(admin);
-            tx.commit();
-            return true;
-        } catch (HibernateException e) {
-            e.printStackTrace();
-            return false;
-        }
+        if(getByUsername(admin.getUserName())==null && getByEmail(admin.getEmail())==null) {
+            try (Session session = hibernateConfig.getSessionFactory().openSession()) {
+                Transaction tx = session.beginTransaction();
+                session.persist(admin);
+                tx.commit();
+                return true;
+            } catch (HibernateException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }else return false;
     }
 
     @Override
@@ -92,6 +97,7 @@ public class AdminRepository implements IAdminRepository {
             Transaction tx = session.beginTransaction();
             admin.setEmail(updatedEntity.getEmail());
             admin.setUserName(updatedEntity.getUserName());
+            admin.setFirstLogin(updatedEntity.isFirstLogin());
             session.persist(admin);
             tx.commit();
             return true;
@@ -117,6 +123,38 @@ public class AdminRepository implements IAdminRepository {
             return false;
         }
     }
+    public Admin getByUsername(String username){
+        List<Admin> admins= getAll().stream()
+                .filter(a ->a.getUserName().equals(username))
+                .collect(Collectors.toList());
+        if(admins.isEmpty()) return null;
+        else{
+            return admins.get(0);
+        }
+    }
+    public Admin getByEmail(String email){
+        List<Admin> admins= getAll().stream()
+                .filter(a ->a.getEmail().equals(email))
+                .collect(Collectors.toList());
+        if(admins.isEmpty()) return null;
+        else{
+            return admins.get(0);
+        }
+    }
+    /*public List<Object> getByEmail(String email){
+        List<Object> list;
+        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
+            Transaction tx = session.beginTransaction();
+            list = session.createQuery(
+                    "From Admin a where a.email=" +email
+            ).list();
+            tx.commit();
+        } catch (HibernateException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return list;
+    }*/
 
     private String getAlphaNumericString(int n)
     {
