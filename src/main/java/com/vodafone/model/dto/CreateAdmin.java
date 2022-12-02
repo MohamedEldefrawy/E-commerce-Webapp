@@ -13,9 +13,10 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateAdmin {
+    private int id;
     @NotNull
     @NotBlank
-    private String username;
+    private String userName;
     @NotNull
     @NotBlank
     private String email;
