@@ -51,22 +51,23 @@ public class UserRepository implements IUserRepository {
             queries.put("email", email);
             user = session.get(User.class, queries);
             if (user != null) { //user's email exist
+                loginDTO.setUserId(user.getId()); //set user id to DTO
                 if (user.getRole() == Role.Admin) {
                     //set login response to admin
-                    loginDTO.setResponse(LoginResponse.ADMIN);
+                    loginDTO.setStatus(UserStatus.ADMIN);
                 } else if (user.getRole() == Role.Customer) {
                     //check customer status and login credentials
                     Customer customer = (Customer) user;
                     //set status
                     switch (customer.getUserStatus()) {
                         case ACTIVATED:
-                            loginDTO.setResponse(LoginResponse.ACTIVATED);
+                            loginDTO.setStatus(UserStatus.ACTIVATED);
                             break;
                         case DEACTIVATED:
-                            loginDTO.setResponse(LoginResponse.DEACTIVATED);
+                            loginDTO.setStatus(UserStatus.DEACTIVATED);
                             break;
                         case SUSPENDED:
-                            loginDTO.setResponse(LoginResponse.SUSPENDED);
+                            loginDTO.setStatus(UserStatus.SUSPENDED);
                             break;
                     }
                 }
@@ -76,7 +77,7 @@ public class UserRepository implements IUserRepository {
                 System.out.println("Is user's credentials valid?: " + isCredentialValid);
                 loginDTO.setCredentialsValid(isCredentialValid);
             } else { //user not registered -> redirect to register.jsp
-                return new LoginDTO(false, LoginResponse.NOT_REGISTERED);
+                return new LoginDTO(false, UserStatus.NOT_REGISTERED, null);
             }
             session.close();
         } catch (HibernateException e) {

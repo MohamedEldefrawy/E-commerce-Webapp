@@ -139,7 +139,7 @@ public class AdminRepository implements IAdminRepository {
             //doesnt update password or role
             Transaction tx = session.beginTransaction();
             Admin admin = session.get(Admin.class, id);
-            admin.setFirstLogin(true);
+            admin.setFirstLogin(false);
             session.update(admin);
             tx.commit();
         } catch (HibernateException e) {
