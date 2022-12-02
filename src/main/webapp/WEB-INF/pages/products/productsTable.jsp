@@ -36,11 +36,8 @@
                         <a href="<c:url value="/product/update.htm"/>" class="btn btn-warning mr-2"><i
                                 class="far fa-edit"></i></a>
 
-                        <form:form method="post">
-                            <form:input path="id" type="hidden" value="${product.getId()}"/>
-                            <button type="submit" class="btn btn-danger"><i
-                                    class="fas fa-trash-alt"></i></button>
-                        </form:form>
+                        <button onclick="deleteRow(${product.getId()})" type="submit" class="btn btn-danger"><i
+                                class="fas fa-trash-alt"></i></button>
                     </div>
                 </td>
             </tr>
@@ -48,6 +45,27 @@
         </tbody>
     </table>
     <script>
+        function deleteRow(id) {
+            let result = confirm("Are you sure?");
+            let row = document.getElementById(id);
+            if (result) {
+                fetch("?id=" + id, {
+                    method: "DELETE",
+                    headers: {
+                        'Accept': '*/*'
+                    }
+                }).then(response => response.json()).then(data => {
+                    if (data) {
+                        alert("Item has been deleted successfully");
+                        row.remove();
+                    } else
+                        alert("Something Wrong!!")
+                }).catch((reason) => {
+                    alert(reason);
+                })
+            }
+        }
+
         $(function () {
             $('#products').DataTable({
                 "paging": true,

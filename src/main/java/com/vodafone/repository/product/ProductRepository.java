@@ -63,7 +63,7 @@ public class ProductRepository implements IProductRepository {
         if (product == null)
             return false;
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
-            transaction = session.getTransaction();
+            transaction = session.beginTransaction();
             session.delete(product);
             transaction.commit();
             return true;

@@ -58,11 +58,13 @@ public class ProductController {
         return "redirect:/product/show.htm";
     }
 
-    @PostMapping("show.htm")
-    public String delete(@ModelAttribute Long id) {
-        this.productService.delete(id);
-        return "redirect:/product/show.htm";
-
+    @DeleteMapping("show.htm")
+    @ResponseBody
+    public String delete(@RequestParam(required = false) Long id) {
+        boolean result = this.productService.delete(id);
+        if (result)
+            return "true";
+        return "false";
     }
 
     @GetMapping("show.htm")
