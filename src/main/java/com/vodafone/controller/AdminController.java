@@ -31,11 +31,13 @@ public class AdminController {
     public AdminController(AdminService adminService, ProductService productService) {
         this.adminService = adminService;
         this.productService = productService;
+        //create super admin
         Admin admin = new Admin();
         admin.setEmail("admin@gmail.com");
         admin.setPassword("1234");
         admin.setRole(Role.Admin);
         admin.setUserName("admoona");
+        admin.setFirstLogin(false);
         this.adminService.create(admin);
     }
 
@@ -96,7 +98,8 @@ public class AdminController {
         admin.setUserName(createAdmin.getUsername());
         admin.setRole(Role.Admin);
         admin.setEmail(createAdmin.getEmail());
-        admin.setPassword("123456");
+        //admin.setPassword("123456");
+        admin.setFirstLogin(true);
         adminService.create(admin);
         return "redirect:/admins/admins.htm";
     }
@@ -130,4 +133,21 @@ public class AdminController {
         productService.delete(productId);
         return null;
     }
+    @PutMapping("/{id]/resetPassword.htm")
+    public String updatePassword(@PathVariable Long id, @Valid @ModelAttribute("password") String newPassword, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            Map<String, Object> model = bindingResult.getModel();
+            System.out.println(model);
+            //if input has error forward to same page
+            return "/{id]/resetPassword.htm";
+        }
+        if(adminService.updatePassword(id, newPassword)){
+            //todo forward to admin home page
+            return null;
+        }
+        //todo forward to admin home page
+        return null;
+
+    }
+
 }

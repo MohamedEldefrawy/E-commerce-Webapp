@@ -68,6 +68,8 @@ public class AdminRepository implements IAdminRepository {
 
     @Override
     public boolean create(Admin admin) {
+        if(admin.getPassword()==null)
+            admin.setPassword(getAlphaNumericString(8));
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
             session.persist(admin);
@@ -98,5 +100,40 @@ public class AdminRepository implements IAdminRepository {
             return false;
         }
     }
+    public boolean updatePassword(Long id, String newPassword){
+        Admin admin = get(id);
+        if (admin == null)
+            return false;
 
+        try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
+            //doesnt update password or role
+            Transaction tx = session.beginTransaction();
+            admin.setPassword(newPassword);
+            session.persist(admin);
+            tx.commit();
+            return true;
+        } catch (HibernateException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private String getAlphaNumericString(int n)
+    {
+        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                + "0123456789"
+                + "abcdefghijklmnopqrstuvxyz"
+                +"_&%";
+
+        StringBuilder sb = new StringBuilder(n);
+
+        for (int i = 0; i < n; i++) {
+            int index
+                    = (int)(AlphaNumericString.length()
+                    * Math.random());
+            sb.append(AlphaNumericString
+                    .charAt(index));
+        }
+        return sb.toString();
+    }
 }
