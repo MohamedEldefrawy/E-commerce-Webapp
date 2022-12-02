@@ -30,12 +30,12 @@
     </div>
     <!-- /.card-header -->
     <!-- form start -->
-    <form class="form-horizontal">
+    <form:form class="form-horizontal">
       <div class="card-body">
         <div class="form-group row m-auto">
           <label for="inputVerificationCode" class="col-sm-3 col-form-label">Verification Code</label>
           <div class="col-sm-7">
-            <input type="number" class="form-control" id="inputVerificationCode" name="verificationCode" placeholder="Verification Code">
+            <form:input type="text" class="form-control" id="inputVerificationCode" name="verificationCode" placeholder="Verification Code"/>
           </div>
         </div>
       </div>
@@ -44,7 +44,7 @@
         <button type="submit" class="btn btn-info w-25 " value="verify">Verify</button>
       </div>
       <!-- /.card-footer -->
-    </form>
+    </form:form>
   </div>
   <!-- /.card -->
 </div>
