@@ -46,7 +46,7 @@ public class AdminController {
     public String getAll(Model model) {
         List<Admin> adminList = this.adminService.getAll();
         model.addAttribute("admins", adminList);
-        return "admin/viewAllAdmins2";
+        return "admin/viewAllAdmins";
 
     }
 
@@ -62,10 +62,14 @@ public class AdminController {
 //
 //    }
     @DeleteMapping("/admins.htm")
+    @ResponseBody
     public String delete(@RequestParam(required = false) Long id) {
         boolean deleted = adminService.delete(id);
-        System.out.println(deleted);
-        return "redirect:/admins/admins.htm";
+//        System.out.println(deleted);
+//        return "redirect:/admins/admins.htm";
+        if (deleted)
+            return "true";
+        return "false";
 
     }
 
@@ -74,9 +78,11 @@ public class AdminController {
         return adminService.create(admin);
     }*/
 
-    @PutMapping("/admins.htm")
-    public boolean update(Long id, Admin admin) {
-        return adminService.update(id, admin);
+    @GetMapping("/updateAdmin.htm")
+    public String updateAdmin(Model model, @RequestParam Long id) {
+        Admin admin = adminService.get(id);
+        model.addAttribute("admin", admin);
+        return "admin/updateAdmin";
     }
 
     @GetMapping("/createAdmin.htm")
@@ -94,7 +100,7 @@ public class AdminController {
             return "admin/createAdmin";
         }
         Admin admin = new Admin();
-        admin.setUserName(createAdmin.getUsername());
+        admin.setUserName(createAdmin.getUserName());
         admin.setRole(Role.Admin);
         admin.setEmail(createAdmin.getEmail());
         //admin.setPassword("123456");
@@ -219,5 +225,20 @@ public class AdminController {
         }
         //todo forward to admin home page
         return null;
+    }
+    @PostMapping("/updateAdmin.htm")
+    public String submit(@Valid @ModelAttribute("admin") CreateAdmin admin, BindingResult bindingResult,
+                         @RequestParam Long id) {
+        if (bindingResult.hasErrors()) {
+            return "admin/updateAdmin";
+        }
+
+        Admin updatedAdmin = new Admin();
+        updatedAdmin.setEmail(admin.getEmail());
+        updatedAdmin.setUserName(admin.getUserName());
+        boolean result = adminService.update(id, updatedAdmin);
+        if (result)
+            return "redirect:/admins/admins.htm";
+        return "admin/updateAdmin";
     }
 }

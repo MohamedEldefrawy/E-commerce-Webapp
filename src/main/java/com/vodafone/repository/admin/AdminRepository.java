@@ -85,23 +85,26 @@ public class AdminRepository implements IAdminRepository {
 
     @Override
     public boolean update(Long id, Admin updatedEntity) {
-        Admin admin = get(id);
-        if (admin == null)
-            return false;
+        if(getByUsername(updatedEntity.getUserName())==null && getByEmail(updatedEntity.getEmail())==null) {
+            Transaction tx;
+            Admin admin = get(id);
+            if (admin == null)
+                return false;
 
-        try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
-            //doesnt update password or role
-            Transaction tx = session.beginTransaction();
-            admin.setEmail(updatedEntity.getEmail());
-            admin.setUserName(updatedEntity.getUserName());
-            admin.setFirstLogin(updatedEntity.isFirstLogin());
-            session.persist(admin);
-            tx.commit();
-            return true;
-        } catch (HibernateException e) {
-            e.printStackTrace();
-            return false;
+            try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
+                //doesnt update password or role
+                tx = session.beginTransaction();
+                admin.setEmail(updatedEntity.getEmail());
+                admin.setUserName(updatedEntity.getUserName());
+                session.update(admin);
+                tx.commit();
+                return true;
+            } catch (HibernateException e) {
+                e.printStackTrace();
+                return false;
+            }
         }
+        return false;
     }
     public boolean updatePassword(Long id, String newPassword){
         Admin admin = get(id);
@@ -112,7 +115,7 @@ public class AdminRepository implements IAdminRepository {
             //doesnt update password or role
             Transaction tx = session.beginTransaction();
             admin.setPassword(newPassword);
-            session.persist(admin);
+            session.update(admin);
             tx.commit();
             return true;
         } catch (HibernateException e) {
@@ -152,4 +155,19 @@ public class AdminRepository implements IAdminRepository {
             e.printStackTrace();
         }
     }
+    public Admin getByUsername(String userName) {
+        List<Admin> admins = getAll().stream()
+                .filter(a -> a.getUserName().equals(userName))
+                .collect(Collectors.toList());
+        if(admins.isEmpty()) return null;
+        return admins.get(0);
+    }
+    public Admin getByEmail(String email) {
+        List<Admin> admins = getAll().stream()
+                .filter(a -> a.getEmail().equals(email))
+                .collect(Collectors.toList());
+        if(admins.isEmpty()) return null;
+        return admins.get(0);
+    }
 }
+
