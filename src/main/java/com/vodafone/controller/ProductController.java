@@ -9,7 +9,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -27,7 +26,7 @@ public class ProductController {
     @GetMapping("create.htm")
     public String create(Model model) {
         model.addAttribute("product", new CreateProduct());
-        return "products/createProduct";
+        return "products/create";
     }
 
     @PostMapping("create.htm")
@@ -55,14 +54,62 @@ public class ProductController {
         newProduct.setCategory(product.getCategory());
         newProduct.setImage(image.getOriginalFilename());
         newProduct.setPrice(product.getPrice());
+        newProduct.setName(product.getName());
         this.productService.create(newProduct);
         return "redirect:/product/show.htm";
     }
 
+    @DeleteMapping("show.htm")
+    @ResponseBody
+    public String delete(@RequestParam(required = false) Long id) {
+        boolean result = this.productService.delete(id);
+        if (result)
+            return "true";
+        return "false";
+    }
+
     @GetMapping("show.htm")
-    public ModelAndView show() {
-        ModelAndView model = new ModelAndView("products/productsTable");
-        model.addObject("products", this.productService.getAll());
-        return model;
+    public String show(Model model) {
+        model.addAttribute("products", this.productService.getAll());
+        model.addAttribute("id", 0L);
+        return "products/products";
+    }
+
+    @GetMapping("update.htm")
+    public String update(Model model, @RequestParam Long id) {
+        Product selectedProduct = this.productService.get(id);
+        model.addAttribute("product", selectedProduct);
+        return "products/update";
+    }
+
+    @PostMapping("update.htm")
+    public String submit(@Valid @ModelAttribute("product") CreateProduct product,
+                         BindingResult bindingResult,
+                         @RequestParam("image") CommonsMultipartFile image,
+                         HttpSession session,
+                         @RequestParam Long id) {
+        if (bindingResult.hasErrors()) {
+            return "products/update";
+        }
+        byte[] imageData = image.getBytes();
+        String path = session.getServletContext().getRealPath("/") + "resources/static/images/" + image.getOriginalFilename();
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(path);
+            fileOutputStream.write(imageData);
+            fileOutputStream.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        Product updatedProduct = new Product();
+        updatedProduct.setDescription(product.getDescription());
+        updatedProduct.setCategory(product.getCategory());
+        updatedProduct.setImage(image.getOriginalFilename());
+        updatedProduct.setPrice(product.getPrice());
+        updatedProduct.setName(product.getName());
+        boolean result = this.productService.update(id, updatedProduct);
+        if (result)
+            return "redirect:/product/show.htm";
+        return "products/update";
     }
 }
