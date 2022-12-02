@@ -18,7 +18,7 @@ public class Customer extends User {
     private Cart cart;
     @Column (nullable = false)
     private UserStatus userStatus;
-    @OneToMany
+    @OneToMany(mappedBy = "customer" ,cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Order> orders;
 
 
