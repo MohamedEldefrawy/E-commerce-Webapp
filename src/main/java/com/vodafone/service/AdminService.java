@@ -34,4 +34,6 @@ public class AdminService {
     public boolean update(Long id, Admin admin){
         return adminRepository.update(id,admin);
     }
+
+    public boolean updatePassword(Long id, String newPassword){return adminRepository.updatePassword(id,newPassword);}
 }
