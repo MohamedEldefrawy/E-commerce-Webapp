@@ -1,6 +1,6 @@
 package com.vodafone.model.dto;
 
-import com.vodafone.model.LoginResponse;
+import com.vodafone.model.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,5 +12,6 @@ import lombok.Setter;
 @Getter
 public class LoginDTO {
     private boolean isCredentialsValid;
-    private LoginResponse response;
+    private UserStatus status;
+    private Long userId;
 }
