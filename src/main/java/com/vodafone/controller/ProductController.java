@@ -9,7 +9,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -59,10 +58,17 @@ public class ProductController {
         return "redirect:/product/show.htm";
     }
 
+    @PostMapping("show.htm")
+    public String delete(@ModelAttribute Long id) {
+        this.productService.delete(id);
+        return "redirect:/product/show.htm";
+
+    }
+
     @GetMapping("show.htm")
-    public ModelAndView show() {
-        ModelAndView model = new ModelAndView("products/productsTable");
-        model.addObject("products", this.productService.getAll());
-        return model;
+    public String show(Model model) {
+        model.addAttribute("products", this.productService.getAll());
+        model.addAttribute("id", 0L);
+        return "products/productsTable";
     }
 }
