@@ -33,6 +33,7 @@
                 <div class="d-flex flex-row">
                     <input id="Image" name="image" class="form-control" type="file"/>
                     <img style="max-height: 120px; max-width: 120px" class="image img-thumbnail mr-auto"
+                         alt="${product.getImage()}"
                          src="<c:url value="/resources/static/images/${product.getImage()}"/>">
                 </div>
             </div>
