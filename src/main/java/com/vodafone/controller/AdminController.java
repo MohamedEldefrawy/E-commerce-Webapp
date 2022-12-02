@@ -47,7 +47,7 @@ public class AdminController {
     public String getAll(Model model) {
         List<Admin> adminList = this.adminService.getAll();
         model.addAttribute("admins", adminList);
-        return "viewAllAdmins2";
+        return "admin/viewAllAdmins2";
 
     }
 
@@ -83,16 +83,16 @@ public class AdminController {
     @GetMapping("/createAdmin.htm")
     public String getCreateAdminPage(Model model) {
         model.addAttribute("admin", new CreateAdmin());
-        return "createAdmin";
+        return "admin/createAdmin";
 
     }
 
     @PostMapping("/createAdmin.htm")
     public String addUser(@Valid @ModelAttribute("admin") CreateAdmin createAdmin, BindingResult bindingResult) {
+        Map<String, Object> model = bindingResult.getModel();
         if (bindingResult.hasErrors()) {
-            Map<String, Object> model = bindingResult.getModel();
             System.out.println(model);
-            return "createAdmin";
+            return "admin/createAdmin";
         }
         Admin admin = new Admin();
         admin.setUserName(createAdmin.getUsername());
@@ -100,8 +100,12 @@ public class AdminController {
         admin.setEmail(createAdmin.getEmail());
         //admin.setPassword("123456");
         admin.setFirstLogin(true);
-        adminService.create(admin);
-        return "redirect:/admins/admins.htm";
+        if(adminService.create(admin))
+            return "redirect:/admins/admins.htm";
+        else{
+            //model.put("errors","Duplicate");
+            return "admin/createAdmin";
+        }
     }
 
     @GetMapping("/products")
