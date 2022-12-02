@@ -5,7 +5,6 @@ import com.vodafone.model.Product;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -47,7 +46,7 @@ public class ProductRepository implements IProductRepository {
             selectedEntity.setDescription(updatedEntity.getDescription());
             selectedEntity.setPrice(updatedEntity.getPrice());
             selectedEntity.setImage(updatedEntity.getImage());
-            session.persist(selectedEntity);
+            session.update(selectedEntity);
             transaction.commit();
             return true;
         } catch (HibernateException e) {

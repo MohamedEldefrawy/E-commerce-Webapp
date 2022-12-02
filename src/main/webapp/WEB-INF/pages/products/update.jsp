@@ -13,7 +13,7 @@
         <form:form modelAttribute="product" method="post" enctype="multipart/form-data">
             <div class="input-group mb-3">
                 <label for="ID" class="col-sm-2 col-form-label">ID</label>
-                <form:input id="ID" class="form-control" path="id" disabled="true" value="${product.getId()}"/>
+                <input type="number" id="ID" class="form-control" disabled value="${product.getId()}"/>
             </div>
             <div class="input-group mb-3">
                 <label for="Category" class="col-sm-2 col-form-label">Category</label>
@@ -37,11 +37,11 @@
                 <form:input id="Price" class="form-control" path="price" value="${product.getPrice()}"/>
             </div>
             <div class="input-group mb-3">
-                <label for="Rate" class="col-sm-2 col-form-label">Price</label>
-                <form:input id="Rate" class="form-control" path="rate" disabled="true" value="${product.getRate()}"/>
+                <label for="Rate" class="col-sm-2 col-form-label">Rate</label>
+                <input type="number" id="Rate" class="form-control" disabled value="${product.getRate()}"/>
             </div>
             <div class="d-flex justify-content-center align-content-center">
-                <input class="btn btn-primary" type="submit" value="Create">
+                <input class="btn btn-primary" type="submit" value="Save">
             </div>
         </form:form>
     </div>
