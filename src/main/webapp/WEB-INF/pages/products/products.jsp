@@ -33,7 +33,8 @@
                 <td><c:out value="${product.getPrice()}"/></td>
                 <td>
                     <div class="d-flex justify-content-center align-items-center">
-                        <a href="<c:url value="/product/update.htm"/>" class="btn btn-warning mr-2"><i
+                        <a href="<c:url value="/product/update.htm?id=${product.getId()}"/>"
+                           class="btn btn-warning mr-2"><i
                                 class="far fa-edit"></i></a>
 
                         <button onclick="deleteRow(${product.getId()})" type="submit" class="btn btn-danger"><i

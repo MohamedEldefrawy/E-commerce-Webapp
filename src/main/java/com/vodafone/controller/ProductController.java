@@ -26,7 +26,7 @@ public class ProductController {
     @GetMapping("create.htm")
     public String create(Model model) {
         model.addAttribute("product", new CreateProduct());
-        return "products/createProduct";
+        return "products/create";
     }
 
     @PostMapping("create.htm")
@@ -71,6 +71,13 @@ public class ProductController {
     public String show(Model model) {
         model.addAttribute("products", this.productService.getAll());
         model.addAttribute("id", 0L);
-        return "products/productsTable";
+        return "products/products";
+    }
+
+    @GetMapping("update.htm")
+    public String update(Model model, @RequestParam Long id) {
+        Product selectedProduct = this.productService.get(id);
+        model.addAttribute("product", selectedProduct);
+        return "products/update";
     }
 }
