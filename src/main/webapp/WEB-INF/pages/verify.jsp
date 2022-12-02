@@ -35,13 +35,13 @@
         <div class="form-group row m-auto">
           <label for="inputVerificationCode" class="col-sm-3 col-form-label">Verification Code</label>
           <div class="col-sm-7">
-            <input type="number" class="form-control" id="inputVerificationCode" placeholder="Verification Code">
+            <input type="number" class="form-control" id="inputVerificationCode" name="verificationCode" placeholder="Verification Code">
           </div>
         </div>
       </div>
       <!-- /.card-body -->
       <div class="card-footer d-flex justify-content-center mb-3 bg-white">
-        <button type="submit" class="btn btn-info w-25 ">Verify</button>
+        <button type="submit" class="btn btn-info w-25 " value="verify">Verify</button>
       </div>
       <!-- /.card-footer -->
     </form>
