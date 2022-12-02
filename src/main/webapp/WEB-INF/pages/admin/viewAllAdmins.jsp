@@ -1,11 +1,17 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://www.rapid-framework.org.cn/rapid" prefix="rapid" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<style>
+    .dataTables_filter{
+        float: left !important;
+    }
+
+</style>
 
 <rapid:override name="content">
-    <div style="padding-bottom: 5%">
-    <a href="./createAdmin.htm" class="btn btn-primary float-right"><i class="fas fa-plus"></i>Add Admin</a>
-    </div><br/>
+    <div style="padding-bottom:2%">
+    <a href="./createAdmin.htm" class="btn btn-primary float-right"><i class="fas fa-plus"></i>  Admin</a>
+    </div>
     <table id="admins" class="table table-bordered table-hover">
         <thead>
         <tr>
@@ -41,7 +47,7 @@
 
     <script>
         $(function () {
-            $('#products').DataTable({
+            $('#admins').DataTable({
                 "paging": true,
                 "lengthChange": false,
                 "searching": true,
@@ -49,6 +55,7 @@
                 "info": true,
                 "autoWidth": false,
                 "responsive": true,
+                "buttons":["addButton"]
             });
         })
         function deleteSomething(id) {
