@@ -31,19 +31,19 @@
                     <div cssClass="form-group row">
                         <label for="inputUserName" cssClass="col-sm-3 col-form-label">User Name</label>
                         <div class="col-sm-9">
-                            <form:input type="text" cssClass="form-control" id="inputUserName" placeholder="User Name"/>
+                            <form:input type="text" cssClass="form-control" id="inputUserName" placeholder="User Name" path="userName"/>
                         </div>
                     </div>
                     <div cssClass="form-group row">
                         <label for="inputEmail3" cssClass="col-sm-3 col-form-label">Email</label>
                         <div cssClass="col-sm-9">
-                            <form:input type="email" cssClass="form-control" name="userEmail" id="inputEmail3" placeholder="Email"/>
+                            <form:input type="email" cssClass="form-control" name="userEmail" id="inputEmail3" placeholder="Email" path="email"/>
                         </div>
                     </div>
                     <div cssClass="form-group row">
                         <label for="inputPassword3" cssClass="col-sm-3 col-form-label">Password</label>
                         <div cssClass="col-sm-9">
-                            <form:input type="password" class="form-control" id="inputPassword3" placeholder="Password"/>
+                            <form:input type="password" class="form-control" id="inputPassword3" placeholder="Password" path="password"/>
                         </div>
                     </div>
                     <div cssClass="form-group row">
