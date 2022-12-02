@@ -17,13 +17,20 @@ import java.util.Objects;
 
 @Controller
 @AllArgsConstructor
-@NoArgsConstructor
 @RequestMapping("/customer")
 public class CustomerController {
-    CustomerService customerService;
-    OrderService orderService;
-    ProductService productService;
-    CartService cartService;
+    private CustomerService customerService;
+    private OrderService orderService;
+    private ProductService productService;
+    private CartService cartService;
+
+    // Home
+    @GetMapping("home.htm")
+    public String home(Model model) {
+        List<Product> products = this.productService.getAll();
+        model.addAttribute("products", products);
+        return "/customer/shared/home";
+    }
 
     @PostMapping
     public boolean create(Customer customer) {

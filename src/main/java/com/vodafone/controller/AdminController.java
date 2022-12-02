@@ -113,6 +113,14 @@ public class AdminController {
         }
     }
 
+    // Home
+    @GetMapping("home.htm")
+    public String home(Model model) {
+        List<Product> productList = this.productService.getAll();
+        model.addAttribute("products", productList);
+        return "shared/home";
+    }
+
     //    Products End Points
     @GetMapping("/products/show.htm")
     public String show(Model model) {
