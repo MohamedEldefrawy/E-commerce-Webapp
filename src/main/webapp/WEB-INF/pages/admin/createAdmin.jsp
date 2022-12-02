@@ -15,8 +15,8 @@
                 <form:input id="email" class="form-control" path="email"/>
             </div>
             <div class="input-group mb-3">
-                <label for="username" class="col-sm-2 col-form-label">Username</label>
-                <form:input id="username" class="form-control" path="username"/>
+                <label for="userName" class="col-sm-2 col-form-label">Username</label>
+                <form:input id="userName" class="form-control" path="userName"/>
             </div>
 
             <div class="d-flex justify-content-center align-content-center">
