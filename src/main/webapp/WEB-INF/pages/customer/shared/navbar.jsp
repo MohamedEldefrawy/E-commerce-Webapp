@@ -100,7 +100,7 @@
                 </button>
                 <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                     <div class="navbar-nav mr-auto py-0">
-                        <a href="home.jsp" class="nav-item nav-link active">Home</a>
+                        <a href="home.htm" class="nav-item nav-link active">Home</a>
                         <a href="#Products" class="nav-item nav-link">Shop</a>
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
