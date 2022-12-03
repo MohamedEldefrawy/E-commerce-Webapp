@@ -1,6 +1,8 @@
 package com.vodafone.model;
 
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.List;
@@ -21,7 +23,7 @@ public class Cart {
     Customer customer;*/
     @OneToOne(mappedBy = "cart")
     private Customer customer;
-    @OneToMany
+    @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER)
     List<CartItem> items;
 
     public Cart(Customer customer, List<CartItem> items) {
