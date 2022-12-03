@@ -1,10 +1,7 @@
 package com.vodafone.repository.customer;
 
 import com.vodafone.config.HibernateConfig;
-import com.vodafone.model.Customer;
-import com.vodafone.model.Email;
-import com.vodafone.model.User;
-import com.vodafone.model.UserStatus;
+import com.vodafone.model.*;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -21,20 +18,6 @@ public class CustomerRepository implements ICustomerRepository {
     public CustomerRepository(HibernateConfig hibernateConfig) {
         this.hibernateConfig = hibernateConfig;
     }
-
-    /*
-        +register():
-        +verifyEmail():
-        + addProductToCart( product : Product):
-        + updateCart():
-        + removeProductFromCart():
-        + emptyCart():void
-        +reviewFinalOrder():
-
-        +submitFinalOrder():
-     */
-
-
     @Override
     public boolean create(Customer customer) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
@@ -42,6 +25,7 @@ public class CustomerRepository implements ICustomerRepository {
             //set customer's default status before verification
             session.persist(customer.getCart());
             customer.setUserStatus(UserStatus.DEACTIVATED);
+            customer.setRole(Role.Customer);
             session.persist(customer);
             transaction.commit();
             return true;
@@ -91,6 +75,16 @@ public class CustomerRepository implements ICustomerRepository {
         Customer customer = null;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             customer = session.get(Customer.class, id);
+        } catch (HibernateException hibernateException) {
+            hibernateException.printStackTrace();
+        }
+        return customer;
+    }
+    @Override
+    public Customer getByMail(String email) {
+        Customer customer = null;
+        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
+            customer = session.get(Customer.class, email);
         } catch (HibernateException hibernateException) {
             hibernateException.printStackTrace();
         }

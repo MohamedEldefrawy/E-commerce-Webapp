@@ -15,9 +15,13 @@ import java.util.List;
 @Entity
 @Table ( name = "customers")
 public class Customer extends User {
+
+    private String code;
+
     /*@OneToOne(mappedBy = "customer", fetch = FetchType.EAGER)
     private Cart cart = new Cart(this,new ArrayList<>());*/
     //Inverted cutomer-cart relationship to make customer the owner
+
     @OneToOne
     @JoinColumn(name = "cartId")
     private Cart cart;
