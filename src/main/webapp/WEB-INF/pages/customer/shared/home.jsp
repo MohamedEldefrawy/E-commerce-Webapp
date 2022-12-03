@@ -29,9 +29,25 @@
     <!-- Customized Bootstrap Stylesheet -->
     <link href="<c:url value="/resources/static/css/style.min.css" />" rel="stylesheet">
 
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="<c:url value="/resources/static/js/easing.min.js" />"></script>
+    <script src="<c:url value="/resources/static/js/owl.carousel.min.js" />"></script>
+
+    <!-- Contact Javascript File -->
+    <script src="<c:url value="/resources/static/js/jqBootstrapValidation.min.js" />"></script>
+    <script src="<c:url value="/resources/static/js/contact.js" />"></script>
+
+    <!-- Template Javascript -->
+    <script src="<c:url value="/resources/static/js/main.js" />"></script>
 </head>
 
 <body>
+<div class="container-fluid">
+
+</div>
 <!-- Navbar Start -->
 <jsp:include page="navbar.jsp"/>
 <!-- Navbar End -->
@@ -40,7 +56,6 @@
 <jsp:include page="products.jsp"/>
 <!-- Products End -->
 
-
 <!-- Footer Start -->
 <jsp:include page="footer.jsp"/>
 <!-- Footer End -->
@@ -48,20 +63,5 @@
 
 <!-- Back to Top -->
 <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
-
-
-<!-- JavaScript Libraries -->
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-<script src="<c:url value="/resources/static/js/easing.min.js" />"></script>
-<script src="<c:url value="/resources/static/js/owl.carousel.min.js" />"></script>
-
-<!-- Contact Javascript File -->
-<script src="<c:url value="/resources/static/js/jqBootstrapValidation.min.js" />"></script>
-<script src="<c:url value="/resources/static/js/contact.js" />"></script>
-
-<!-- Template Javascript -->
-<script src="<c:url value="/resources/static/js/main.js" />"></script>
 </body>
-
 </html>

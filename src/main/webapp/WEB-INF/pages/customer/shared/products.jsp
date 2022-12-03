@@ -1,7 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<div class="text-center mb-4">
+<div id="Products" class="text-center mb-4">
     <h2 class="section-title px-5"><span class="px-2">Products</span></h2>
 </div>
 

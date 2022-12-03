@@ -101,7 +101,7 @@
                 <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                     <div class="navbar-nav mr-auto py-0">
                         <a href="home.jsp" class="nav-item nav-link active">Home</a>
-                        <a href="shop.html" class="nav-item nav-link">Shop</a>
+                        <a href="#Products" class="nav-item nav-link">Shop</a>
                         <a href="detail.html" class="nav-item nav-link">Shop Detail</a>
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
@@ -119,29 +119,23 @@
                 </div>
             </nav>
             <div id="header-carousel" class="carousel slide" data-ride="carousel">
-                <div class="carousel-inner">
-                    <div class="carousel-item active" style="height: 410px;">
-                        <img class="img-fluid" src="img/carousel-1.jpg" alt="Image">
-                        <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
-                            <div class="p-3" style="max-width: 700px;">
-                                <h4 class="text-light text-uppercase font-weight-medium mb-3">10% Off Your First
-                                    Order</h4>
-                                <h3 class="display-4 text-white font-weight-semi-bold mb-4">Fashionable Dress</h3>
-                                <a href="" class="btn btn-light py-2 px-3">Shop Now</a>
+                <div id="CarouselItems" class="carousel-inner">
+                    <c:forEach items="${products}" var="product">
+                        <div class="carousel-item" style="height: 410px;">
+                            <img class="img-fluid" src="<c:url value="/resources/static/images/${product.getImage()}"/>"
+                                 alt="${product.getName()}">
+                            <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                                <div class="p-3" style="max-width: 700px;">
+                                    <h4 class="text-light text-uppercase font-weight-medium mb-3">10% Off Your First
+                                        Order
+                                    </h4>
+                                    <h3 class="display-4 text-white font-weight-semi-bold mb-4">${product.getName()}</h3>
+                                    <a href="#Products" class="btn btn-light py-2 px-3">Shop Now</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="carousel-item" style="height: 410px;">
-                        <img class="img-fluid" src="img/carousel-2.jpg" alt="Image">
-                        <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
-                            <div class="p-3" style="max-width: 700px;">
-                                <h4 class="text-light text-uppercase font-weight-medium mb-3">10% Off Your First
-                                    Order</h4>
-                                <h3 class="display-4 text-white font-weight-semi-bold mb-4">Reasonable Price</h3>
-                                <a href="" class="btn btn-light py-2 px-3">Shop Now</a>
-                            </div>
-                        </div>
-                    </div>
+                    </c:forEach>
+
                 </div>
                 <a class="carousel-control-prev" href="#header-carousel" data-slide="prev">
                     <div class="btn btn-dark" style="width: 45px; height: 45px;">
@@ -158,3 +152,7 @@
     </div>
 </div>
 <!-- Navbar End -->
+
+<script>
+    document.getElementById("CarouselItems").firstElementChild.classList.add("active");
+</script>
