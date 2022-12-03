@@ -21,7 +21,99 @@
             </div>
             <div class="input-group mb-3">
                 <label for="Category" class="col-sm-2 col-form-label">Category</label>
-                <form:input id="Category" class="form-control" path="category" value="${product.getCategory()}"/>
+                <form:select class="form-control" id="Category" path="category">
+                    <c:if test="${product.getCategory() == 'Cats'}" var="condition">
+                        <form:option value="Cats" selected="true">
+                            Cats
+                        </form:option>
+                        <form:option value="Dogs">
+                            Dogs
+                        </form:option>
+                        <form:option value="Birds">
+                            Birds
+                        </form:option>
+                        <form:option value="Turtles">
+                            Turtles
+                        </form:option>
+
+                        <form:option value="Hamsters">
+                            Hamsters
+                        </form:option>
+                    </c:if>
+                    <c:if test="${product.getCategory() == 'Dogs'}" var="condition">
+                        <form:option value="Cats">
+                            Cats
+                        </form:option>
+                        <form:option value="Dogs" selected="true">
+                            Dogs
+                        </form:option>
+                        <form:option value="Birds">
+                            Birds
+                        </form:option>
+                        <form:option value="Turtles">
+                            Turtles
+                        </form:option>
+
+                        <form:option value="Hamsters">
+                            Hamsters
+                        </form:option>
+                    </c:if>
+                    <c:if test="${product.getCategory() == 'Turtles'}" var="condition">
+                        <form:option value="Cats">
+                            Cats
+                        </form:option>
+                        <form:option value="Dogs">
+                            Dogs
+                        </form:option>
+                        <form:option value="Birds">
+                            Birds
+                        </form:option>
+                        <form:option value="Turtles" selected="true">
+                            Turtles
+                        </form:option>
+
+                        <form:option value="Hamsters">
+                            Hamsters
+                        </form:option>
+                    </c:if>
+                    <c:if test="${product.getCategory() == 'Birds'}" var="condition">
+                        <form:option value="Cats">
+                            Cats
+                        </form:option>
+                        <form:option value="Dogs">
+                            Dogs
+                        </form:option>
+                        <form:option value="Birds" selected="true">
+                            Birds
+                        </form:option>
+                        <form:option value="Turtles">
+                            Turtles
+                        </form:option>
+                        <form:option value="Hamsters">
+                            Hamsters
+                        </form:option>
+                    </c:if>
+                    <c:if test="${product.getCategory() == 'Hamsters'}" var="condition">
+                        <form:option value="Cats">
+                            Cats
+                        </form:option>
+                        <form:option value="Dogs" selected="true">
+                            Dogs
+                        </form:option>
+                        <form:option value="Birds">
+                            Birds
+                        </form:option>
+                        <form:option value="Turtles">
+                            Turtles
+                        </form:option>
+
+                        <form:option value="Hamsters" selected="true">
+                            Hamsters
+                        </form:option>
+                    </c:if>
+                </form:select>
+                    <%--                <form:input id="Category" class="form-control" path="category" value="
+                                     ${product.getCategory()}"/>--%>
             </div>
             <div class="input-group mb-3">
                 <label for="Description" class="col-sm-2 col-form-label">Description</label>

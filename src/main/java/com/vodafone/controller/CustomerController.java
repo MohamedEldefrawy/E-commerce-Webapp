@@ -28,8 +28,12 @@ public class CustomerController {
 
     // Home
     @GetMapping("home.htm")
-    public String home(Model model) {
-        List<Product> products = this.productService.getAll();
+    public String home(Model model, @RequestParam(required = false) String category) {
+        List<Product> products;
+        if (category != null)
+            products = this.productService.getByCategory(category);
+        else
+            products = this.productService.getAll();
         model.addAttribute("products", products);
         return "/customer/shared/home";
     }
@@ -122,11 +126,18 @@ public class CustomerController {
         return null;
     }
 
-    @PostMapping("{customerId}/cart")
-    public String addItemToCart(@PathVariable Long customerId, @RequestBody CartItem item) {
-        Cart customerCart = customerService.get(customerId).getCart();
-        cartService.addItem(customerCart.getId(), item);
-        return null;
+    @PostMapping("/addToCart")
+    @ResponseBody
+    public String addItemToCart(@RequestParam int customerId, @RequestParam int itemId,
+                                @RequestParam int quantity) {
+        System.out.println(customerId + " " + itemId + " " + quantity);
+        Cart customerCart = customerService.get(Long.valueOf(customerId)).getCart();
+        Product product = productService.get(Long.valueOf(itemId));
+        CartItem cartItem = new CartItem(quantity, product, customerCart);
+        boolean added = cartService.addItem(customerCart.getId(), cartItem);
+        if (added)
+            return "true";
+        return "false";
     }
 
     @PostMapping("{customerId}/cart/{itemId}")

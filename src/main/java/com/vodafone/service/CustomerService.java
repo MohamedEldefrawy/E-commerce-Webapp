@@ -2,6 +2,8 @@ package com.vodafone.service;
 
 import com.vodafone.model.Customer;
 import com.vodafone.model.Email;
+import com.vodafone.model.Role;
+import com.vodafone.model.UserStatus;
 import com.vodafone.repository.customer.CustomerRepository;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,12 @@ public class CustomerService {
 
     public CustomerService(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
+        Customer customer = new Customer(UserStatus.ACTIVATED);
+        customer.setEmail("mi@gmail.com");
+        customer.setUserName("mi");
+        customer.setRole(Role.Customer);
+        customer.setPassword("1234");
+        customerRepository.create(customer);
     }
 
     public boolean create(Customer customer){
