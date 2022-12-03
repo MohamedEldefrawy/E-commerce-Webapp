@@ -126,9 +126,7 @@ public class CustomerController {
                                 @RequestParam int quantity) {
         System.out.println(customerId + " " + itemId + " "+quantity);
         Cart customerCart = customerService.get(Long.valueOf(customerId)).getCart();
-        System.out.println(customerCart);
         Product product = productService.get(Long.valueOf(itemId));
-        System.out.println(product);
         CartItem cartItem = new CartItem(quantity,product,customerCart);
         boolean added = cartService.addItem(customerCart.getId(), cartItem);
         if (added)
