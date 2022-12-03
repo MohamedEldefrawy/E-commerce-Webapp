@@ -24,9 +24,12 @@ public class CartItem {
     @ManyToOne
     private Cart cart;
 
+    private double total;
+
     public CartItem(int quantity, Product product, Cart cart) {
         this.quantity = quantity;
         this.product = product;
         this.cart = cart;
+        this.total=quantity*product.getPrice();
     }
 }
