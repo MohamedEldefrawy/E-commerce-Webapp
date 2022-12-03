@@ -24,6 +24,7 @@ public class Cart {
     @OneToOne(mappedBy = "cart")
     private Customer customer;
     @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     List<CartItem> items;
 
     public Cart(Customer customer, List<CartItem> items) {
