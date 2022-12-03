@@ -30,9 +30,6 @@
                     <form:option value="Turtles">
                         Turtles
                     </form:option>
-                    <form:option value="Fish">
-                        Fish
-                    </form:option>
                     <form:option value="Hamsters">
                         Hamsters
                     </form:option>
