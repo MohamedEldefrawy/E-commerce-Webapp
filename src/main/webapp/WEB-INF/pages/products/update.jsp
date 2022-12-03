@@ -112,13 +112,16 @@
                         </form:option>
                     </c:if>
                 </form:select>
-                    <%--                <form:input id="Category" class="form-control" path="category" value="
-                                     ${product.getCategory()}"/>--%>
             </div>
             <div class="input-group mb-3">
                 <label for="Description" class="col-sm-2 col-form-label">Description</label>
                 <form:input id="Description" class="form-control" path="description"
                             value="${product.getDescription()}"/>
+            </div>
+            <div class="input-group mb-3">
+                <label for="Units" class="col-sm-2 col-form-label">Units</label>
+                <form:input id="Units" type="number" class="form-control" path="inStock"
+                            value="${product.getInStock()}"/>
             </div>
             <div class="input-group mb-3">
                 <label for="Image" class="col-sm-2 col-form-label">Image</label>

@@ -24,4 +24,7 @@ public class CreateProduct {
     @NotBlank
     @Min(value = 1)
     private double price;
+    @NotBlank
+    @Min(value = 1)
+    private int inStock;
 }

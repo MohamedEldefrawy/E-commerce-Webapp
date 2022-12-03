@@ -6,46 +6,49 @@
 </div>
 
 <div class="container-fluid pt-5">
-    <c:forEach items="${products}" var="product">
-        <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
-            <div class="card product-item border-0 mb-4">
-                <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                    <img style="max-height: 100px; max-width: 100px" class="img-fluid w-100"
-                         src="<c:url value="/resources/static/images/${product.getImage()}"/>">
-                </div>
-                <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                    <h6 class="text-truncate mb-3">${product.getName()}</h6>
-                    <div class="d-flex justify-content-center">
-                        <h6>$${product.getPrice()}</h6>
-                        <h6 class="text-muted ml-2">
-                            <del>$${product.getPrice()+0.99}</del>
-                        </h6>
+    <div class="row px-xl-5 pb-3">
+        <c:forEach items="${products}" var="product">
+            <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+                <div class="card product-item border-0 mb-4">
+                    <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                        <img class="img-fluid w-100"
+                             src="<c:url value="/resources/static/images/${product.getImage()}"/>">
                     </div>
-                </div>
-                <div class="card-footer d-flex justify-content-between bg-light border">
-                    <div class="input-group quantity mr-3" style="width: 40px;">
-                        <div class="input-group-btn" style="width: 40px;">
-                            <button class="btn btn-primary btn-minus" >
-                                <i class="fa fa-minus"></i>
-                            </button>
-                        </div>
-                        <input id = "${product.getId()}" type="text" style="width: 40px;" class="form-control bg-secondary text-center" value="1">
-                        <div class="input-group-btn" style="width: 40px;">
-                            <button class="btn btn-primary btn-plus">
-                                <i class="fa fa-plus"></i>
-                            </button>
+                    <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
+                        <h6 class="text-truncate mb-3">${product.getName()}</h6>
+                        <div class="d-flex justify-content-center">
+                            <h6>$${product.getPrice()}</h6>
+                            <h6 class="text-muted ml-2">
+                                <del>$${product.getPrice()+1.99}</del>
+                            </h6>
                         </div>
                     </div>
-                    <br/>
-                    <button class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</button>
-                    <button class="btn btn-sm text-dark p-0" onclick="addToCart(${product.getId()})"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add
-                        To Cart</button>
+                    <div class="card-footer d-flex justify-content-between bg-light border">
+                        <div class="input-group quantity mr-3" style="width: 40px;">
+                            <div class="input-group-btn" style="width: 40px;">
+                                <button class="btn btn-primary btn-minus">
+                                    <i class="fa fa-minus"></i>
+                                </button>
+                            </div>
+                            <input id="${product.getId()}" type="text" style="width: 40px;"
+                                   class="form-control bg-secondary text-center" value="1">
+                            <div class="input-group-btn" style="width: 40px;">
+                                <button class="btn btn-primary btn-plus">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <br/>
+                        <button class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail
+                        </button>
+                        <button class="btn btn-sm text-dark p-0" onclick="addToCart(${product.getId()})"><i
+                                class="fas fa-shopping-cart text-primary mr-1"></i>Add
+                            To Cart
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-    </c:forEach>
-
-    <div class="row px-xl-5 pb-3">
+        </c:forEach>
     </div>
 </div>
 

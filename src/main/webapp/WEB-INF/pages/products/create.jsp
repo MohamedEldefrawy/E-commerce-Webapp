@@ -40,6 +40,10 @@
                 <form:input id="Description" class="form-control" path="description"/>
             </div>
             <div class="input-group mb-3">
+                <label for="Units" class="col-sm-2 col-form-label">Units</label>
+                <form:input id="Units" type="number" class="form-control" path="inStock"/>
+            </div>
+            <div class="input-group mb-3">
                 <label for="Image" class="col-sm-2 col-form-label">Image</label>
                 <input id="Image" name="image" class="form-control" type="file"/>
             </div>
