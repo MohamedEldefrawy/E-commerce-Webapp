@@ -84,6 +84,8 @@
                     <a href="<c:url value="/customer/home.htm?category=Turtles"/>" class="nav-item nav-link">Turtles</a>
                     <a href="<c:url value="/customer/home.htm?category=Hamsters"/>"
                        class="nav-item nav-link">Hamsters</a>
+                    <a href="<c:url value="/customer/home.htm"/>"
+                       class="nav-item nav-link">All Products</a>
                 </div>
             </nav>
         </div>

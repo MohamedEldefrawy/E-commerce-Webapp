@@ -12,6 +12,7 @@
         <tr>
             <th>ID</th>
             <th>Description</th>
+            <th>Units</th>
             <th>Image</th>
             <th>Category</th>
             <th>Rate</th>
@@ -24,6 +25,7 @@
             <tr id="${product.getId()}">
                 <td><c:out value="${product.getId()}"/></td>
                 <td><c:out value="${product.getDescription()}"/></td>
+                <td><c:out value="${product.getInStock()}"/></td>
                 <td>
                     <img style="max-height: 100px; max-width: 100px" class="image img-thumbnail  img-circle mr-auto"
                          src="<c:url value="/resources/static/images/${product.getImage()}"/>">
