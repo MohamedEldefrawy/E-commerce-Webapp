@@ -3,6 +3,8 @@ package com.vodafone.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -36,6 +38,7 @@ public class Order {
     private float total;
     
     @OneToMany(mappedBy = "order" ,cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @Fetch(value = FetchMode.SUBSELECT)
     @Getter
     @Setter
     Set<OrderItem> orderItems = new HashSet<>();
