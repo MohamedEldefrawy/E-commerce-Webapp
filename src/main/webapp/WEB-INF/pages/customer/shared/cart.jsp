@@ -91,7 +91,7 @@
                                 </div>
                             </td>
                             <td class="align-middle">$${item.getTotal()}</td>
-                            <td class="align-middle"><button class="btn btn-sm btn-primary"><i class="fa fa-times"></i></button></td>
+                            <td class="align-middle"><button class="btn btn-sm btn-primary" onclick="deleteRow(${item.getId()})"><i class="fa fa-times"></i></button></td>
                         </tr>
                     </c:forEach>
                 </c:if>
@@ -151,8 +151,21 @@
 <script src="<c:url value="/resources/static/js/main.js" />"></script>
 </body>
 <script>
-    function getTotal(price,quantity){
-        return parseInt(price) * parseInt(quantity)
+    function deleteRow(id) {
+        let row = document.getElementById(id);
+            fetch("?customerId=2&itemId=" + id, {
+                method: "DELETE",
+                headers: {
+                    'Accept': '*/*'
+                }
+            }).then(response => response.json()).then(data => {
+                if (data) {
+                    row.remove();
+                } else
+                    alert("Something Wrong!!")
+            }).catch((reason) => {
+                alert(reason);
+            })
     }
 </script>
 
