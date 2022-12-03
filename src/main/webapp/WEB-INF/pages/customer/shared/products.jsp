@@ -18,14 +18,28 @@
                     <div class="d-flex justify-content-center">
                         <h6>$${product.getPrice()}</h6>
                         <h6 class="text-muted ml-2">
-                            <del>$0</del>
+                            <del>$${product.getPrice()+0.99}</del>
                         </h6>
                     </div>
                 </div>
                 <div class="card-footer d-flex justify-content-between bg-light border">
-                    <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                    <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add
-                        To Cart</a>
+                    <div class="input-group quantity mr-3" style="width: 40px;">
+                        <div class="input-group-btn" style="width: 40px;">
+                            <button class="btn btn-primary btn-minus" >
+                                <i class="fa fa-minus"></i>
+                            </button>
+                        </div>
+                        <input id = "${product.getId()}" type="text" style="width: 40px;" class="form-control bg-secondary text-center" value="1">
+                        <div class="input-group-btn" style="width: 40px;">
+                            <button class="btn btn-primary btn-plus">
+                                <i class="fa fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <br/>
+                    <button class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</button>
+                    <button class="btn btn-sm text-dark p-0" onclick="addToCart(${product.getId()})"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add
+                        To Cart</button>
                 </div>
             </div>
         </div>
@@ -34,3 +48,23 @@
     <div class="row px-xl-5 pb-3">
     </div>
 </div>
+
+<script>
+    function addToCart(id) {
+        let quantity = document.getElementById(id).value;
+        fetch("./addToCart/?customerId=2&itemId=" + id + "&quantity=" + quantity, {
+            method: "POST",
+            headers: {
+                'Accept': '*/*'
+            }
+        }).then(response => response.json()).then(data => {
+            if (data) {
+                alert("Item has been deleted successfully");
+            } else
+                alert("Something Wrong!!")
+        }).catch((reason) => {
+            alert(reason);
+        })
+
+    }
+</script>
