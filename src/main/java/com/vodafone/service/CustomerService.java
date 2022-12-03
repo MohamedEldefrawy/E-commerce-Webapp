@@ -28,6 +28,9 @@ public class CustomerService {
     public Customer get(Long id){
         return customerRepository.get(id);
     }
+    public Customer getByMail(String email){
+        return customerRepository.getByMail(email);
+    }
 
     public List<Customer> getAll(){
         return customerRepository.getAll();
