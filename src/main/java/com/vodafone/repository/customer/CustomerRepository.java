@@ -95,6 +95,16 @@ public class CustomerRepository implements ICustomerRepository {
         }
         return customer;
     }
+    @Override
+    public Customer getByMail(String email) {
+        Customer customer = null;
+        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
+            customer = session.get(Customer.class, email);
+        } catch (HibernateException hibernateException) {
+            hibernateException.printStackTrace();
+        }
+        return customer;
+    }
 
     @Override
     public List<Customer> getAll() {

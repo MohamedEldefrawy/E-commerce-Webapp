@@ -11,4 +11,5 @@ public interface ICustomerRepository extends Repository<Customer> {
     boolean resetPassword(String email, String password);
     Email requestResetPassword(String email);
     Email sendActivationEmail(String email,String OTP);
+    public Customer getByMail(String email);
 }
