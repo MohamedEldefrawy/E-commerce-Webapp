@@ -5,10 +5,13 @@
   Time: 1:42 p.m.
   To change this template use File | Settings | File Templates.
 --%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:spring="http://www.springframework.org/tags" xmlns:form="http://www.springframework.org/tags/form">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -30,12 +33,12 @@
     </div>
     <!-- /.card-header -->
     <!-- form start -->
-    <form:form class="form-horizontal">
+    <form:form modelAttribute="customerDTO" class="form-horizontal"  method="post">
       <div class="card-body">
         <div class="form-group row m-auto">
           <label for="inputVerificationCode" class="col-sm-3 col-form-label">Verification Code</label>
           <div class="col-sm-7">
-            <form:input type="text" class="form-control" id="inputVerificationCode" name="verificationCode" placeholder="Verification Code"/>
+            <input type="text"  class="form-control" id="inputVerificationCode" name="verificationCode" placeholder="Verification Code"/>
           </div>
         </div>
       </div>

@@ -2,18 +2,15 @@ package com.vodafone.controller;
 
 import com.vodafone.model.*;
 import com.vodafone.model.dto.CreateUser;
-import com.vodafone.model.dto.CustomerDTO;
-import com.vodafone.service.CartService;
-import com.vodafone.service.CustomerService;
-import com.vodafone.service.OrderService;
-import com.vodafone.service.ProductService;
+import com.vodafone.service.*;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +24,7 @@ public class CustomerController {
     private OrderService orderService;
     private ProductService productService;
     private CartService cartService;
+    private SendEmailService sendEmailService;
 
     // Home
     @GetMapping("home.htm")
@@ -153,19 +151,34 @@ public class CustomerController {
     }
 
     @PostMapping("registration.htm")
-    public String addUser(@Valid @ModelAttribute("customerDTO") Customer customerDTO, BindingResult bindingResult) {
+    public String addUser(@Valid @ModelAttribute("customerDTO") Customer customerDTO, BindingResult bindingResult,
+                          HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
-            Map<String, Object> model = bindingResult.getModel();
-            System.out.println(model);
+            Map<String, Object>  modelBind = bindingResult.getModel();
+            System.out.println(modelBind);
             return "registration";
         }
         System.out.println(customerDTO);
+
+        String otp = sendEmailService.getRandom();
+        customerDTO.setCode(otp);
         customerService.create(customerDTO);
-        return "redirect:/customer/verify.htm";
+        boolean test = sendEmailService.sendEmail(customerDTO);
+        if(test){
+            HttpSession session  = request.getSession();
+            session.setAttribute("verificationCode", customerDTO);
+            System.out.println(session);
+            return "redirect:/customer/verify.htm";
+        }
+        else {
+            return "registration";
+        }
+
     }
 
     @GetMapping("/verify.htm")
     public String getUsers(Model model) {
+        //TODO: how to integrate otp part
         return "verify";
     }
 }
