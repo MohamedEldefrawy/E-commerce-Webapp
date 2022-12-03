@@ -1,10 +1,7 @@
 package com.vodafone.repository.customer;
 
 import com.vodafone.config.HibernateConfig;
-import com.vodafone.model.Customer;
-import com.vodafone.model.Email;
-import com.vodafone.model.User;
-import com.vodafone.model.UserStatus;
+import com.vodafone.model.*;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -41,6 +38,7 @@ public class CustomerRepository implements ICustomerRepository {
             Transaction transaction = session.beginTransaction();
             //set customer's default status before verification
             customer.setUserStatus(UserStatus.DEACTIVATED);
+            customer.setRole(Role.Customer);
             session.persist(customer);
             transaction.commit();
             return true;
