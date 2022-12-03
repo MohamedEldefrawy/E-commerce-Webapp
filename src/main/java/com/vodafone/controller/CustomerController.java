@@ -2,6 +2,7 @@ package com.vodafone.controller;
 
 import com.vodafone.model.*;
 import com.vodafone.model.dto.CreateUser;
+import com.vodafone.model.dto.CustomerDTO;
 import com.vodafone.service.CartService;
 import com.vodafone.service.CustomerService;
 import com.vodafone.service.OrderService;
@@ -10,9 +11,12 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Controller
@@ -139,5 +143,29 @@ public class CustomerController {
         Cart customerCart = customerService.get(customerId).getCart();
         cartService.clearCart(customerCart.getId());
         return null;
+    }
+
+
+    @GetMapping("registration.htm")
+    public String registration(Model model) {
+        model.addAttribute("customerDTO", new Customer());
+        return "registration";
+    }
+
+    @PostMapping("registration.htm")
+    public String addUser(@Valid @ModelAttribute("customerDTO") Customer customerDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            Map<String, Object> model = bindingResult.getModel();
+            System.out.println(model);
+            return "registration";
+        }
+        System.out.println(customerDTO);
+        customerService.create(customerDTO);
+        return "redirect:/customer/verify.htm";
+    }
+
+    @GetMapping("/verify.htm")
+    public String getUsers(Model model) {
+        return "verify";
     }
 }
