@@ -1,6 +1,7 @@
 package com.vodafone.model;
 
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -22,5 +23,6 @@ public class Product {
     private String category;
     private float rate;
     private double price;
+    @ColumnDefault("10")
     private int inStock;
 }

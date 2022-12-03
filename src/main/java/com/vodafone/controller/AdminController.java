@@ -105,9 +105,9 @@ public class AdminController {
         admin.setEmail(createAdmin.getEmail());
         //admin.setPassword("123456");
         admin.setFirstLogin(true);
-        if(adminService.create(admin))
+        if (adminService.create(admin))
             return "redirect:/admins/admins.htm";
-        else{
+        else {
             //model.put("errors","Duplicate");
             return "admin/createAdmin";
         }
@@ -165,6 +165,7 @@ public class AdminController {
         updatedProduct.setImage(image.getOriginalFilename());
         updatedProduct.setPrice(product.getPrice());
         updatedProduct.setName(product.getName());
+        updatedProduct.setInStock(product.getInStock());
         boolean result = this.productService.update(id, updatedProduct);
         if (result)
             return "redirect:/product/show.htm";
@@ -205,6 +206,7 @@ public class AdminController {
         newProduct.setImage(image.getOriginalFilename());
         newProduct.setPrice(product.getPrice());
         newProduct.setName(product.getName());
+        newProduct.setInStock(product.getInStock());
         this.productService.create(newProduct);
         return "redirect:/admins/products/show.htm";
     }
@@ -234,6 +236,7 @@ public class AdminController {
         //todo forward to admin home page
         return null;
     }
+
     @PostMapping("/updateAdmin.htm")
     public String submit(@Valid @ModelAttribute("admin") CreateAdmin admin, BindingResult bindingResult,
                          @RequestParam Long id) {

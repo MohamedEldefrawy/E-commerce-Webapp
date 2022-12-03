@@ -2,17 +2,18 @@ package com.vodafone.controller;
 
 import com.vodafone.model.*;
 import com.vodafone.model.dto.CreateUser;
-import com.vodafone.service.CartService;
-import com.vodafone.service.CustomerService;
-import com.vodafone.service.OrderService;
-import com.vodafone.service.ProductService;
+import com.vodafone.service.*;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Controller
@@ -23,11 +24,16 @@ public class CustomerController {
     private OrderService orderService;
     private ProductService productService;
     private CartService cartService;
+    private SendEmailService sendEmailService;
 
     // Home
     @GetMapping("home.htm")
-    public String home(Model model) {
-        List<Product> products = this.productService.getAll();
+    public String home(Model model, @RequestParam(required = false) String category) {
+        List<Product> products;
+        if (category != null)
+            products = this.productService.getByCategory(category);
+        else
+            products = this.productService.getAll();
         model.addAttribute("products", products);
         return "/customer/shared/home";
     }
@@ -129,9 +135,10 @@ public class CustomerController {
     @ResponseBody
     public String addItemToCart(@RequestParam int customerId, @RequestParam int itemId,
                                 @RequestParam int quantity) {
+
         Cart customerCart = customerService.get(Long.valueOf(customerId)).getCart();
         Product product = productService.get(Long.valueOf(itemId));
-        CartItem cartItem = new CartItem(quantity,product,customerCart);
+        CartItem cartItem = new CartItem(quantity, product, customerCart);
         boolean added = cartService.addItem(customerCart.getId(), cartItem);
         if (added)
             return "true";
@@ -153,5 +160,44 @@ public class CustomerController {
         Cart customerCart = customerService.get(customerId).getCart();
         cartService.clearCart(customerCart.getId());
         return null;
+    }
+
+
+    @GetMapping("registration.htm")
+    public String registration(Model model) {
+        model.addAttribute("customerDTO", new Customer());
+        return "registration";
+    }
+
+    @PostMapping("registration.htm")
+    public String register(@Valid @ModelAttribute("customerDTO") Customer customerDTO, BindingResult bindingResult,
+                          HttpServletRequest request) {
+        if (bindingResult.hasErrors()) {
+            Map<String, Object>  modelBind = bindingResult.getModel();
+            System.out.println(modelBind);
+            return "registration";
+        }
+        System.out.println(customerDTO);
+
+        String otp = sendEmailService.getRandom();
+        customerDTO.setCode(otp);
+        customerService.create(customerDTO);
+        boolean test = sendEmailService.sendEmail(customerDTO);
+        if(test){
+            HttpSession session  = request.getSession();
+            session.setAttribute("verificationCode", customerDTO);
+            System.out.println(session);
+            return "redirect:/customer/verify.htm";
+        }
+        else {
+            return "registration";
+        }
+
+    }
+
+    @GetMapping("/verify.htm")
+    public String verify(Model model) {
+        //TODO: how to integrate otp part
+        return "verify";
     }
 }

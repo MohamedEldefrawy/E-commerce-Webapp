@@ -17,11 +17,31 @@
 
             <div class="input-group mb-3">
                 <label for="Category" class="col-sm-2 col-form-label">Category</label>
-                <form:input id="Category" class="form-control" path="category"/>
+                <form:select class="form-control" id="Category" path="category">
+                    <form:option value="Cats">
+                        Cats
+                    </form:option>
+                    <form:option value="Dogs">
+                        Dogs
+                    </form:option>
+                    <form:option value="Birds">
+                        Birds
+                    </form:option>
+                    <form:option value="Turtles">
+                        Turtles
+                    </form:option>
+                    <form:option value="Hamsters">
+                        Hamsters
+                    </form:option>
+                </form:select>
             </div>
             <div class="input-group mb-3">
                 <label for="Description" class="col-sm-2 col-form-label">Description</label>
                 <form:input id="Description" class="form-control" path="description"/>
+            </div>
+            <div class="input-group mb-3">
+                <label for="Units" class="col-sm-2 col-form-label">Units</label>
+                <form:input id="Units" type="number" class="form-control" path="inStock"/>
             </div>
             <div class="input-group mb-3">
                 <label for="Image" class="col-sm-2 col-form-label">Image</label>

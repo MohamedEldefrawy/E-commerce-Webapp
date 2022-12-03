@@ -2,9 +2,9 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<html xmlns:spring="http://www.springframework.org/tags" xmlns:form="http://www.springframework.org/tags/form">
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:spring="http://www.springframework.org/tags" xmlns:form="http://www.springframework.org/tags/form">
+
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -26,30 +26,24 @@
             </div>
             <!-- /.card-header -->
             <!-- form start -->
-            <form class="form-horizontal">
+            <form:form modelAttribute="customerDTO" class="form-horizontal"  method="post">
                 <div class="card-body">
                     <div class="form-group row">
-                        <label for="inputFullName" class="col-sm-3 col-form-label">Full Name</label>
+                        <label for="inputUserName" class="col-sm-3 col-form-label">User Name</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="inputFullName" placeholder="Full Name">
+                            <form:input type="text" class="form-control" id="inputUserName" placeholder="User Name" path="userName"/>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="inputEmail3" class="col-sm-3 col-form-label">Email</label>
                         <div class="col-sm-9">
-                            <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+                            <form:input type="email" class="form-control" name="userEmail" id="inputEmail3" placeholder="Email" path="email"/>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="inputPassword3" class="col-sm-3 col-form-label">Password</label>
                         <div class="col-sm-9">
-                            <input type="password" class="form-control" id="inputPassword3" placeholder="Password">
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="inputConfirmPassword" class="col-sm-3 col-form-label">Confirm Password</label>
-                        <div class="col-sm-9">
-                            <input type="password" class="form-control" id="inputConfirmPassword" placeholder="Confirm Password">
+                            <form:input type="password" class="form-control" id="inputPassword3" placeholder="Password" path="password"/>
                         </div>
                     </div>
                 </div>
@@ -60,7 +54,7 @@
                     <button type="submit" class="btn btn-default m-auto w-25 d-block " id="signIn">Sign in</button>
                 </div>
                 <!-- /.card-footer -->
-            </form>
+            </form:form>
         </div>
         <!-- /.card -->
     </div>
