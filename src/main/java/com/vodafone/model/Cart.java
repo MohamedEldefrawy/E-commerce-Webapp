@@ -16,9 +16,16 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
     private Long id;
-    @OneToOne
-    @JoinColumn(name = "customer_id")
-    Customer customer;
+    /*@OneToOne
+    @JoinColumn(name = "customer_id",referencedColumnName = "id")
+    Customer customer;*/
+    @OneToOne(mappedBy = "cart")
+    private Customer customer;
     @OneToMany
     List<CartItem> items;
+
+    public Cart(Customer customer, List<CartItem> items) {
+        this.customer = customer;
+        this.items = items;
+    }
 }
