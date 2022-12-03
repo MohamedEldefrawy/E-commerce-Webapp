@@ -40,6 +40,7 @@ public class CustomerRepository implements ICustomerRepository {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             //set customer's default status before verification
+            session.persist(customer.getCart());
             customer.setUserStatus(UserStatus.DEACTIVATED);
             session.persist(customer);
             transaction.commit();
