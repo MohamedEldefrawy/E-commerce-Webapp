@@ -114,10 +114,16 @@ public class CustomerController {
         return null;
     }
 
-    @GetMapping("{customerId}/cart")
-    public String showCustomerCart(@PathVariable Long customerId) {
+    @GetMapping("showCart.htm")
+    public String showCustomerCart(Model model,@RequestParam Long customerId) {
         Cart customerCart = customerService.get(customerId).getCart();
-        return null;
+        List<CartItem> cartItems = customerCart.getItems();
+        double totalCartPrice = cartItems.stream().mapToDouble(CartItem::getTotal).sum();
+        model.addAttribute("items", cartItems);
+        model.addAttribute("orderTotal",totalCartPrice);
+        System.out.println(customerCart.getItems());
+
+        return "/customer/shared/cart";
     }
 
     @PostMapping("/addToCart")
