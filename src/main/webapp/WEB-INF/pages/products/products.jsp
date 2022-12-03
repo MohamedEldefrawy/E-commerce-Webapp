@@ -57,7 +57,7 @@
                     }
                 }).then(response => response.json()).then(data => {
                     if (data) {
-                        alert("Item added successfully");
+                        alert("Item has been deleted successfully");
                         row.remove();
                     } else
                         alert("Something Wrong!!")
