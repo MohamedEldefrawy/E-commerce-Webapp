@@ -151,7 +151,7 @@ public class CustomerController {
     }
 
     @PostMapping("registration.htm")
-    public String addUser(@Valid @ModelAttribute("customerDTO") Customer customerDTO, BindingResult bindingResult,
+    public String register(@Valid @ModelAttribute("customerDTO") Customer customerDTO, BindingResult bindingResult,
                           HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             Map<String, Object>  modelBind = bindingResult.getModel();
@@ -177,7 +177,7 @@ public class CustomerController {
     }
 
     @GetMapping("/verify.htm")
-    public String getUsers(Model model) {
+    public String verify(Model model) {
         //TODO: how to integrate otp part
         return "verify";
     }
