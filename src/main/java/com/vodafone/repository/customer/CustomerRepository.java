@@ -18,20 +18,6 @@ public class CustomerRepository implements ICustomerRepository {
     public CustomerRepository(HibernateConfig hibernateConfig) {
         this.hibernateConfig = hibernateConfig;
     }
-
-    /*
-        +register():
-        +verifyEmail():
-        + addProductToCart( product : Product):
-        + updateCart():
-        + removeProductFromCart():
-        + emptyCart():void
-        +reviewFinalOrder():
-
-        +submitFinalOrder():
-     */
-
-
     @Override
     public boolean create(Customer customer) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
