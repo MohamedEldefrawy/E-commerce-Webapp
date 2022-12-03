@@ -17,7 +17,6 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Repository
-@NoArgsConstructor
 @AllArgsConstructor
 public class CartRepository implements ICartRepository {
     HibernateConfig config;
@@ -177,6 +176,7 @@ public class CartRepository implements ICartRepository {
     public boolean addItem(Long cartId, CartItem item) {
         try (Session session = config.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
+            session.persist(item);
             Cart cart = get(cartId);
             cart.getItems().add(item); //add item to cart list
             session.update(cart); //update cart
