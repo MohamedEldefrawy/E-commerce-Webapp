@@ -14,6 +14,7 @@ import java.util.List;
 @Entity
 @Table ( name = "customers")
 public class Customer extends User {
+    private String code;
     @OneToOne
     private Cart cart;
     @Column (nullable = false)
