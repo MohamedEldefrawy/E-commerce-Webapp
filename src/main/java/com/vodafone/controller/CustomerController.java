@@ -120,11 +120,20 @@ public class CustomerController {
         return null;
     }
 
-    @PostMapping("{customerId}/cart")
-    public String addItemToCart(@PathVariable Long customerId, @RequestBody CartItem item) {
-        Cart customerCart = customerService.get(customerId).getCart();
-        cartService.addItem(customerCart.getId(), item);
-        return null;
+    @PostMapping("/addToCart")
+    @ResponseBody
+    public String addItemToCart(@RequestParam int customerId, @RequestParam int itemId,
+                                @RequestParam int quantity) {
+        System.out.println(customerId + " " + itemId + " "+quantity);
+        Cart customerCart = customerService.get(Long.valueOf(customerId)).getCart();
+        System.out.println(customerCart);
+        Product product = productService.get(Long.valueOf(itemId));
+        System.out.println(product);
+        CartItem cartItem = new CartItem(quantity,product,customerCart);
+        boolean added = cartService.addItem(customerCart.getId(), cartItem);
+        if (added)
+            return "true";
+        return "false";
     }
 
     @PostMapping("{customerId}/cart/{itemId}")
