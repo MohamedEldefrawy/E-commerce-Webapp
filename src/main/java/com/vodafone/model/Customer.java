@@ -18,7 +18,7 @@ public class Customer extends User {
     /*@OneToOne(mappedBy = "customer", fetch = FetchType.EAGER)
     private Cart cart = new Cart(this,new ArrayList<>());*/
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne
     @JoinColumn(name = "cartId")
     private Cart cart;
     @Column (nullable = false)
