@@ -182,7 +182,7 @@ public class CustomerController {
         customerService.create(customerDTO);
         boolean isEmailSent = sendEmailService.sendEmail(customerDTO);
         if(isEmailSent){
-            return "redirect:/customer/verify.htm";
+            return "redirect:/customer/verify";
         }
         else {
             return "registration";
@@ -192,7 +192,30 @@ public class CustomerController {
 
     @GetMapping("/verify.htm")
     public String verify(Model model) {
-        //TODO: how to integrate otp part
+        model.addAttribute("customer", new Customer());
         return "verify";
     }
+
+    @PostMapping("verify.htm")
+    public String verifyCustomer(@Valid @ModelAttribute("customer") Customer customer, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            Map<String, Object>  modelBind = bindingResult.getModel();
+            System.out.println(modelBind);
+            return "registration";
+        }
+        Customer customer1 = customerService.getByMail(customer.getEmail());
+        if(customer1==null){
+            return "404";
+        } else {
+            if(customer1.getCode().equals(customer.getCode())){
+                return "redirect:/customer/shared/home";
+            }else {
+                return "404";
+            }
+
+        }
+
+    }
+
+
 }
