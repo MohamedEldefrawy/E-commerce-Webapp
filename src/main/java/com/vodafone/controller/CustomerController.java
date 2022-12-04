@@ -201,7 +201,7 @@ public class CustomerController {
         if (bindingResult.hasErrors()) {
             Map<String, Object>  modelBind = bindingResult.getModel();
             System.out.println(modelBind);
-            return "registration";
+            return "verify";
         }
         Customer customer1 = customerService.getByMail(customer.getEmail());
         if(customer1==null){
