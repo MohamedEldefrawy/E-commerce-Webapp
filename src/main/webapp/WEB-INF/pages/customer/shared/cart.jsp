@@ -78,13 +78,13 @@
                             <td class="align-middle">
                                 <div class="input-group quantity mx-auto" style="width: 100px;">
                                     <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-minus" >
+                                        <button class="btn btn-sm btn-primary btn-minus" onclick="decrementQuantity(${item.getCart().getId()},${item.getProduct().getId()})">
                                             <i class="fa fa-minus"></i>
                                         </button>
                                     </div>
                                     <input type="text" class="form-control form-control-sm bg-secondary text-center" style ="height: 25px;"value="${item.getQuantity()}">
                                     <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-plus">
+                                        <button class="btn btn-sm btn-primary btn-plus" onclick="incrementQuantity(${item.getCart().getId()},${item.getProduct().getId()})" >
                                             <i class="fa fa-plus"></i>
                                         </button>
                                     </div>
@@ -167,6 +167,36 @@
             }).catch((reason) => {
                 alert(reason);
             })
+    }
+    function incrementQuantity(cartId,productId) {
+        fetch("./increment/?cartId="+cartId+"&productId=" + productId, {
+            method: "PUT",
+            headers: {
+                'Accept': '*/*'
+            }
+        }).then(response => response.json()).then(data => {
+            if (data) {
+                window.location.reload();
+            } else
+                alert("Something Wrong!!")
+        }).catch((reason) => {
+            alert(reason);
+        })
+    }
+    function decrementQuantity(cartId,productId) {
+        fetch("./decrement/?cartId="+cartId+"&productId=" + productId, {
+            method: "PUT",
+            headers: {
+                'Accept': '*/*'
+            }
+        }).then(response => response.json()).then(data => {
+            if (data) {
+                window.location.reload();
+            } else
+                alert("Something Wrong!!")
+        }).catch((reason) => {
+            alert(reason);
+        })
     }
 </script>
 
