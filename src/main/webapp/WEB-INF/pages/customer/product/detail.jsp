@@ -46,7 +46,7 @@
                             <div class="nav-item dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
                                 <div class="dropdown-menu rounded-0 m-0">
-                                    <a href="<c:url value="/customer/showCart.htm?customerId=2"/>" class="dropdown-item">Shopping Cart</a>
+                                    <a href="<c:url value="/customer/showCart.htm"/>" class="dropdown-item">Shopping Cart</a>
                                     <a href="checkout.html" class="dropdown-item">Checkout</a>
                                 </div>
                             </div>
@@ -147,7 +147,7 @@
     <script>
         function addToCart(id) {
             let quantity = document.getElementById(id).value;
-            fetch("../../addToCart/?customerId=2&itemId=" + id + "&quantity=" + quantity, {
+            fetch("../../addToCart/?itemId=" + id + "&quantity=" + quantity, {
                 method: "POST",
                 headers: {
                     'Accept': '*/*'
