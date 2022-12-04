@@ -32,7 +32,7 @@ public class UserController {
         } else {
             session.setAttribute("id", loginDTO.getUserId());
             if (loginDTO.getStatus() == UserStatus.ADMIN) { //Admin-only logic
-                Admin admin = (Admin) userService.get(loginDTO.getUserId());
+                Admin admin = adminService.get(loginDTO.getUserId());
                 if (admin.isFirstLogin()) {
                     //todo: send email with new generated password
                     adminService.setFirstLoginFlag(admin.getId()); //set flag to false

@@ -193,9 +193,9 @@ public class CustomerController {
 
         String otp = sendEmailService.getRandom();
         customerDTO.setCode(otp);
+        //todo: check for username and email uniqueness
         customerService.create(customerDTO);
-        boolean test = sendEmailService.sendEmail(customerDTO);
-        if (test) {
+        if (sendEmailService.sendEmail(customerDTO, EmailType.ACTIVATION, session)) {
 //            HttpSession session = request.getSession();
             session.setAttribute("email", customerDTO.getEmail());
             session.setAttribute("password", customerDTO.getPassword());
