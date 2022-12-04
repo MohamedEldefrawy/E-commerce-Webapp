@@ -168,6 +168,10 @@ public class CustomerController {
         model.addAttribute("customerDTO", new Customer());
         return "registration";
     }
+    @GetMapping("login.htm")
+    public String login() {
+        return "login";
+    }
 
     @PostMapping("registration.htm")
     public String addCustomer(@Valid @ModelAttribute("customerDTO") Customer customerDTO, BindingResult bindingResult) {
@@ -182,7 +186,7 @@ public class CustomerController {
         customerService.create(customerDTO);
         boolean isEmailSent = sendEmailService.sendEmail(customerDTO);
         if(isEmailSent){
-            return "redirect:/customer/verify";
+            return "redirect:/customer/verify.htm";
         }
         else {
             return "registration";
@@ -190,7 +194,7 @@ public class CustomerController {
 
     }
 
-    @GetMapping("/verify.htm")
+    @GetMapping("verify.htm")
     public String verify(Model model) {
         model.addAttribute("customer", new Customer());
         return "verify";
@@ -201,7 +205,7 @@ public class CustomerController {
         if (bindingResult.hasErrors()) {
             Map<String, Object>  modelBind = bindingResult.getModel();
             System.out.println(modelBind);
-            return "registration";
+            return "verify";
         }
         Customer customer1 = customerService.getByMail(customer.getEmail());
         if(customer1==null){
@@ -209,7 +213,7 @@ public class CustomerController {
         } else {
             if(customer1.getCode().equals(customer.getCode())){
                 customerService.updateStatusActivated(customer.getEmail());
-                return "redirect:/customer/shared/home";
+                return "redirect:/customer/home.htm";
             }else {
                 return "404";
             }
@@ -217,6 +221,7 @@ public class CustomerController {
         }
 
     }
+
 
 
 }

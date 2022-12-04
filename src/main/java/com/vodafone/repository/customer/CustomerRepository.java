@@ -65,7 +65,7 @@ public class CustomerRepository implements ICustomerRepository {
             } else {
                 customer.setUserStatus(UserStatus.ACTIVATED);
                 session.update(customer);
-                session.beginTransaction().commit();
+               transaction.commit();
                 return true;
             }
         } catch (HibernateException hibernateException) {
