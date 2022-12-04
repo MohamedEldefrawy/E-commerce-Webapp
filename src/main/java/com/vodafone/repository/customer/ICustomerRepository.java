@@ -10,5 +10,7 @@ import java.util.List;
 public interface ICustomerRepository extends Repository<Customer> {
     boolean resetPassword(String email, String password);
     Customer getByMail(String email);
+
+    Customer getByUserName(String username);
     boolean updateStatusActivated(String email);
 }

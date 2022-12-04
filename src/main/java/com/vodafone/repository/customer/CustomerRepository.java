@@ -24,7 +24,7 @@ public class CustomerRepository implements ICustomerRepository {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             //set customer's default status before verification
-            customer.setCart(new Cart(customer,new ArrayList<>()));
+            customer.setCart(new Cart(customer, new ArrayList<>()));
             session.persist(customer.getCart());
             customer.setUserStatus(UserStatus.DEACTIVATED);
             customer.setRole(Role.Customer);
@@ -56,6 +56,7 @@ public class CustomerRepository implements ICustomerRepository {
         }
 
     }
+
     public boolean updateStatusActivated(String email) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
@@ -65,7 +66,7 @@ public class CustomerRepository implements ICustomerRepository {
             } else {
                 customer.setUserStatus(UserStatus.ACTIVATED);
                 session.update(customer);
-               transaction.commit();
+                transaction.commit();
                 return true;
             }
         } catch (HibernateException hibernateException) {
@@ -109,6 +110,17 @@ public class CustomerRepository implements ICustomerRepository {
         Customer customer = null;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             customer = session.createQuery("SELECT customer from Customer customer where customer.email=: email", Customer.class).setParameter("email", email).getSingleResult();
+        } catch (HibernateException hibernateException) {
+            hibernateException.printStackTrace();
+        }
+        return customer;
+    }
+
+    @Override
+    public Customer getByUserName(String username) {
+        Customer customer = null;
+        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
+            customer = session.createQuery("SELECT customer from Customer customer where customer.userName=: username", Customer.class).setParameter("username", username).getSingleResult();
         } catch (HibernateException hibernateException) {
             hibernateException.printStackTrace();
         }

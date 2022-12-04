@@ -190,10 +190,19 @@ public class CustomerController {
             return "registration";
         }
         System.out.println(customerDTO);
-
         String otp = sendEmailService.getRandom();
         customerDTO.setCode(otp);
         //todo: check for username and email uniqueness
+        if (customerService.getByMail(customerDTO.getEmail()) == null) {
+            System.out.println("Email exists");
+            return "";
+            //todo: display error for not unique email
+        }
+        if (customerService.getByUserName(customerDTO.getUserName()) == null) {
+            System.out.println("Username exists");
+            return "";
+            //todo: display error for not unique username
+        }
         customerService.create(customerDTO);
         if (sendEmailService.sendEmail(customerDTO, EmailType.ACTIVATION, session)) {
 //            HttpSession session = request.getSession();
