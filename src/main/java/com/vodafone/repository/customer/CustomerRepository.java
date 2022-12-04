@@ -18,6 +18,7 @@ public class CustomerRepository implements ICustomerRepository {
     public CustomerRepository(HibernateConfig hibernateConfig) {
         this.hibernateConfig = hibernateConfig;
     }
+
     @Override
     public boolean create(Customer customer) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
@@ -45,6 +46,7 @@ public class CustomerRepository implements ICustomerRepository {
                 return false;
             } else {
                 session.update(updatedCustomer);
+                session.beginTransaction().commit();
                 return true;
             }
         } catch (HibernateException hibernateException) {
@@ -81,11 +83,12 @@ public class CustomerRepository implements ICustomerRepository {
         }
         return customer;
     }
+
     @Override
     public Customer getByMail(String email) {
         Customer customer = null;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            customer = session.createQuery("SELECT customer from Customer customer where customer.email= "+email,Customer.class).uniqueResult();
+            customer = session.createQuery("SELECT customer from Customer customer where customer.email=: email", Customer.class).setParameter("email", email).getSingleResult();
         } catch (HibernateException hibernateException) {
             hibernateException.printStackTrace();
         }
@@ -106,8 +109,7 @@ public class CustomerRepository implements ICustomerRepository {
     public boolean resetPassword(String email, String password) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Customer customer = getByMail(email); //get customer by email
-            if(customer == null)
-            {
+            if (customer == null) {
                 System.out.println("Customer not found in DB");
                 return false;
             }
@@ -116,6 +118,7 @@ public class CustomerRepository implements ICustomerRepository {
             //update customer's status to activated
             customer.setUserStatus(UserStatus.ACTIVATED);
             session.update(customer);
+            session.beginTransaction().commit();
             return true;
         } catch (HibernateException hibernateException) {
             hibernateException.printStackTrace();

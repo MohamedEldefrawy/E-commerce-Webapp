@@ -39,8 +39,10 @@
                             </div>
                         </div>
                         <br/>
-                        <button class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail
-                        </button>
+                        <a href="<c:url value="/customer/products/${product.getId()}/details.htm"/>"
+                           class="btn btn-sm text-dark p-0 m-auto"><i class="fas fa-eye text-primary mr-1"></i>View
+                            Detail
+                        </a>
                         <button class="btn btn-sm text-dark p-0" onclick="addToCart(${product.getId()})"><i
                                 class="fas fa-shopping-cart text-primary mr-1"></i>Add
                             To Cart
