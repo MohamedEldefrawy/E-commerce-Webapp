@@ -164,7 +164,7 @@ public class CustomerController {
 
 
     @GetMapping("registration.htm")
-    public String registration(Model model) {
+    public String getDataFromRegistration(Model model) {
         model.addAttribute("customerDTO", new Customer());
         return "registration";
     }
