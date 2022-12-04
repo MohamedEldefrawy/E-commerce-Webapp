@@ -52,7 +52,7 @@ public class SendEmailService {
             msg.setSubject("User Email Verification");
             msg.setSentDate(new Date());
             // set plain text message
-            msg.setContent("Registered successfully.Please verify your account using this code: " + user.getCode(), "text/html");
+            msg.setContent("Registered successfully.Please verify your email using this code: " + user.getCode(), "text/html");
 
             // sends the e-mail
             Transport.send(msg);
