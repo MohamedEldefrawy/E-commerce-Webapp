@@ -25,13 +25,11 @@ public class Customer extends User {
     @OneToOne
     @JoinColumn(name = "cartId")
     private Cart cart;
-    @Column (nullable = false)
-    private UserStatus userStatus;
     @OneToMany(mappedBy = "customer" ,cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Order> orders;
 
-    public Customer(UserStatus userStatus) {
-        this.userStatus = userStatus;
+    public Customer() {
+        this.userStatus = UserStatus.DEACTIVATED;
         cart = new Cart(this,new ArrayList<>());
     }
 }

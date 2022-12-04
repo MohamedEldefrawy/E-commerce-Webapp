@@ -25,5 +25,7 @@ public abstract class User {
     String email;
     @Column(nullable = false)
     String password;
+    @Column(nullable = false)
+    UserStatus userStatus;
     Role role;
 }
