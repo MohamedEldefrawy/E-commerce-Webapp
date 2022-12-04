@@ -116,7 +116,6 @@ public class SendEmailService {
         Email emailObj = new Email();
         emailObj.setSubject("Activate your email");
         emailObj.setTo(email);
-        //todo: add button to email body
         emailObj.setFrom(from);
         //todo: test email links
         emailObj.setBody("Welcome to Admins' family" +
