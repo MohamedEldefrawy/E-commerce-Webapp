@@ -30,6 +30,9 @@ public class CustomerService {
     public boolean update(Long id, Customer updatedCustomer){
         return customerRepository.update(id,updatedCustomer);
     }
+    public boolean updateStatusActivated(String email){
+        return customerRepository.updateStatusActivated(email);
+    }
     public boolean delete(Long id){
         return customerRepository.delete(id);
     }
