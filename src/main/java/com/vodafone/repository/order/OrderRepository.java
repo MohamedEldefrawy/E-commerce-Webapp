@@ -57,6 +57,9 @@ public class OrderRepository implements IOrderRepository {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
             session.persist(order);
+            //Adds created customer to customer's arrayList
+            order.getCustomer().getOrders().add(order);
+            session.update(order.getCustomer());
             tx.commit();
             return true;
         } catch (HibernateException e) {

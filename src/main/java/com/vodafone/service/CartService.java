@@ -70,7 +70,7 @@ public class CartService {
 
     public int setProductQuantity(Long cartId, Long itemId, int newQuantity){ return cartRepository.setProductQuantity(cartId, itemId, newQuantity); }
 
-    public int incrementProductQuantity(Long cartId, Long itemId){ return cartRepository.incrementProductQuantity(cartId, itemId); }
+    public int incrementProductQuantity(Long cartId, Long productId,int quantity){ return cartRepository.incrementProductQuantity(cartId, productId, quantity); }
 
-    public int decrementProductQuantity(Long cartId, Long itemId){ return cartRepository.decrementProductQuantity(cartId, itemId); }
+    public int decrementProductQuantity(Long cartId, Long productId){ return cartRepository.decrementProductQuantity(cartId, productId); }
 }

@@ -100,10 +100,11 @@ public class CustomerController {
         return null;
     }
 
-    @GetMapping("{customerId}/orders")
-    public String getCustomerOrders(@PathVariable Long customerId) {
+    @GetMapping("/orders.htm")
+    public String getCustomerOrders(Model model,@RequestParam Long customerId) {
         List<Order> orders = orderService.getByCustomerId(customerId);
-        return null;
+        model.addAttribute("orders", orders);
+        return "/customer/shared/orders";
     }
 
     @GetMapping("{customerId}/finalOrder")
@@ -113,11 +114,16 @@ public class CustomerController {
         return null;
     }
 
-    @PostMapping("{customerId}/finalOrder")
-    public String submitFinalOrder(@PathVariable Long customerId) {
+    @PostMapping("/submitOrder.htm")
+    @ResponseBody
+    public String submitFinalOrder(@RequestParam Long customerId) {
         Cart customerCart = customerService.get(customerId).getCart();
         Order submittedOrder = cartService.submitFinalOrder(customerCart.getId());
-        return null;
+        boolean created = orderService.create(submittedOrder);
+        if(created)
+            return "true";
+        //todo redirect to error page
+        return "false";
     }
 
     @GetMapping("showCart.htm")
@@ -200,6 +206,24 @@ public class CustomerController {
         return "verify";
     }
 
+    @PutMapping("/increment")
+    @ResponseBody
+    public String incrementProductQuantity(@RequestParam Long cartId, @RequestParam Long productId) {
+        int newQuantity = cartService.incrementProductQuantity(cartId, productId,1);
+        if (newQuantity>0)
+            return "true";
+        return "false";
+    }
+    @PutMapping("/decrement")
+    @ResponseBody
+    public String decrementProductQuantity(@RequestParam Long cartId, @RequestParam Long productId) {
+        int newQuantity = cartService.decrementProductQuantity(cartId, productId);
+        if (newQuantity>=0)
+            return "true";
+        return "false";
+    }
+
+
     @PostMapping("verify.htm")
     public String verifyCustomer(@Valid @ModelAttribute("customer") Customer customer, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -221,7 +245,6 @@ public class CustomerController {
         }
 
     }
-
 
 
 }
