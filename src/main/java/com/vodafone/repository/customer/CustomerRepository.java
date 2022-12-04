@@ -56,6 +56,25 @@ public class CustomerRepository implements ICustomerRepository {
         }
 
     }
+    public boolean updateStatusActivated(String email) {
+        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Customer customer = getByMail(email);
+            if (customer == null) {
+                return false;
+            } else {
+                customer.setUserStatus(UserStatus.ACTIVATED);
+                session.update(customer);
+                session.beginTransaction().commit();
+                return true;
+            }
+        } catch (HibernateException hibernateException) {
+            hibernateException.printStackTrace();
+            return false;
+        }
+
+    }
+
 
     @Override
     public boolean delete(Long id) {
