@@ -9,8 +9,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +68,14 @@ public class CustomerController {
         return "resetPassword";
     }
 
+
+    @GetMapping("/products/{id}/details.htm")
+    public String viewProductDetails(Model model, @PathVariable Long id) {
+        Product product = this.productService.get(id);
+        model.addAttribute("product", product);
+        return "/customer/product/detail";
+    }
+
     @GetMapping("products/rate")
     public String getProductsByRate(float rate) {
         List<Product> products = productService.getByRate(rate);
@@ -101,7 +107,7 @@ public class CustomerController {
     }
 
     @GetMapping("/orders.htm")
-    public String getCustomerOrders(Model model,@RequestParam Long customerId) {
+    public String getCustomerOrders(Model model, @RequestParam Long customerId) {
         List<Order> orders = orderService.getByCustomerId(customerId);
         model.addAttribute("orders", orders);
         return "/customer/shared/orders";
@@ -120,19 +126,19 @@ public class CustomerController {
         Cart customerCart = customerService.get(customerId).getCart();
         Order submittedOrder = cartService.submitFinalOrder(customerCart.getId());
         boolean created = orderService.create(submittedOrder);
-        if(created)
+        if (created)
             return "true";
         //todo redirect to error page
         return "false";
     }
 
     @GetMapping("showCart.htm")
-    public String showCustomerCart(Model model,@RequestParam Long customerId) {
+    public String showCustomerCart(Model model, @RequestParam Long customerId) {
         Cart customerCart = customerService.get(customerId).getCart();
         List<CartItem> cartItems = customerCart.getItems();
         double totalCartPrice = cartItems.stream().mapToDouble(CartItem::getTotal).sum();
         model.addAttribute("items", cartItems);
-        model.addAttribute("orderTotal",totalCartPrice);
+        model.addAttribute("orderTotal", totalCartPrice);
 
         return "/customer/shared/cart";
     }
@@ -174,6 +180,7 @@ public class CustomerController {
         model.addAttribute("customerDTO", new Customer());
         return "registration";
     }
+
     @GetMapping("login.htm")
     public String login() {
         return "login";
@@ -182,7 +189,7 @@ public class CustomerController {
     @PostMapping("registration.htm")
     public String addCustomer(@Valid @ModelAttribute("customerDTO") Customer customerDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            Map<String, Object>  modelBind = bindingResult.getModel();
+            Map<String, Object> modelBind = bindingResult.getModel();
             System.out.println(modelBind);
             return "registration";
         }
@@ -191,10 +198,9 @@ public class CustomerController {
         customerDTO.setCode(otp);
         customerService.create(customerDTO);
         boolean isEmailSent = sendEmailService.sendEmail(customerDTO);
-        if(isEmailSent){
+        if (isEmailSent) {
             return "redirect:/customer/verify.htm";
-        }
-        else {
+        } else {
             return "registration";
         }
 
@@ -209,16 +215,17 @@ public class CustomerController {
     @PutMapping("/increment")
     @ResponseBody
     public String incrementProductQuantity(@RequestParam Long cartId, @RequestParam Long productId) {
-        int newQuantity = cartService.incrementProductQuantity(cartId, productId,1);
-        if (newQuantity>0)
+        int newQuantity = cartService.incrementProductQuantity(cartId, productId, 1);
+        if (newQuantity > 0)
             return "true";
         return "false";
     }
+
     @PutMapping("/decrement")
     @ResponseBody
     public String decrementProductQuantity(@RequestParam Long cartId, @RequestParam Long productId) {
         int newQuantity = cartService.decrementProductQuantity(cartId, productId);
-        if (newQuantity>=0)
+        if (newQuantity >= 0)
             return "true";
         return "false";
     }
@@ -227,18 +234,18 @@ public class CustomerController {
     @PostMapping("verify.htm")
     public String verifyCustomer(@Valid @ModelAttribute("customer") Customer customer, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            Map<String, Object>  modelBind = bindingResult.getModel();
+            Map<String, Object> modelBind = bindingResult.getModel();
             System.out.println(modelBind);
             return "verify";
         }
         Customer customer1 = customerService.getByMail(customer.getEmail());
-        if(customer1==null){
+        if (customer1 == null) {
             return "404";
         } else {
-            if(customer1.getCode().equals(customer.getCode())){
+            if (customer1.getCode().equals(customer.getCode())) {
                 customerService.updateStatusActivated(customer.getEmail());
                 return "redirect:/customer/home.htm";
-            }else {
+            } else {
                 return "404";
             }
 
