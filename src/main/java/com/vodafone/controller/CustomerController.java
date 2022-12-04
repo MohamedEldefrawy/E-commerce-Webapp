@@ -64,9 +64,21 @@ public class CustomerController {
     }
 
     @GetMapping("reset.htm")
-    public String resetPassword(Model model) {
-        customerService.resetPassword(Objects.requireNonNull(model.getAttribute("email")).toString(), Objects.requireNonNull(model.getAttribute("password")).toString());
-        model.addAttribute("user", new CreateUser());
+    public String resetPasswordLoader(Model model) {
+        model.addAttribute("resetUser", new CreateUser());
+        return "resetPassword";
+    }
+
+    @PostMapping("reset.htm")
+    public String resetPassword(@Valid @ModelAttribute("resetUser") CreateUser user, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            Map<String, Object> modelBind = bindingResult.getModel();
+            System.out.println(modelBind);
+            return "registration";
+        }
+        System.out.println(user);
+        if (customerService.resetPassword(user.getEmail(), user.getPassword()))
+            return "login";
         return "resetPassword";
     }
 
