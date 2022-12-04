@@ -33,12 +33,18 @@
     </div>
     <!-- /.card-header -->
     <!-- form start -->
-    <form:form modelAttribute="customerDTO" class="form-horizontal"  method="post">
+    <form:form  class="form-horizontal" modelAttribute="customer"  method="post">
       <div class="card-body">
-        <div class="form-group row m-auto">
+        <div class="form-group row ">
+          <label for="inputEmail" class="col-sm-3 col-form-label">Email</label>
+          <div class="col-sm-9">
+            <form:input type="email"  cssClass="form-control" id="inputEmail" name="email" placeholder="Email" path="email"/>
+          </div>
+        </div>
+        <div class="form-group row ">
           <label for="inputVerificationCode" class="col-sm-3 col-form-label">Verification Code</label>
-          <div class="col-sm-7">
-            <input type="text"  class="form-control" id="inputVerificationCode" name="verificationCode" placeholder="Verification Code"/>
+          <div class="col-sm-9">
+            <form:input type="text"  cssClass="form-control" id="inputVerificationCode" name="verificationCode" placeholder="Verification Code" path="code"/>
           </div>
         </div>
       </div>

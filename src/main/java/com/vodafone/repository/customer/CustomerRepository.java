@@ -24,9 +24,11 @@ public class CustomerRepository implements ICustomerRepository {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             //set customer's default status before verification
+            customer.setCart(new Cart(customer,new ArrayList<>()));
             session.persist(customer.getCart());
             customer.setUserStatus(UserStatus.DEACTIVATED);
             customer.setRole(Role.Customer);
+
             session.persist(customer);
             transaction.commit();
             return true;
@@ -54,6 +56,25 @@ public class CustomerRepository implements ICustomerRepository {
         }
 
     }
+    public boolean updateStatusActivated(String email) {
+        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Customer customer = getByMail(email);
+            if (customer == null) {
+                return false;
+            } else {
+                customer.setUserStatus(UserStatus.ACTIVATED);
+                session.update(customer);
+               transaction.commit();
+                return true;
+            }
+        } catch (HibernateException hibernateException) {
+            hibernateException.printStackTrace();
+            return false;
+        }
+
+    }
+
 
     @Override
     public boolean delete(Long id) {

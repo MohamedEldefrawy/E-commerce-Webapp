@@ -56,7 +56,9 @@
                     <!-- /.card-body -->
                     <div class="card-footer d-flex justify-content-center mb-3 bg-white">
                         <button type="submit" class="btn btn-info mr-2 w-25 ">Sign in</button>
-                        <button type="submit" class="btn btn-default w-25 ">Sign Up</button>
+                        <button type="button" class="btn btn-default w-25 ">
+                            <a href="<c:url value="registration.htm" />" >Sign Up</a>
+                        </button>
                     </div>
                     <!-- /.card-footer -->
                 </form>
@@ -75,11 +77,5 @@
         <script src="<c:url value="/resources/static/js/adminlte.min.js"/>"></script>
         <!-- AdminLTE for demo purposes -->
         <script src="<c:url value="/resources/static/js/demo.js"/>"></script>
-        <!-- Page specific script -->
-        <script>
-            $(function () {
-                bsCustomFileInput.init();
-            });
-        </script>
     </body>
 </html>

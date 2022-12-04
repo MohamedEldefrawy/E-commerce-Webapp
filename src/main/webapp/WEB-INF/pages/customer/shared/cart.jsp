@@ -78,13 +78,13 @@
                             <td class="align-middle">
                                 <div class="input-group quantity mx-auto" style="width: 100px;">
                                     <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-minus" >
+                                        <button class="btn btn-sm btn-primary btn-minus" onclick="decrementQuantity(${item.getCart().getId()},${item.getProduct().getId()})">
                                             <i class="fa fa-minus"></i>
                                         </button>
                                     </div>
                                     <input type="text" class="form-control form-control-sm bg-secondary text-center" style ="height: 25px;"value="${item.getQuantity()}">
                                     <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-plus">
+                                        <button class="btn btn-sm btn-primary btn-plus" onclick="incrementQuantity(${item.getCart().getId()},${item.getProduct().getId()})" >
                                             <i class="fa fa-plus"></i>
                                         </button>
                                     </div>
@@ -118,7 +118,7 @@
                         <h5 class="font-weight-bold">Total</h5>
                         <h5 class="font-weight-bold">$${orderTotal}</h5>
                     </div>
-                    <button class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</button>
+                    <button onclick="checkout()" class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</button>
                 </div>
             </div>
         </div>
@@ -151,9 +151,9 @@
 <script src="<c:url value="/resources/static/js/main.js" />"></script>
 </body>
 <script>
-    function deleteRow(id) {
-        let row = document.getElementById(id);
-            fetch("?customerId=2&itemId=" + id, {
+    function deleteRow(itemId) {
+        let row = document.getElementById(itemId);
+            fetch("?customerId=2&itemId=" + itemId, {
                 method: "DELETE",
                 headers: {
                     'Accept': '*/*'
@@ -161,12 +161,62 @@
             }).then(response => response.json()).then(data => {
                 if (data) {
                     row.remove();
+                    window.location.reload();
                 } else
                     alert("Something Wrong!!")
             }).catch((reason) => {
                 alert(reason);
             })
     }
+    function incrementQuantity(cartId,productId) {
+        fetch("./increment/?cartId="+cartId+"&productId=" + productId, {
+            method: "PUT",
+            headers: {
+                'Accept': '*/*'
+            }
+        }).then(response => response.json()).then(data => {
+            if (data) {
+                window.location.reload();
+            } else
+                alert("Something Wrong!!")
+        }).catch((reason) => {
+            alert(reason);
+        })
+    }
+    function decrementQuantity(cartId,productId) {
+        fetch("./decrement/?cartId="+cartId+"&productId=" + productId, {
+            method: "PUT",
+            headers: {
+                'Accept': '*/*'
+            }
+        }).then(response => response.json()).then(data => {
+            if (data) {
+                window.location.reload();
+            } else
+                alert("Something Wrong!!")
+        }).catch((reason) => {
+            alert(reason);
+        })
+    }
+    function checkout() {
+        let result = confirm("Are you sure?");
+        if(result) {
+            fetch("./submitOrder.htm?customerId=2", {
+                method: "POST",
+                headers: {
+                    'Accept': '*/*'
+                }
+            }).then(response => response.json()).then(data => {
+                if (data) {
+                    window.location.reload()
+                } else
+                    alert("Something Wrong!!")
+            }).catch((reason) => {
+                alert(reason);
+            })
+        }
+    }
+
 </script>
 
 </html>

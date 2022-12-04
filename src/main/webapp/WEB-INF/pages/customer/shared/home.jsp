@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="rapid" uri="http://www.rapid-framework.org.cn/rapid" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -35,13 +36,16 @@
 <div class="container-fluid">
 
 </div>
-<!-- Navbar Start -->
-<jsp:include page="navbar.jsp"/>
-<!-- Navbar End -->
+<rapid:block name="content">
+    <!-- Navbar Start -->
+    <jsp:include page="navbar.jsp"/>
+    <!-- Navbar End -->
 
-<!-- Products Start -->
-<jsp:include page="products.jsp"/>
-<!-- Products End -->
+    <!-- Products Start -->
+    <jsp:include page="products.jsp"/>
+    <!-- Products End -->
+</rapid:block>
+
 
 <!-- Footer Start -->
 <jsp:include page="footer.jsp"/>
