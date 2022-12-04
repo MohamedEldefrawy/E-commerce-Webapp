@@ -125,8 +125,11 @@ public class CartRepository implements ICartRepository {
             //check if it's null so we can't operate
             if (cart == null)
                 return false;
+            //delete all cart items from database
+            cart.getItems().stream().forEach(i->session.delete(i));
+            //delete cart object
             cart.getItems().clear();
-            session.delete(cart);
+            session.update(cart);
             transaction.commit();
             session.close();
         } catch (HibernateException e) {
@@ -166,6 +169,8 @@ public class CartRepository implements ICartRepository {
                 total += (float) (orderItem.getProduct().getPrice() * quantity);
                 //decrement product inStock variable
                 cartItem.getProduct().setInStock(availableInStock - quantity);
+                //add order to OrderItems
+                orderItems.add(orderItem);
             } else {
                 //Todo("Handle unavailable product exception");
                 System.out.println("Product hasn't enough instances in stock");
