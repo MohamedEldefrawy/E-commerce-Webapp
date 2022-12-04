@@ -72,5 +72,5 @@ public class CartService {
 
     public int incrementProductQuantity(Long cartId, Long productId,int quantity){ return cartRepository.incrementProductQuantity(cartId, productId, quantity); }
 
-    public int decrementProductQuantity(Long cartId, Long itemId){ return cartRepository.decrementProductQuantity(cartId, itemId); }
+    public int decrementProductQuantity(Long cartId, Long productId){ return cartRepository.decrementProductQuantity(cartId, productId); }
 }

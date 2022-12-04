@@ -200,4 +200,20 @@ public class CustomerController {
         //TODO: how to integrate otp part
         return "verify";
     }
+    @PutMapping("/increment")
+    @ResponseBody
+    public String incrementProductQuantity(@RequestParam Long cartId, @RequestParam Long productId) {
+        int newQuantity = cartService.incrementProductQuantity(cartId, productId,1);
+        if (newQuantity>0)
+            return "true";
+        return "false";
+    }
+    @PutMapping("/decrement")
+    @ResponseBody
+    public String decrementProductQuantity(@RequestParam Long cartId, @RequestParam Long productId) {
+        int newQuantity = cartService.decrementProductQuantity(cartId, productId);
+        if (newQuantity>=0)
+            return "true";
+        return "false";
+    }
 }

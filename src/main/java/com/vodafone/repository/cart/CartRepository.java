@@ -163,7 +163,7 @@ public class CartRepository implements ICartRepository {
                 orderItem.setQuantity(quantity);
                 orderItem.setProduct(cartItem.getProduct());
                 //add sub-total
-                total = (float) (orderItem.getProduct().getPrice() * quantity);
+                total += (float) (orderItem.getProduct().getPrice() * quantity);
                 //decrement product inStock variable
                 cartItem.getProduct().setInStock(availableInStock - quantity);
             } else {
@@ -233,23 +233,20 @@ public class CartRepository implements ICartRepository {
 
     @Override
     public int incrementProductQuantity(Long cartId, Long productId,int quantity) {
-        System.out.println("incrementing");
         try (Session session = config.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             Cart cart = get(cartId);
             int newQuantity = 0;
             CartItem foundItem=null;
             for (CartItem item : cart.getItems()) {
-                System.out.println("found");
                 if (item.getProduct().getId().equals(productId)) {
                     newQuantity = item.getQuantity() + quantity;
                     item.setQuantity(newQuantity);
                     foundItem = item;
-                    System.out.println("new quanity: "+quantity);
                 }
             }
             session.update(cart); //update cart
-            session.update(foundItem);
+            session.update(foundItem); //updates CartItem
             transaction.commit();
             session.close();
             return newQuantity;
@@ -260,19 +257,22 @@ public class CartRepository implements ICartRepository {
     }
 
     @Override
-    public int decrementProductQuantity(Long cartId, Long itemId) {
+    public int decrementProductQuantity(Long cartId, Long productId) {
         try (Session session = config.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             Cart cart = get(cartId);
+            CartItem foundItem=null;
             int newQuantity = 0;
             for (CartItem item : cart.getItems()) {
-                if (item.getId().equals(itemId)) {
+                if (item.getProduct().getId().equals(productId)) {
                     newQuantity = item.getQuantity() - 1;
-                    if (newQuantity < 0) //to prevent negative quantities
+                    if (newQuantity >= 0) //to prevent negative quantities
                         item.setQuantity(newQuantity);
+                    foundItem = item;
                 }
             }
             session.update(cart); //update cart
+            session.update(foundItem); //updates cartItem
             transaction.commit();
             session.close();
             return newQuantity;

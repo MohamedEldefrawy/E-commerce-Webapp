@@ -24,5 +24,5 @@ public interface ICartRepository extends Repository<Cart> {
 
     int incrementProductQuantity(Long cartId, Long productId,int quantity);
 
-    int decrementProductQuantity(Long cartId, Long itemId);
+    int decrementProductQuantity(Long cartId, Long productId);
 }
