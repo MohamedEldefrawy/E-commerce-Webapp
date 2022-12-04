@@ -164,13 +164,13 @@ public class CustomerController {
 
 
     @GetMapping("registration.htm")
-    public String getDataFromRegistration(Model model) {
+    public String registration(Model model) {
         model.addAttribute("customerDTO", new Customer());
         return "registration";
     }
 
     @PostMapping("registration.htm")
-    public String register(@Valid @ModelAttribute("customerDTO") Customer customerDTO, BindingResult bindingResult,
+    public String addCustomer(@Valid @ModelAttribute("customerDTO") Customer customerDTO, BindingResult bindingResult,
                           HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
             Map<String, Object>  modelBind = bindingResult.getModel();
