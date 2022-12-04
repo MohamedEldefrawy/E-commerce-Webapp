@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
+
 @Controller
 @RequestMapping("/users")
 @NoArgsConstructor
@@ -20,8 +22,10 @@ public class UserController {
     AdminService adminService;
 
     @GetMapping("login.htm")
-    public String login(String email, String password) {
+    public String login(String email, String password, HttpSession session) {
         LoginDTO loginDTO = userService.login(email, password);
+        session.setAttribute("email",email);
+        session.setAttribute("password",password);
         if (loginDTO == null) //exception occurred
         {
             System.out.println("Error occurred while logging in....");
@@ -30,18 +34,20 @@ public class UserController {
             if (loginDTO.getStatus() == UserStatus.ADMIN && admin.isFirstLogin()) { //checks first-login flag
                 //todo: send email with new generated password
                 adminService.setFirstLoginFlag(admin.getId()); //set flag to false
-                return "redirect:/resetPassword.htm";
+                return "redirect:/setAdminPassword.htm";
             } else if (loginDTO.getStatus() == UserStatus.ADMIN && loginDTO.isCredentialsValid()) {
-                //todo: redirect to admin panel
+                return "redirect:/products.htm";
             } else if (loginDTO.getStatus() == UserStatus.ACTIVATED && loginDTO.isCredentialsValid()) {
                 return "redirect:/home.htm";
             }
+            //todo: put below code into switch
             if ((loginDTO.getStatus() == UserStatus.ADMIN || loginDTO.getStatus() == UserStatus.ACTIVATED) && !loginDTO.isCredentialsValid()) {
                 //todo: display 'incorrect email or password is entered' message
+                System.out.println("Wrong Credentials!");
             } else if (loginDTO.getStatus() == UserStatus.SUSPENDED) {
                 return "redirect:/resetPassword.htm";
             } else if (loginDTO.getStatus() == UserStatus.DEACTIVATED) {
-                //todo: redirect to verify email page
+                return "redirect:/verify.htm";
             } else if (loginDTO.getStatus() == UserStatus.NOT_REGISTERED) {
                 return "redirect:/registration.htm";
             }
