@@ -26,6 +26,7 @@ public class CustomerRepository implements ICustomerRepository {
             session.persist(customer.getCart());
             customer.setUserStatus(UserStatus.DEACTIVATED);
             customer.setRole(Role.Customer);
+            customer.setCart(new Cart(customer,new ArrayList<>()));
             session.persist(customer);
             transaction.commit();
             return true;
