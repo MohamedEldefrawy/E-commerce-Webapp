@@ -134,12 +134,13 @@ public class CustomerController {
         return null;
     }
 
-    @PostMapping("{customerId}/finalOrder")
-    public String submitFinalOrder(@PathVariable Long customerId) {
+    @PostMapping("/submitOrder.htm")
+    @ResponseBody
+    public String submitFinalOrder(@RequestParam Long customerId) {
         Cart customerCart = customerService.get(customerId).getCart();
         Order submittedOrder = cartService.submitFinalOrder(customerCart.getId());
         boolean created = orderService.create(submittedOrder);
-        if (created)
+        if(created)
             return "true";
         //todo redirect to error page
         return "false";
