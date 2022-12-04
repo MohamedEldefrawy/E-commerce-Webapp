@@ -182,7 +182,7 @@ public class CustomerController {
         customerService.create(customerDTO);
         boolean isEmailSent = sendEmailService.sendEmail(customerDTO);
         if(isEmailSent){
-            return "redirect:/customer/verify";
+            return "redirect:/customer/verify.htm";
         }
         else {
             return "registration";
@@ -190,7 +190,7 @@ public class CustomerController {
 
     }
 
-    @GetMapping("/verify.htm")
+    @GetMapping("verify.htm")
     public String verify(Model model) {
         model.addAttribute("customer", new Customer());
         return "verify";
@@ -209,7 +209,7 @@ public class CustomerController {
         } else {
             if(customer1.getCode().equals(customer.getCode())){
                 customerService.updateStatusActivated(customer.getEmail());
-                return "redirect:/customer/shared/home";
+                return "redirect:/customer/home.htm";
             }else {
                 return "404";
             }
