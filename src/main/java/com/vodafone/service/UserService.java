@@ -19,24 +19,4 @@ public class UserService {
     public LoginDTO login(String email, String password) {
         return userRepository.login(email,password);
     }
-
-    public boolean create(User user) {
-        return userRepository.create(user);
-    }
-
-    public boolean update(Long id, User updatedEntity) {
-        return userRepository.update(id, updatedEntity);
-    }
-
-    public boolean delete(Long id) {
-        return userRepository.delete(id);
-    }
-
-    public User get(Long id) {
-        return userRepository.get(id);
-    }
-
-    public List<User> getAll() {
-        return userRepository.getAll();
-    }
 }

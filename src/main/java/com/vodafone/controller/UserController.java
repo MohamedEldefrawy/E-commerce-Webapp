@@ -60,34 +60,4 @@ public class UserController {
         }
         return "login";
     }
-
-    @PostMapping
-    public String create(@RequestBody User user) {
-        userService.create(user);
-        return null;
-    }
-
-    @PutMapping("{id}")
-    public String update(@PathVariable Long id, @RequestBody User updatedEntity) {
-        userService.update(id, updatedEntity);
-        return null;
-    }
-
-    @DeleteMapping("{id}")
-    public String delete(@PathVariable Long id) {
-        userService.delete(id);
-        return null;
-    }
-
-    @GetMapping("{id}")
-    public String get(@PathVariable Long id) {
-        userService.get(id);
-        return null;
-    }
-
-    @GetMapping
-    public String getAll() {
-        userService.getAll();
-        return null;
-    }
 }
