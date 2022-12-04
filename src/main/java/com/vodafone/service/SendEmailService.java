@@ -57,8 +57,7 @@ public class SendEmailService {
                     break;
 
                 case SET_ADMIN_PASSWORD:
-                    //todo: save generated password in session and fetch it here
-//                    emailObj = sendAdminResetMail(user.getEmail(),);
+                    emailObj = sendAdminResetMail(user.getEmail(), user.getPassword());
                     break;
             }
             // creates a new e-mail message
