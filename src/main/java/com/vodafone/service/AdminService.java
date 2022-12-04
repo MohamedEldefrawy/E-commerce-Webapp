@@ -15,27 +15,35 @@ public class AdminService {
         this.adminRepository = adminRepository;
     }
 
-    public List<Admin> getAll(){
+    public List<Admin> getAll() {
         return adminRepository.getAll();
     }
 
-    public Admin get(Long id){
+    public Admin get(Long id) {
         return adminRepository.get(id);
     }
 
-    public boolean delete(Long id){
+    public boolean delete(Long id) {
         return adminRepository.delete(id);
     }
 
-    public boolean create(Admin admin){
+    public boolean create(Admin admin) {
         return adminRepository.create(admin);
     }
 
-    public boolean update(Long id, Admin admin){
-        return adminRepository.update(id,admin);
+    public boolean update(Long id, Admin admin) {
+        return adminRepository.update(id, admin);
     }
 
-    public boolean updatePassword(Long id, String newPassword){return adminRepository.updatePassword(id,newPassword);}
+    public boolean updatePassword(Long id, String newPassword) {
+        return adminRepository.updatePassword(id, newPassword);
+    }
 
-    public void setFirstLoginFlag(Long id){ adminRepository.setFirstLoginFlag(id); }
+    public void setFirstLoginFlag(Long id) {
+        adminRepository.setFirstLoginFlag(id);
+    }
+
+    public Admin getByEmail(String email) {
+        return adminRepository.getByEmail(email);
+    }
 }
