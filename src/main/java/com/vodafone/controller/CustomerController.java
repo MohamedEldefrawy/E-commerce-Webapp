@@ -168,6 +168,10 @@ public class CustomerController {
         model.addAttribute("customerDTO", new Customer());
         return "registration";
     }
+    @GetMapping("login.htm")
+    public String login() {
+        return "login";
+    }
 
     @PostMapping("registration.htm")
     public String addCustomer(@Valid @ModelAttribute("customerDTO") Customer customerDTO, BindingResult bindingResult) {
@@ -217,6 +221,7 @@ public class CustomerController {
         }
 
     }
+
 
 
 }
