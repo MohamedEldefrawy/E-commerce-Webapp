@@ -14,13 +14,14 @@ public class CustomerService {
 
     public CustomerService(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
-        Customer customer = new Customer(UserStatus.ACTIVATED);
+        /*Customer customer = new Customer(UserStatus.ACTIVATED);
         customer.setEmail("mi@gmail.com");
         customer.setUserName("mi");
         customer.setRole(Role.Customer);
         customer.setPassword("1234");
-        customerRepository.create(customer);
+        customerRepository.create(customer);*/
     }
+
 
     public boolean create(Customer customer){
         return customerRepository.create(customer);
