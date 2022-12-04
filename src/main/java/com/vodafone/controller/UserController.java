@@ -30,6 +30,7 @@ public class UserController {
         {
             System.out.println("Error occurred while logging in....");
         } else {
+            session.setAttribute("id",loginDTO.getUserId());
             Admin admin = (Admin) userService.get(loginDTO.getUserId());
             if (loginDTO.getStatus() == UserStatus.ADMIN && admin.isFirstLogin()) { //checks first-login flag
                 //todo: send email with new generated password
