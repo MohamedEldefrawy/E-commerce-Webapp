@@ -64,29 +64,10 @@ public class CustomerController {
     }
 
     @GetMapping("reset.htm")
-    public String resetPasswordLoader(Model model) {
-        model.addAttribute("resetUser", new CreateUser());
+    public String resetPassword(Model model) {
+        customerService.resetPassword(Objects.requireNonNull(model.getAttribute("email")).toString(), Objects.requireNonNull(model.getAttribute("password")).toString());
+        model.addAttribute("user", new CreateUser());
         return "resetPassword";
-    }
-
-    @PostMapping("reset.htm")
-    public String resetPassword(@Valid @ModelAttribute("resetUser") CreateUser user, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            Map<String, Object> modelBind = bindingResult.getModel();
-            System.out.println(modelBind);
-            return "registration";
-        }
-        System.out.println(user);
-        if (customerService.resetPassword(user.getEmail(), user.getPassword()))
-            return "login";
-        return "resetPassword";
-    }
-
-    @GetMapping("/products/{id}/details.htm")
-    public String viewProductDetails(Model model, @PathVariable Long id) {
-        Product product = this.productService.get(id);
-        model.addAttribute("product", product);
-        return "/customer/product/detail";
     }
 
     @GetMapping("products/rate")
@@ -140,12 +121,12 @@ public class CustomerController {
     }
 
     @GetMapping("showCart.htm")
-    public String showCustomerCart(Model model, @RequestParam Long customerId) {
+    public String showCustomerCart(Model model,@RequestParam Long customerId) {
         Cart customerCart = customerService.get(customerId).getCart();
         List<CartItem> cartItems = customerCart.getItems();
         double totalCartPrice = cartItems.stream().mapToDouble(CartItem::getTotal).sum();
         model.addAttribute("items", cartItems);
-        model.addAttribute("orderTotal", totalCartPrice);
+        model.addAttribute("orderTotal",totalCartPrice);
 
         return "/customer/shared/cart";
     }
@@ -189,25 +170,21 @@ public class CustomerController {
     }
 
     @PostMapping("registration.htm")
-    public String register(@Valid @ModelAttribute("customerDTO") Customer customerDTO, BindingResult bindingResult,
-                           HttpServletRequest request) {
+    public String addCustomer(@Valid @ModelAttribute("customerDTO") Customer customerDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            Map<String, Object> modelBind = bindingResult.getModel();
+            Map<String, Object>  modelBind = bindingResult.getModel();
             System.out.println(modelBind);
             return "registration";
         }
         System.out.println(customerDTO);
-
         String otp = sendEmailService.getRandom();
         customerDTO.setCode(otp);
         customerService.create(customerDTO);
-        boolean test = sendEmailService.sendEmail(customerDTO);
-        if (test) {
-            HttpSession session = request.getSession();
-            session.setAttribute("verificationCode", customerDTO);
-            System.out.println(session);
-            return "redirect:/customer/verify.htm";
-        } else {
+        boolean isEmailSent = sendEmailService.sendEmail(customerDTO);
+        if(isEmailSent){
+            return "redirect:/customer/verify";
+        }
+        else {
             return "registration";
         }
 
@@ -215,7 +192,31 @@ public class CustomerController {
 
     @GetMapping("/verify.htm")
     public String verify(Model model) {
-        //TODO: how to integrate otp part
+        model.addAttribute("customer", new Customer());
         return "verify";
     }
+
+    @PostMapping("verify.htm")
+    public String verifyCustomer(@Valid @ModelAttribute("customer") Customer customer, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            Map<String, Object>  modelBind = bindingResult.getModel();
+            System.out.println(modelBind);
+            return "registration";
+        }
+        Customer customer1 = customerService.getByMail(customer.getEmail());
+        if(customer1==null){
+            return "404";
+        } else {
+            if(customer1.getCode().equals(customer.getCode())){
+                customerService.updateStatusActivated(customer.getEmail());
+                return "redirect:/customer/shared/home";
+            }else {
+                return "404";
+            }
+
+        }
+
+    }
+
+
 }
