@@ -107,10 +107,11 @@ public class CustomerController {
         return null;
     }
 
-    @GetMapping("{customerId}/orders")
-    public String getCustomerOrders(@PathVariable Long customerId) {
+    @GetMapping("/orders.htm")
+    public String getCustomerOrders(Model model,@RequestParam Long customerId) {
         List<Order> orders = orderService.getByCustomerId(customerId);
-        return null;
+        model.addAttribute("orders", orders);
+        return "/customer/shared/orders";
     }
 
     @GetMapping("{customerId}/finalOrder")
