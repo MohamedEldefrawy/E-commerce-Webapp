@@ -163,8 +163,8 @@ public class CartRepository implements ICartRepository {
             int availableInStock = cartItem.getProduct().getInStock();
             if (quantity <= availableInStock) {
                 //set product in Order
-                orderItem.setQuantity(quantity);
                 orderItem.setProduct(cartItem.getProduct());
+                orderItem.setQuantity(quantity);
                 //add sub-total
                 total += (float) (orderItem.getProduct().getPrice() * quantity);
                 //decrement product inStock variable
