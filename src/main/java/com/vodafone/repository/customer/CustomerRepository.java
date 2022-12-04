@@ -125,6 +125,8 @@ public class CustomerRepository implements ICustomerRepository {
         }
     }
 
+    //Todo: encapsulate below methods into another service i.e. EmailService to be called in CustomerController
+
     @Override
     public Email requestResetPassword(String email) {
         Email emailObj = new Email();

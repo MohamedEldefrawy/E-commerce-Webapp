@@ -183,7 +183,7 @@ public class CustomerController {
 
     @PostMapping("registration.htm")
     public String register(@Valid @ModelAttribute("customerDTO") Customer customerDTO, BindingResult bindingResult,
-                           HttpServletRequest request) {
+                           HttpServletRequest request, HttpSession session) {
         if (bindingResult.hasErrors()) {
             Map<String, Object> modelBind = bindingResult.getModel();
             System.out.println(modelBind);
@@ -196,8 +196,11 @@ public class CustomerController {
         customerService.create(customerDTO);
         boolean test = sendEmailService.sendEmail(customerDTO);
         if (test) {
-            HttpSession session = request.getSession();
-            session.setAttribute("verificationCode", customerDTO);
+//            HttpSession session = request.getSession();
+            session.setAttribute("email", customerDTO.getEmail());
+            session.setAttribute("password", customerDTO.getPassword());
+            session.setAttribute("userName", customerDTO.getUserName());
+            session.setAttribute("verificationCode", otp);
             System.out.println(session);
             return "redirect:/customer/verify.htm";
         } else {
