@@ -118,7 +118,7 @@
                         <h5 class="font-weight-bold">Total</h5>
                         <h5 class="font-weight-bold">$${orderTotal}</h5>
                     </div>
-                    <button class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</button>
+                    <button onclick="checkout()" class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</button>
                 </div>
             </div>
         </div>
@@ -151,9 +151,9 @@
 <script src="<c:url value="/resources/static/js/main.js" />"></script>
 </body>
 <script>
-    function deleteRow(id) {
-        let row = document.getElementById(id);
-            fetch("?customerId=2&itemId=" + id, {
+    function deleteRow(itemId) {
+        let row = document.getElementById(itemId);
+            fetch("?customerId=2&itemId=" + itemId, {
                 method: "DELETE",
                 headers: {
                     'Accept': '*/*'
@@ -198,6 +198,25 @@
             alert(reason);
         })
     }
+    function checkout() {
+        let result = confirm("Are you sure?");
+        if(result) {
+            fetch("./submitOrder.htm?customerId=2", {
+                method: "POST",
+                headers: {
+                    'Accept': '*/*'
+                }
+            }).then(response => response.json()).then(data => {
+                if (data) {
+                    window.location.reload()
+                } else
+                    alert("Something Wrong!!")
+            }).catch((reason) => {
+                alert(reason);
+            })
+        }
+    }
+
 </script>
 
 </html>
