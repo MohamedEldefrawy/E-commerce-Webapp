@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 @AllArgsConstructor
@@ -179,13 +180,26 @@ public class CartRepository implements ICartRepository {
     @Override
     public boolean addItem(Long cartId, CartItem item) {
         try (Session session = config.getSessionFactory().openSession()) {
-            Transaction transaction = session.beginTransaction();
-            session.persist(item);
             Cart cart = get(cartId);
-            cart.getItems().add(item); //add item to cart list
-            session.update(cart); //update cart
-            transaction.commit();
-            session.close();
+            List<CartItem> items = cart.getItems();
+            //checks if item is already in cart then increments quantity
+            List<CartItem> matchingProduct = items.stream()
+                    .filter(i->i.getProduct().getId().equals(item.getProduct().getId()))
+                    .collect(Collectors.toList());
+            if(!matchingProduct.isEmpty()){
+                int newQuantity = incrementProductQuantity(cartId,item.getProduct().getId(),item.getQuantity());
+                if(newQuantity>0)
+                    return true;
+                return false;
+            }
+            else {
+                Transaction transaction = session.beginTransaction();
+                session.persist(item);
+                items.add(item); //add item to cart list
+                session.update(cart); //update cart
+                transaction.commit();
+                session.close();
+            }
         } catch (HibernateException e) {
             e.printStackTrace();
             return false;
@@ -218,18 +232,24 @@ public class CartRepository implements ICartRepository {
     }
 
     @Override
-    public int incrementProductQuantity(Long cartId, Long itemId) {
+    public int incrementProductQuantity(Long cartId, Long productId,int quantity) {
+        System.out.println("incrementing");
         try (Session session = config.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             Cart cart = get(cartId);
             int newQuantity = 0;
+            CartItem foundItem=null;
             for (CartItem item : cart.getItems()) {
-                if (item.getId().equals(itemId)) {
-                    newQuantity = item.getQuantity() + 1;
+                System.out.println("found");
+                if (item.getProduct().getId().equals(productId)) {
+                    newQuantity = item.getQuantity() + quantity;
                     item.setQuantity(newQuantity);
+                    foundItem = item;
+                    System.out.println("new quanity: "+quantity);
                 }
             }
             session.update(cart); //update cart
+            session.update(foundItem);
             transaction.commit();
             session.close();
             return newQuantity;

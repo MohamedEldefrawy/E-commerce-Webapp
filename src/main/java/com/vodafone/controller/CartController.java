@@ -92,8 +92,8 @@ public class CartController {
     }
 
     @PutMapping("{cartId}/{itemId}/increment")
-    public String incrementProductQuantity(@PathVariable Long cartId, @PathVariable Long itemId) {
-        cartService.incrementProductQuantity(cartId, itemId);
+    public String incrementProductQuantity(@PathVariable Long cartId, @PathVariable Long productId) {
+        cartService.incrementProductQuantity(cartId, productId,1);
         return null;
     }
 

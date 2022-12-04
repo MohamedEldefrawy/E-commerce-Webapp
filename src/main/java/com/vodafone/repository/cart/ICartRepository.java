@@ -22,7 +22,7 @@ public interface ICartRepository extends Repository<Cart> {
 
     int setProductQuantity(Long cartId, Long itemId, int newQuantity);
 
-    int incrementProductQuantity(Long cartId, Long itemId);
+    int incrementProductQuantity(Long cartId, Long productId,int quantity);
 
     int decrementProductQuantity(Long cartId, Long itemId);
 }
