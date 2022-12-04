@@ -208,6 +208,7 @@ public class CustomerController {
             return "404";
         } else {
             if(customer1.getCode().equals(customer.getCode())){
+                customerService.updateStatusActivated(customer.getEmail());
                 return "redirect:/customer/shared/home";
             }else {
                 return "404";
