@@ -234,11 +234,9 @@ public class AdminController {
             return "/{id}/resetPassword.htm";
         }
         if (adminService.updatePassword(id, newPassword)) {
-            //todo forward to admin home page
-            return null;
+            return "redirect:/products";
         }
-        //todo forward to admin home page
-        return null;
+        return "redirect:/login";
     }
 
     @PostMapping("/updateAdmin.htm")
