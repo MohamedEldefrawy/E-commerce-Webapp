@@ -11,7 +11,8 @@
     <title>Reset Password</title>
 
     <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet"  href="<c:url value="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback" />">
+    <link rel="stylesheet"
+          href="<c:url value="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback" />">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="<c:url value="/resources/static/plugins/fontawesome-free/css/all.min.css" />">
     <!-- Theme style -->
@@ -26,14 +27,16 @@
         </div>
         <!-- /.card-header -->
         <!-- form start -->
-        <form:form class="form-horizonta" method="post">
+        <form:form class="form-horizontal" method="post" modelAttribute="resetUser">
             <div class="card-body">
-                <div class="form-group row">
-                    <label for="inputPassword3" class="col-sm-3 col-form-label">Password</label>
-                    <div class="col-sm-9">
-                        <input type="password" class="form-control" id="inputPassword3" placeholder="Password">
+                    <label for="inputEmail" class="col-sm-3 col-form-label">Email</label>
+                    <div class="form-group row">
+                        <form:input type="email" class="form-control" id="inputEmail" placeholder="Enter your email" path="email"/>
                     </div>
-                </div>
+                    <label for="inputPassword3" class="col-sm-3 col-form-label">Password</label>
+                    <div class="form-group row">
+                        <form:input type="password" class="form-control" id="inputPassword3" placeholder="Password" path="password"/>
+                    </div>
             </div>
             <!-- /.card-body -->
             <div class="card-footer bg-white ">
