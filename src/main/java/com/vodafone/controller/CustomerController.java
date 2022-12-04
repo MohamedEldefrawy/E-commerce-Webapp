@@ -239,7 +239,7 @@ public class CustomerController {
 
     @GetMapping("/verify.htm")
     public String verify(Model model) {
-        //TODO: how to integrate otp part
+        model.addAttribute("customer", new Customer());
         return "verify";
     }
 
