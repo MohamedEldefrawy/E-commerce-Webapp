@@ -10,8 +10,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Setter @Getter
-@NoArgsConstructor @AllArgsConstructor
+@Setter @Getter @AllArgsConstructor
 @Entity
 @Table ( name = "customers")
 public class Customer extends User {

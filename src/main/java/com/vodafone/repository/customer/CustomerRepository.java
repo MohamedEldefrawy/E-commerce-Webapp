@@ -145,38 +145,4 @@ public class CustomerRepository implements ICustomerRepository {
             return false;
         }
     }
-
-    //Todo: encapsulate below methods into another service i.e. EmailService to be called in CustomerController
-
-    @Override
-    public Email requestResetPassword(String email) {
-        Email emailObj = new Email();
-        emailObj.setSubject("Password reset");
-        emailObj.setTo(email);
-        //todo: change from to website_name@ecommerce.com
-        //todo: add button to email body
-        emailObj.setFrom("Temp");
-        emailObj.setBody("Dear customer," +
-                "\nForget your password?" +
-                "\nWe received a request to reset your password." +
-                "\nClick on below button to redirect you to reset password page.");
-        //todo: call resetPassword after user entered a new password
-        return emailObj;
-    }
-
-    @Override
-    public Email sendActivationEmail(String email, String OTP) {
-        Email emailObj = new Email();
-        emailObj.setSubject("Activate your email");
-        emailObj.setTo(email);
-        //todo: change from to website_name@ecommerce.com
-        //todo: add button to email body
-        emailObj.setFrom("Temp");
-        emailObj.setBody("Dear customer," +
-                "\nWe are happy that you decided to use our service." +
-                "\nYou could use below code to verify your account." +
-                "\n" + OTP +
-                "\nClick on below button to redirect to verification page.");
-        return emailObj;
-    }
 }
