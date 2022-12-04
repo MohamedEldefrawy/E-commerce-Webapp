@@ -46,7 +46,7 @@
                             <div class="nav-item dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
                                 <div class="dropdown-menu rounded-0 m-0">
-                                    <a href="./showCart.htm?customerId=2" class="dropdown-item">Shopping Cart</a>
+                                    <a href="<c:url value="/customer/showCart.htm?customerId=2"/>" class="dropdown-item">Shopping Cart</a>
                                     <a href="checkout.html" class="dropdown-item">Checkout</a>
                                 </div>
                             </div>
@@ -115,14 +115,14 @@
                                 <i class="fa fa-minus"></i>
                             </button>
                         </div>
-                        <input type="text" class="form-control bg-secondary text-center" value="1">
+                        <input  id= ${product.getId()} type="text" class="form-control bg-secondary text-center" value="1">
                         <div class="input-group-btn">
                             <button class="btn btn-primary btn-plus">
                                 <i class="fa fa-plus"></i>
                             </button>
                         </div>
                     </div>
-                    <button class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
+                    <button onclick="addToCart(${product.getId()})" class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
                 </div>
                 <div class="d-flex pt-2">
                     <p class="text-dark font-weight-medium mb-0 mr-2">Share on:</p>
@@ -144,6 +144,25 @@
             </div>
         </div>
     </div>
+    <script>
+        function addToCart(id) {
+            let quantity = document.getElementById(id).value;
+            fetch("../../addToCart/?customerId=2&itemId=" + id + "&quantity=" + quantity, {
+                method: "POST",
+                headers: {
+                    'Accept': '*/*'
+                }
+            }).then(response => response.json()).then(data => {
+                if (data) {
+                    alert("Item added successfully");
+                } else
+                    alert("Something Wrong!!")
+            }).catch((reason) => {
+                alert(reason);
+            })
+
+        }
+    </script>
     <!-- Shop Detail End -->
 </rapid:override>
 
