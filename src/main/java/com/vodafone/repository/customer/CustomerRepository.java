@@ -85,7 +85,7 @@ public class CustomerRepository implements ICustomerRepository {
     public Customer getByMail(String email) {
         Customer customer = null;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            customer = session.get(Customer.class, email);
+            customer = session.createQuery("SELECT customer from Customer customer where customer.email= "+email,Customer.class).uniqueResult();
         } catch (HibernateException hibernateException) {
             hibernateException.printStackTrace();
         }
@@ -105,7 +105,7 @@ public class CustomerRepository implements ICustomerRepository {
     @Override
     public boolean resetPassword(String email, String password) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            Customer customer = session.get(Customer.class, email); //get customer by email
+            Customer customer = getByMail(email); //get customer by email
             if(customer == null)
             {
                 System.out.println("Customer not found in DB");
