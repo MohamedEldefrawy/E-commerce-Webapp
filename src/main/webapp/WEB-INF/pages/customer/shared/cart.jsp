@@ -161,6 +161,7 @@
             }).then(response => response.json()).then(data => {
                 if (data) {
                     row.remove();
+                    window.location.reload();
                 } else
                     alert("Something Wrong!!")
             }).catch((reason) => {
