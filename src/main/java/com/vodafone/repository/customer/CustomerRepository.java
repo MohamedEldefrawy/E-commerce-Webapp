@@ -18,14 +18,17 @@ public class CustomerRepository implements ICustomerRepository {
     public CustomerRepository(HibernateConfig hibernateConfig) {
         this.hibernateConfig = hibernateConfig;
     }
+
     @Override
     public boolean create(Customer customer) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             //set customer's default status before verification
+            customer.setCart(new Cart(customer,new ArrayList<>()));
             session.persist(customer.getCart());
             customer.setUserStatus(UserStatus.DEACTIVATED);
             customer.setRole(Role.Customer);
+
             session.persist(customer);
             transaction.commit();
             return true;
@@ -44,6 +47,7 @@ public class CustomerRepository implements ICustomerRepository {
                 return false;
             } else {
                 session.update(updatedCustomer);
+                session.beginTransaction().commit();
                 return true;
             }
         } catch (HibernateException hibernateException) {
@@ -52,6 +56,25 @@ public class CustomerRepository implements ICustomerRepository {
         }
 
     }
+    public boolean updateStatusActivated(String email) {
+        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Customer customer = getByMail(email);
+            if (customer == null) {
+                return false;
+            } else {
+                customer.setUserStatus(UserStatus.ACTIVATED);
+                session.update(customer);
+                session.beginTransaction().commit();
+                return true;
+            }
+        } catch (HibernateException hibernateException) {
+            hibernateException.printStackTrace();
+            return false;
+        }
+
+    }
+
 
     @Override
     public boolean delete(Long id) {
@@ -80,11 +103,12 @@ public class CustomerRepository implements ICustomerRepository {
         }
         return customer;
     }
+
     @Override
     public Customer getByMail(String email) {
         Customer customer = null;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            customer = session.createQuery("SELECT customer from Customer customer where customer.email= "+email,Customer.class).uniqueResult();
+            customer = session.createQuery("SELECT customer from Customer customer where customer.email=: email", Customer.class).setParameter("email", email).getSingleResult();
         } catch (HibernateException hibernateException) {
             hibernateException.printStackTrace();
         }
@@ -105,8 +129,7 @@ public class CustomerRepository implements ICustomerRepository {
     public boolean resetPassword(String email, String password) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Customer customer = getByMail(email); //get customer by email
-            if(customer == null)
-            {
+            if (customer == null) {
                 System.out.println("Customer not found in DB");
                 return false;
             }
@@ -115,6 +138,7 @@ public class CustomerRepository implements ICustomerRepository {
             //update customer's status to activated
             customer.setUserStatus(UserStatus.ACTIVATED);
             session.update(customer);
+            session.beginTransaction().commit();
             return true;
         } catch (HibernateException hibernateException) {
             hibernateException.printStackTrace();
