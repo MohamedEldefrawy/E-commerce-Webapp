@@ -100,9 +100,13 @@ public class CartRepository implements ICartRepository {
     public boolean removeItem(Long cartId, Long itemId) {
         try (Session session = config.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
+            //remove cartItem from cart arrayList
             Cart cart = get(cartId);
             cart.getItems().removeIf(item -> Objects.equals(item.getId(), itemId)); //remove desired item
             session.update(cart); //update cart
+            //Remove cartItem from DB
+            CartItem cartItem = session.get(CartItem.class,itemId);
+            session.delete(cartItem);
             transaction.commit();
             session.close();
         } catch (HibernateException e) {

@@ -120,17 +120,22 @@ public class CustomerController {
         return null;
     }
 
-    @GetMapping("{customerId}/cart")
-    public String showCustomerCart(@PathVariable Long customerId) {
+    @GetMapping("showCart.htm")
+    public String showCustomerCart(Model model,@RequestParam Long customerId) {
         Cart customerCart = customerService.get(customerId).getCart();
-        return null;
+        List<CartItem> cartItems = customerCart.getItems();
+        double totalCartPrice = cartItems.stream().mapToDouble(CartItem::getTotal).sum();
+        model.addAttribute("items", cartItems);
+        model.addAttribute("orderTotal",totalCartPrice);
+
+        return "/customer/shared/cart";
     }
 
     @PostMapping("/addToCart")
     @ResponseBody
     public String addItemToCart(@RequestParam int customerId, @RequestParam int itemId,
                                 @RequestParam int quantity) {
-        System.out.println(customerId + " " + itemId + " " + quantity);
+
         Cart customerCart = customerService.get(Long.valueOf(customerId)).getCart();
         Product product = productService.get(Long.valueOf(itemId));
         CartItem cartItem = new CartItem(quantity, product, customerCart);
@@ -140,11 +145,14 @@ public class CustomerController {
         return "false";
     }
 
-    @PostMapping("{customerId}/cart/{itemId}")
-    public String removeItemFromCart(@PathVariable Long customerId, @PathVariable Long itemId) {
+    @DeleteMapping("showCart.htm")
+    @ResponseBody
+    public String removeItemFromCart(@RequestParam Long customerId, @RequestParam Long itemId) {
         Cart customerCart = customerService.get(customerId).getCart();
-        cartService.removeItem(customerCart.getId(), itemId);
-        return null;
+        boolean deleted = cartService.removeItem(customerCart.getId(), itemId);
+        if (deleted)
+            return "true";
+        return "false";
     }
 
     @PutMapping("{customerId}/cart/clear")

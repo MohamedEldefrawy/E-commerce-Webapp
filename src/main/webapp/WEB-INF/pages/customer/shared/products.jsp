@@ -62,7 +62,7 @@
             }
         }).then(response => response.json()).then(data => {
             if (data) {
-                alert("Item has been deleted successfully");
+                alert("Item added successfully");
             } else
                 alert("Something Wrong!!")
         }).catch((reason) => {
