@@ -9,8 +9,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
@@ -82,6 +80,14 @@ public class CustomerController {
         return "resetPassword";
     }
 
+
+    @GetMapping("/products/{id}/details.htm")
+    public String viewProductDetails(Model model, @PathVariable Long id) {
+        Product product = this.productService.get(id);
+        model.addAttribute("product", product);
+        return "/customer/product/detail";
+    }
+
     @GetMapping("products/rate")
     public String getProductsByRate(float rate) {
         List<Product> products = productService.getByRate(rate);
@@ -112,8 +118,8 @@ public class CustomerController {
         return null;
     }
 
-    @GetMapping("{customerId}/orders")
-    public String getCustomerOrders(@PathVariable Long customerId) {
+    @GetMapping("/orders.htm")
+    public String getCustomerOrders(Model model, @RequestParam Long customerId) {
         List<Order> orders = orderService.getByCustomerId(customerId);
         return null;
     }
@@ -129,7 +135,11 @@ public class CustomerController {
     public String submitFinalOrder(@PathVariable Long customerId) {
         Cart customerCart = customerService.get(customerId).getCart();
         Order submittedOrder = cartService.submitFinalOrder(customerCart.getId());
-        return null;
+        boolean created = orderService.create(submittedOrder);
+        if (created)
+            return "true";
+        //todo redirect to error page
+        return "false";
     }
 
     @GetMapping("showCart.htm")
@@ -179,6 +189,11 @@ public class CustomerController {
     public String registration(Model model) {
         model.addAttribute("customerDTO", new Customer());
         return "registration";
+    }
+    
+    @GetMapping("login.htm")
+    public String login() {
+        return "login";
     }
 
     @PostMapping("registration.htm")
