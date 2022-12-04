@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 
 @AllArgsConstructor
-@NoArgsConstructor
 @Repository
 public class UserRepository implements IUserRepository {
     HibernateConfig config;

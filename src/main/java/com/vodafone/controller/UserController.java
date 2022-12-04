@@ -15,7 +15,6 @@ import javax.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/users")
-@NoArgsConstructor
 @AllArgsConstructor
 public class UserController {
     UserService userService;
