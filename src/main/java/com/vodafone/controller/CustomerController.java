@@ -261,16 +261,6 @@ public class CustomerController {
     @GetMapping("/verify.htm")
     public String verify(Model model, HttpSession session) {
         model.addAttribute("customer", new Customer());
-        Runnable otpExpirationThread = () -> {
-            try {
-                Thread.sleep(60000);
-                this.customerService.expireOtp(session.getAttribute("username").toString());
-            } catch (InterruptedException e) {
-                System.out.println(e.getMessage());
-            }
-        };
-
-        otpExpirationThread.run();
         return "verify";
     }
 
@@ -282,6 +272,15 @@ public class CustomerController {
             System.out.println(modelBind);
             return "verify";
         }
+        Runnable otpExpirationThread = () -> {
+            try {
+                Thread.sleep(60000);
+                this.customerService.expireOtp(session.getAttribute("username").toString());
+            } catch (InterruptedException e) {
+                System.out.println(e.getMessage());
+            }
+        };
+        otpExpirationThread.run();
         Customer customer1 = customerService.getByMail((String) session.getAttribute("email"));
         if (customer1 == null) {
             //todo: display email not found error
