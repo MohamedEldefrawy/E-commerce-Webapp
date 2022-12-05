@@ -236,9 +236,6 @@ public class CustomerController {
         session.setAttribute("username", customerDTO.getUserName());
         session.setAttribute("verificationCode", otp);
         customerService.create(customerDTO);
-        session.setAttribute("email", customerDTO.getEmail());
-        session.setAttribute("username", customerDTO.getUserName());
-        session.setAttribute("verificationCode", otp);
         if (sendEmailService.sendEmail(customerDTO, EmailType.ACTIVATION, session)) {
 
             return "redirect:/customer/verify.htm";
@@ -266,7 +263,7 @@ public class CustomerController {
         model.addAttribute("customer", new Customer());
         Runnable otpExpirationThread = () -> {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(60000);
                 Customer customer = this.customerService.getByUserName(session.getAttribute("username").toString());
                 customer.setCode(null);
             } catch (InterruptedException e) {
@@ -277,6 +274,7 @@ public class CustomerController {
         otpExpirationThread.run();
         return "verify";
     }
+
 
     @PostMapping("verify.htm")
     public String verifyCustomer(@Valid @ModelAttribute("customer") Customer customer, BindingResult bindingResult, HttpSession session) {
@@ -291,13 +289,16 @@ public class CustomerController {
             return "404";
         } else {
             if (customer1.getCode().equals(customer.getCode())) {
-                customerService.updateStatusActivated(customer.getEmail());
+                System.out.println(customer1.getEmail());
+                System.out.println("updated " + customerService.updateStatusActivated(customer1.getEmail()));
+                customerService.updateStatusActivated(customer1.getEmail());
                 return "redirect:/customer/home.htm";
             } else {
                 return "404";
             }
         }
     }
+
 
     @PutMapping("/increment")
     @ResponseBody
@@ -323,4 +324,5 @@ public class CustomerController {
             return "true";
         return "false";
     }
+
 }
