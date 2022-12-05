@@ -23,10 +23,14 @@ public abstract class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true)
+    @NotNull @NotBlank
     String userName;
     @Column(unique = true)
+    @Email
+    @NotNull @NotBlank
     String email;
     @Column(nullable = false)
+    @NotNull @NotBlank
     String password;
     @Column(nullable = false)
     UserStatus userStatus;

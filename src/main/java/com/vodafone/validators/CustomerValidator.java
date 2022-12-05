@@ -36,7 +36,6 @@ public class CustomerValidator implements Validator {
                     "This Username Already Exists");
         }
 
-
     }
 
 }

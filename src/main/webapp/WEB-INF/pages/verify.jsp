@@ -33,15 +33,15 @@
     </div>
     <!-- /.card-header -->
     <!-- form start -->
-    <form:form  class="form-horizontal" modelAttribute="customer"  method="post">
+    <form  class="form-horizontal"   method="post">
       <div class="card-body">
         <div class="form-group row ">
           <label for="inputVerificationCode" class="col-sm-3 col-form-label">Verification Code</label>
           <div class="col-sm-9">
-            <form:input type="text"  cssClass="form-control" id="inputVerificationCode" name="verificationCode" placeholder="Verification Code" path="code"/>
+            <input type="text" maxlength="6" minlength="6" class="form-control" id="inputVerificationCode" name="verificationCode" placeholder="Verification Code" required />
           </div>
           <div class="col-sm-5 m-auto">
-            <form:errors path="code" cssClass="text-danger"/>
+            <span class="text-danger">${error}</span>
           </div>
         </div>
       </div>
@@ -54,7 +54,7 @@
         </button>
       </div>
       <!-- /.card-footer -->
-    </form:form>
+    </form>
   </div>
   <!-- /.card -->
 </div>
