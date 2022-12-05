@@ -32,17 +32,26 @@
                             <div class="col-sm-9">
                                 <form:input type="text" class="form-control" id="inputUserName" placeholder="User Name" path="userName"/>
                             </div>
+                            <div class="col-sm-5 m-auto">
+                                <form:errors path="userName" cssClass="text-danger"/>
+                            </div>
                         </div>
                         <div class="form-group row">
                             <label for="inputEmail3" class="col-sm-3 col-form-label">Email</label>
                             <div class="col-sm-9">
                                 <form:input type="email" class="form-control" name="userEmail" id="inputEmail3" placeholder="Email" path="email"/>
                             </div>
+                            <div class="col-sm-5 m-auto">
+                                <form:errors path="email" cssClass="text-danger"/>
+                            </div>
                         </div>
                         <div class="form-group row">
                             <label for="inputPassword3" class="col-sm-3 col-form-label">Password</label>
                             <div class="col-sm-9">
                                 <form:input type="password" class="form-control" id="inputPassword3" placeholder="Password" path="password"/>
+                            </div>
+                            <div class="col-sm-5 m-auto">
+                                <form:errors path="password" cssClass="text-danger"/>
                             </div>
                         </div>
                     </div>
