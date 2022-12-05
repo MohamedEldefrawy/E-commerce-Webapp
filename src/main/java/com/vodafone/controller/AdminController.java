@@ -106,7 +106,6 @@ public class AdminController {
         Map<String, Object> model = bindingResult.getModel();
         validator.validate(createAdmin,bindingResult);
         if (bindingResult.hasErrors()) {
-            System.out.println(model);
             return "admin/createAdmin";
         }
         /*validator.validate(createAdmin,bindingResult);
