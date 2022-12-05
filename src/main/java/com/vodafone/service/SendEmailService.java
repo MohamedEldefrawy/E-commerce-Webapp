@@ -1,6 +1,5 @@
 package com.vodafone.service;
 
-import com.vodafone.model.Customer;
 import com.vodafone.model.Email;
 import com.vodafone.model.EmailType;
 import com.vodafone.model.User;
@@ -51,14 +50,14 @@ public class SendEmailService {
             Email emailObj = new Email();
             switch (emailType) {
                 case ACTIVATION:
-                    emailObj = sendActivationEmail(user.getEmail(), (String) httpSession.getAttribute("verificationCode"));
+                    emailObj = sendActivationEmail(httpSession);
                     break;
                 case FORGET_PASSWORD:
-                    emailObj = requestResetPassword(user.getEmail());
+                    emailObj = requestResetPassword(httpSession);
                     break;
 
                 case SET_ADMIN_PASSWORD:
-                    emailObj = sendAdminResetMail(user.getEmail(), user.getPassword());
+                    emailObj = sendAdminResetMail(httpSession, user.getPassword());
                     break;
             }
             // creates a new e-mail message
@@ -83,48 +82,43 @@ public class SendEmailService {
 
     }
 
-    //todo: link parameters to session and remove them
-    public Email requestResetPassword(String email) {
+    public Email requestResetPassword(HttpSession session) {
         Email emailObj = new Email();
         emailObj.setSubject("Password reset");
-        emailObj.setTo(email);
+        emailObj.setTo((String) session.getAttribute("email"));
         emailObj.setFrom(from);
         //todo: test email links
         emailObj.setBody("Dear customer," +
                 "\nForget your password?" +
                 "\nWe received a request to reset your password." +
                 "\nClick on below link to redirect you to reset password page." +
-                "\n  http://localhost:8080/Ecommerce_war/webapp/WEB_INF/pages/resetPassword.htm");
+                "\n  http://localhost:8080/Ecommerce_war/customer/resetPassword.htm");
         return emailObj;
     }
 
-    //todo: link parameters to session and remove them
-    public Email sendActivationEmail(String email, String OTP) {
+    public Email sendActivationEmail(HttpSession session) {
         Email emailObj = new Email();
         emailObj.setSubject("Activate your email");
-        emailObj.setTo(email);
+        emailObj.setTo((String) session.getAttribute("email"));
         emailObj.setFrom(from);
         //todo: test email links
         emailObj.setBody("Dear customer," +
                 "\nWe are happy that you decided to use our service." +
                 "\nYou could use below code to verify your account." +
-                "\n" + OTP +
-                "\nClick on below link to redirect to verification page." +
-                "\n http://localhost:8080/Ecommerce_war/webapp/WEB_INF/pages/verify.htm");
+                "\n" + session.getAttribute("verificationCode"));
         return emailObj;
     }
 
-    //todo: link parameters to session and remove them
-    public Email sendAdminResetMail(String email, String password) {
+    public Email sendAdminResetMail(HttpSession session, String password) {
         Email emailObj = new Email();
         emailObj.setSubject("Activate your email");
-        emailObj.setTo(email);
+        emailObj.setTo((String) session.getAttribute("email"));
         emailObj.setFrom(from);
         //todo: test email links
         emailObj.setBody("Welcome to Admins' family" +
                 "\nWe have created your account. and you can use below password for first login:" +
                 "\n " + password +
-                "\nFollow this link to create new password http://localhost:8080/Ecommerce_war/webapp/WEB_INF/pages/admin/setAdminPassword.htm" +
+                "\nFollow this link to create new password http://localhost:8080/Ecommerce_war/admins/setAdminPassword.htm" +
                 "\nRegards," +
                 "\nTMNT super admin.");
         return emailObj;

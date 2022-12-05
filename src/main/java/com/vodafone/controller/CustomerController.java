@@ -80,14 +80,14 @@ public class CustomerController {
     }
 
     @PostMapping("reset.htm")
-    public String resetPassword(@Valid @ModelAttribute("resetUser") CreateUser user, BindingResult bindingResult) {
+    public String resetPassword(@Valid @ModelAttribute("resetUser") CreateUser user, BindingResult bindingResult, HttpSession session) {
         if (bindingResult.hasErrors()) {
             Map<String, Object> modelBind = bindingResult.getModel();
             System.out.println(modelBind);
             return "registration";
         }
         System.out.println(user);
-        if (customerService.resetPassword(user.getEmail(), user.getPassword()))
+        if (customerService.resetPassword(session.getAttribute("email").toString(), user.getPassword()))
             return "login";
         return "resetPassword";
     }
@@ -129,6 +129,7 @@ public class CustomerController {
         List<Product> products = productService.getByCategory(category);
         return null;
     }
+
     //edit in frontend
     @GetMapping("/orders.htm")
     public String getCustomerOrders(HttpSession session, Model model) {
@@ -147,7 +148,7 @@ public class CustomerController {
     //change in front end
     @PostMapping("/submitOrder.htm")
     @ResponseBody
-    public String submitFinalOrder(HttpSession session){
+    public String submitFinalOrder(HttpSession session) {
         Long customerId = (long) session.getAttribute("id");
         Cart customerCart = customerService.get(customerId).getCart();
         Order submittedOrder = cartService.submitFinalOrder(customerCart.getId());
@@ -228,26 +229,18 @@ public class CustomerController {
             System.out.println(modelBind);
             return "registration";
         }
-        System.out.println(customerDTO);
         String otp = sendEmailService.getRandom();
         customerDTO.setCode(otp);
-        //todo: check for username and email uniqueness
-        if (customerService.getByMail(customerDTO.getEmail()) != null) {
-            System.out.println("Email exists");
-            return "";
-            //todo: display error for not unique email
-        }
-        if (customerService.getByUserName(customerDTO.getUserName()) != null) {
-            System.out.println("Username exists");
-            return "";
-            //todo: display error for not unique username
-        }
+        //set session attributes
+        session.setAttribute("email", customerDTO.getEmail());
+        session.setAttribute("username", customerDTO.getUserName());
+        session.setAttribute("verificationCode", otp);
         customerService.create(customerDTO);
         session.setAttribute("email", customerDTO.getEmail());
         session.setAttribute("username", customerDTO.getUserName());
         session.setAttribute("verificationCode", otp);
         if (sendEmailService.sendEmail(customerDTO, EmailType.ACTIVATION, session)) {
-            System.out.println(session);
+
             return "redirect:/customer/verify.htm";
         } else {
             return "registration";
@@ -268,8 +261,8 @@ public class CustomerController {
         //retrieve cartId from session
         Long customerId = (long) session.getAttribute("id");
         Long cartId = customerService.get(customerId).getCart().getId();
-        int newQuantity = cartService.incrementProductQuantity(cartId, productId,1);
-        if (newQuantity>0)
+        int newQuantity = cartService.incrementProductQuantity(cartId, productId, 1);
+        if (newQuantity > 0)
 
             return "true";
         return "false";
