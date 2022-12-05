@@ -1,7 +1,10 @@
 package com.vodafone.repository.customer;
 
 import com.vodafone.config.HibernateConfig;
-import com.vodafone.model.*;
+import com.vodafone.model.Cart;
+import com.vodafone.model.Customer;
+import com.vodafone.model.Role;
+import com.vodafone.model.UserStatus;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -75,6 +78,25 @@ public class CustomerRepository implements ICustomerRepository {
             return false;
         }
 
+    }
+
+    @Override
+    public boolean expireOtp(String userName) {
+        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Customer customer = getByUserName(userName);
+            if (customer == null) {
+                return false;
+            } else {
+                customer.setCode(null);
+                session.update(customer);
+                transaction.commit();
+                return true;
+            }
+        } catch (HibernateException hibernateException) {
+            hibernateException.printStackTrace();
+            return false;
+        }
     }
 
 
