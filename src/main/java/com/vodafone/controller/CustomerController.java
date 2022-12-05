@@ -248,10 +248,55 @@ public class CustomerController {
 
     }
 
+    @GetMapping("resend.htm")
+    public String resendOtp(HttpSession session) {
+        Customer selectedCustomer = this.customerService.getByUserName(session.getAttribute("username").toString());
+        String otp = this.sendEmailService.getRandom();
+        selectedCustomer.setCode(otp);
+        if (sendEmailService.sendEmail(selectedCustomer, EmailType.ACTIVATION, session)) {
+
+            return "redirect:/customer/verify.htm";
+        } else {
+            return "registration";
+        }
+    }
+
     @GetMapping("/verify.htm")
-    public String verify(Model model) {
+    public String verify(Model model, HttpSession session) {
         model.addAttribute("customer", new Customer());
+        Runnable otpExpirationThread = () -> {
+            try {
+                Thread.sleep(1000);
+                Customer customer = this.customerService.getByUserName(session.getAttribute("username").toString());
+                customer.setCode(null);
+            } catch (InterruptedException e) {
+                System.out.println(e.getMessage());
+            }
+        };
+
+        otpExpirationThread.run();
         return "verify";
+    }
+
+    @PostMapping("verify.htm")
+    public String verifyCustomer(@Valid @ModelAttribute("customer") Customer customer, BindingResult bindingResult, HttpSession session) {
+        if (bindingResult.hasErrors()) {
+            Map<String, Object> modelBind = bindingResult.getModel();
+            System.out.println(modelBind);
+            return "verify";
+        }
+        Customer customer1 = customerService.getByMail((String) session.getAttribute("email"));
+        if (customer1 == null) {
+            //todo: display email not found error
+            return "404";
+        } else {
+            if (customer1.getCode().equals(customer.getCode())) {
+                customerService.updateStatusActivated(customer.getEmail());
+                return "redirect:/customer/home.htm";
+            } else {
+                return "404";
+            }
+        }
     }
 
     @PutMapping("/increment")
@@ -277,26 +322,5 @@ public class CustomerController {
         if (newQuantity >= 0)
             return "true";
         return "false";
-    }
-
-    @PostMapping("verify.htm")
-    public String verifyCustomer(@Valid @ModelAttribute("customer") Customer customer, BindingResult bindingResult, HttpSession session) {
-        if (bindingResult.hasErrors()) {
-            Map<String, Object> modelBind = bindingResult.getModel();
-            System.out.println(modelBind);
-            return "verify";
-        }
-        Customer customer1 = customerService.getByMail((String) session.getAttribute("email"));
-        if (customer1 == null) {
-            //todo: display email not found error
-            return "404";
-        } else {
-            if (customer1.getCode().equals(customer.getCode())) {
-                customerService.updateStatusActivated(customer.getEmail());
-                return "redirect:/customer/home.htm";
-            } else {
-                return "404";
-            }
-        }
     }
 }
