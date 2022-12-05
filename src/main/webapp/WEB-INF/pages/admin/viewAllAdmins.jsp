@@ -53,24 +53,6 @@
             });
         })
 
-        function deleteSomething(id) {
-            $.ajax({
-                type: "DELETE",
-                url: "?id=" + id,
-                success: function (response) {
-                    console.log("success")
-                    window.location.reload()
-                },
-                error: function (xhr, status, error) {
-                    console.log(xhr);
-                    if (xhr.status === 500) {
-                        window.location.reload()
-                    }
-                    //alert('Error: ' + error.message);
-                },
-            });
-        }
-
         function deleteById(id) {
             let result = confirm("Are you sure?");
             let row = document.getElementById(id);
@@ -85,9 +67,9 @@
                         alert("Item has been deleted successfully");
                         row.remove();
                     } else
-                        alert("Something Wrong!!")
+                        window.location.href="../error.htm"
                 }).catch((reason) => {
-                    alert(reason);
+                    window.location.href = "../login.htm"
                 })
             }
         }

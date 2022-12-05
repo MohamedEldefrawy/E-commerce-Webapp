@@ -199,9 +199,9 @@
                 row.remove();
                 window.location.reload();
             } else
-                alert("Something Wrong!!")
+                window.location.href="../error.htm"
         }).catch((reason) => {
-            alert(reason);
+            window.location.href = "../login.htm"
         })
     }
     function incrementQuantity(productId) {
@@ -214,9 +214,9 @@
             if (data) {
                 window.location.reload();
             } else
-                alert("Something Wrong!!")
+                window.location.href="../error.htm"
         }).catch((reason) => {
-            alert(reason);
+            window.location.href = "../login.htm"
         })
     }
     function decrementQuantity(productId) {
@@ -229,9 +229,9 @@
             if (data) {
                 window.location.reload();
             } else
-                alert("Something Wrong!!")
+                window.location.href="../error.htm"
         }).catch((reason) => {
-            alert(reason);
+            window.location.href = "../login.htm"
         })
     }
     function checkout() {
@@ -246,9 +246,9 @@
                 if (data) {
                     window.location.reload()
                 } else
-                    alert("Something Wrong!!")
+                    window.location.href="../error.htm"
             }).catch((reason) => {
-                alert(reason);
+                window.location.href = "../login.htm"
             })
         }
     }

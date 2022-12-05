@@ -66,9 +66,9 @@
             if (data) {
                 alert("Item added successfully");
             } else
-                alert("Something Wrong!!")
+                window.location.href="../error.htm"
         }).catch((reason) => {
-            alert(reason);
+            window.location.href = "../login.htm"
         })
 
     }

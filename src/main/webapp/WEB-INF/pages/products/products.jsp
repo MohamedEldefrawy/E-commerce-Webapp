@@ -62,10 +62,9 @@
                         alert("Item has been deleted successfully");
                         row.remove();
                     } else
-                        alert("Something Wrong!!")
+                        window.location.href="../../error.htm"
                 }).catch((reason) => {
-                    //todo: redirect to error page
-                    alert("Authorization required");
+                    window.location.href = "../../login.htm"
                 })
             }
         }
