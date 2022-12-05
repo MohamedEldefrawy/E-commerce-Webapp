@@ -48,7 +48,7 @@
                                 path="email"/>
                 </div>
             </div>
-            <div class="d-flex justify-content-end align-content-center">
+            <div class="d-flex justify-content-end align-content-start">
                 <form:errors path="email" cssClass="error"/>
             </div>
             <div class="form-group row">
@@ -58,9 +58,9 @@
                                 placeholder="Password"
                                 path="password"/>
                 </div>
-                <div class="d-flex justify-content-end align-content-center">
-                    <form:errors path="password" cssClass="error"/>
-                </div>
+            </div>
+            <div class="d-flex justify-content-end align-content-center">
+                <form:errors path="password" cssClass="error"/>
             </div>
             <!-- /.card-body -->
             <div class="card-footer d-flex justify-content-center mb-3 bg-white">
