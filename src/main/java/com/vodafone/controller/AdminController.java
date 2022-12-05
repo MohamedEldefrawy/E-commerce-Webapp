@@ -1,6 +1,7 @@
 package com.vodafone.controller;
 
 import com.vodafone.model.Admin;
+import com.vodafone.model.EmailType;
 import com.vodafone.model.Product;
 import com.vodafone.model.Role;
 import com.vodafone.model.dto.CreateAdmin;
@@ -8,6 +9,7 @@ import com.vodafone.model.dto.CreateProduct;
 import com.vodafone.service.AdminService;
 import com.vodafone.service.HashService;
 import com.vodafone.service.ProductService;
+import com.vodafone.service.SendEmailService;
 import com.vodafone.validators.AdminValidator;
 import com.vodafone.validators.UserAuthorizer;
 import org.springframework.stereotype.Controller;
@@ -37,13 +39,16 @@ public class AdminController {
 
     private HashService hashService;
 
+    private SendEmailService emailService;
+
     public AdminController(AdminService adminService, ProductService productService,
-                           AdminValidator adminValidator, UserAuthorizer userAuthorizer, HashService hashService) {
+                           AdminValidator adminValidator, UserAuthorizer userAuthorizer, HashService hashService, SendEmailService emailService) {
         this.adminService = adminService;
         this.productService = productService;
         this.validator = adminValidator;
         this.userAuthorizer = userAuthorizer;
         this.hashService = hashService;
+        this.emailService = emailService;
         //todo: save super admin config in config file as a bean
         //create super admin
         Admin admin = new Admin();
@@ -123,9 +128,17 @@ public class AdminController {
             admin.setRole(Role.Admin);
             admin.setEmail(createAdmin.getEmail());
             admin.setFirstLogin(true);
-            if (adminService.create(admin))
-                return "redirect:/admins/admins.htm";
-            else {
+            if (adminService.create(admin)) {
+                //encrypt admin password in db
+                String encrypted = hashService.encryptPassword(admin.getPassword(), admin.getUserName());
+                admin.setPassword(encrypted);
+                adminService.updatePassword(admin.getId(), encrypted);
+                session.setAttribute("dec_password", admin.getPassword());
+                //send email
+                emailService.sendEmail(admin, EmailType.SET_ADMIN_PASSWORD,session);
+                //redirect to set password
+                return "redirect:/admins/setAdminPassword.htm";
+            } else {
                 //model.put("errors","Duplicate");
                 return "admin/createAdmin";
             }
