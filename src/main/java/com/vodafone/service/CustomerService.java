@@ -15,15 +15,17 @@ import java.util.List;
 public class CustomerService {
     private CustomerRepository customerRepository;
 
-//    public CustomerService(CustomerRepository customerRepository) {
-//        this.customerRepository = customerRepository;
-//        /*Customer customer = new Customer(UserStatus.ACTIVATED);
-//        customer.setEmail("mi@gmail.com");
-//        customer.setUserName("mi");
-//        customer.setRole(Role.Customer);
-//        customer.setPassword("1234");
-//        customerRepository.create(customer);*/
-//    }
+
+    public CustomerService(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
+        Customer customer = new Customer();
+        customer.setEmail("mi@gmail.com");
+        customer.setUserName("mi");
+        customer.setRole(Role.Customer);
+        customer.setPassword("1234");
+        customer.setUserStatus(UserStatus.ACTIVATED);
+        customerRepository.create(customer);
+    }
 
 
     public boolean create(Customer customer) {

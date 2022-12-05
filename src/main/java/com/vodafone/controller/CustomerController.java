@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -34,6 +35,16 @@ public class CustomerController {
             products = this.productService.getByCategory(category);
         else
             products = this.productService.getAll();
+        model.addAttribute("products", products);
+        return "/customer/shared/home";
+    }
+
+    @GetMapping("/search/home.htm")
+    public String search(Model model, @RequestParam(required = false) String category, @RequestParam(required = false) String name) {
+        List<Product> products = new ArrayList<>(this.productService.getByCategory(category));
+        Product selectedProduct = this.productService.getByName(name);
+        if (selectedProduct != null)
+            products.add(selectedProduct);
         model.addAttribute("products", products);
         return "/customer/shared/home";
     }
@@ -121,9 +132,10 @@ public class CustomerController {
     }
 
     @GetMapping("/orders.htm")
-    public String getCustomerOrders(Model model, @RequestParam Long customerId) {
+    public String getCustomerOrders(Model model,@RequestParam Long customerId) {
         List<Order> orders = orderService.getByCustomerId(customerId);
-        return null;
+        model.addAttribute("orders", orders);
+        return "/customer/shared/orders";
     }
 
     @GetMapping("{customerId}/finalOrder")
@@ -133,12 +145,13 @@ public class CustomerController {
         return null;
     }
 
-    @PostMapping("{customerId}/finalOrder")
-    public String submitFinalOrder(@PathVariable Long customerId) {
+    @PostMapping("/submitOrder.htm")
+    @ResponseBody
+    public String submitFinalOrder(@RequestParam Long customerId) {
         Cart customerCart = customerService.get(customerId).getCart();
         Order submittedOrder = cartService.submitFinalOrder(customerCart.getId());
         boolean created = orderService.create(submittedOrder);
-        if (created)
+        if(created)
             return "true";
         //todo redirect to error page
         return "false";
@@ -237,7 +250,45 @@ public class CustomerController {
 
     @GetMapping("/verify.htm")
     public String verify(Model model) {
-        //TODO: how to integrate otp part
+        model.addAttribute("customer", new Customer());
         return "verify";
+    }
+
+    @PutMapping("/increment")
+    @ResponseBody
+    public String incrementProductQuantity(@RequestParam Long cartId, @RequestParam Long productId) {
+        int newQuantity = cartService.incrementProductQuantity(cartId, productId,1);
+        if (newQuantity>0)
+            return "true";
+        return "false";
+    }
+    @PutMapping("/decrement")
+    @ResponseBody
+    public String decrementProductQuantity(@RequestParam Long cartId, @RequestParam Long productId) {
+        int newQuantity = cartService.decrementProductQuantity(cartId, productId);
+        if (newQuantity>=0)
+            return "true";
+        return "false";
+    }
+    @PostMapping("verify.htm")
+    public String verifyCustomer(@Valid @ModelAttribute("customer") Customer customer, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            Map<String, Object>  modelBind = bindingResult.getModel();
+            System.out.println(modelBind);
+            return "verify";
+        }
+        Customer customer1 = customerService.getByMail(customer.getEmail());
+        if(customer1==null){
+            return "404";
+        } else {
+            if(customer1.getCode().equals(customer.getCode())){
+                customerService.updateStatusActivated(customer.getEmail());
+                return "redirect:/customer/home.htm";
+            }else {
+                return "404";
+            }
+
+        }
+
     }
 }

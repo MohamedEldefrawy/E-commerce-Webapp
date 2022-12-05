@@ -67,4 +67,5 @@
 
 <!-- Template Javascript -->
 <script src="<c:url value="/resources/static/js/main.js" />"></script>
+<script src="<c:url value="/resources/static/js/customerHome.js" />"></script>
 </html>
