@@ -16,7 +16,7 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class CartService {
-    ICartRepository cartRepository;
+    private ICartRepository cartRepository;
 
 
     public boolean create(Cart entity) {

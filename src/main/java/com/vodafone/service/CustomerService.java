@@ -5,13 +5,15 @@ import com.vodafone.model.Email;
 import com.vodafone.model.Role;
 import com.vodafone.model.UserStatus;
 import com.vodafone.repository.customer.CustomerRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class CustomerService {
-    CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
+
 
     public CustomerService(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;

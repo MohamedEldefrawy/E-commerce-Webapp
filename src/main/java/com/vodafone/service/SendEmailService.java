@@ -3,6 +3,7 @@ package com.vodafone.service;
 import com.vodafone.model.Customer;
 import com.vodafone.model.Email;
 import com.vodafone.model.EmailType;
+import com.vodafone.model.User;
 import org.springframework.stereotype.Service;
 
 import javax.mail.*;
@@ -17,7 +18,7 @@ import java.util.Random;
 public class SendEmailService {
     static String from = "t.m.n.t.ecommerce";
 
-    //generate vrification code
+    //generate verification code
     public String getRandom() {
         Random rnd = new Random();
         int number = rnd.nextInt(999999);
@@ -25,7 +26,7 @@ public class SendEmailService {
     }
 
     //send email to the user email
-    public boolean sendEmail(Customer user, EmailType emailType, HttpSession httpSession) {
+    public boolean sendEmail(User user, EmailType emailType, HttpSession httpSession) {
         try {
             String userName = "t.m.n.t.ecommerce@gmail.com";
             String password = "ekuivkoxncvvndgb";
@@ -82,6 +83,7 @@ public class SendEmailService {
 
     }
 
+    //todo: link parameters to session and remove them
     public Email requestResetPassword(String email) {
         Email emailObj = new Email();
         emailObj.setSubject("Password reset");
@@ -96,6 +98,7 @@ public class SendEmailService {
         return emailObj;
     }
 
+    //todo: link parameters to session and remove them
     public Email sendActivationEmail(String email, String OTP) {
         Email emailObj = new Email();
         emailObj.setSubject("Activate your email");
@@ -111,6 +114,7 @@ public class SendEmailService {
         return emailObj;
     }
 
+    //todo: link parameters to session and remove them
     public Email sendAdminResetMail(String email, String password) {
         Email emailObj = new Email();
         emailObj.setSubject("Activate your email");

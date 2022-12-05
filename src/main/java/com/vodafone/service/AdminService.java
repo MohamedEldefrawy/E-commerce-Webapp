@@ -2,18 +2,16 @@ package com.vodafone.service;
 
 import com.vodafone.model.Admin;
 import com.vodafone.repository.admin.AdminRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class AdminService {
 
-    AdminRepository adminRepository;
-
-    public AdminService(AdminRepository adminRepository) {
-        this.adminRepository = adminRepository;
-    }
+    private AdminRepository adminRepository;
 
     public List<Admin> getAll() {
         return adminRepository.getAll();
