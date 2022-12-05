@@ -36,16 +36,10 @@
         <!-- form start -->
         <form:form class="form-horizontal" method="post" modelAttribute="resetAdmin">
             <div class="card-body">
-                <label for="inputOldPassword" class="col-sm-3 col-form-label">Old password</label>
-                <div class="form-group row">
-                    <form:input class="form-control" id="inputOldPassword"
-                                placeholder="Enter the password received by mail"
-                                path="oldPassword"/>
-                </div>
                 <label for="inputPassword3" class="col-sm-3 col-form-label">Password</label>
                 <div class="form-group row">
                     <form:input type="password" class="form-control" id="inputPassword3" placeholder="Password"
-                                path="newPassword"/>
+                                path="resetAdmin"/>
                 </div>
             </div>
             <!-- /.card-body -->
