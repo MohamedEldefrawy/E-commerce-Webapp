@@ -10,6 +10,7 @@ import com.vodafone.service.AdminService;
 import com.vodafone.service.SendEmailService;
 import com.vodafone.service.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -43,7 +44,7 @@ public class UserController {
         }
 
         User user = userService.getUserByEmail(login.getEmail());
-        boolean isCredentialsValid = userService.verifyUserCredentials(login.getEmail(), login.getPassword());
+        boolean valid = new Argon2PasswordEncoder(32, 16, 1, 2 * 1024, 2).matches(login.getPassword(),user.getPassword());
         session.setAttribute("email", login.getEmail());
         if (user == null) //exception occurred
         {
@@ -57,13 +58,13 @@ public class UserController {
                     adminService.setFirstLoginFlag(admin.getId()); //set flag to false
                     return "redirect:/setAdminPassword.htm";
                 }
-                if (isCredentialsValid) {
+                if (valid) {
                     return "redirect:/admins/home.htm";
                 }
-            } else if (user.getUserStatus() == UserStatus.ACTIVATED && isCredentialsValid) { //valid credentials customer
+            } else if (user.getUserStatus() == UserStatus.ACTIVATED && valid) { //valid credentials customer
                 return "redirect:/customer/home.htm";
             }
-            if ((user.getUserStatus() == UserStatus.ADMIN || user.getUserStatus() == UserStatus.ACTIVATED) && !isCredentialsValid) {
+            if ((user.getUserStatus() == UserStatus.ADMIN || user.getUserStatus() == UserStatus.ACTIVATED) && !valid) {
                 //todo: display 'incorrect email or password is entered' message
                 System.out.println("Wrong Credentials!");
             } else { //User only logic
