@@ -25,6 +25,5 @@ public class CreateUser {
     @Size(max = 30, message = "Password exceeded 30 characters")
     private String password;
     @NotNull
-    @NotBlank
     private Role role;
 }

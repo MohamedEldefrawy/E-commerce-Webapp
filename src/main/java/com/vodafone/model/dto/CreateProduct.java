@@ -21,10 +21,10 @@ public class CreateProduct {
     @NotNull
     @NotBlank
     private String category;
-    @NotBlank
+    @NotNull
     @Min(value = 1)
     private double price;
-    @NotBlank
+    @NotNull
     @Min(value = 1)
     private int inStock;
 }

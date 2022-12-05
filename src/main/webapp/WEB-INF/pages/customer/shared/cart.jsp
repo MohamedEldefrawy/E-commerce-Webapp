@@ -153,7 +153,7 @@
 <script>
     function deleteRow(itemId) {
         let row = document.getElementById(itemId);
-            fetch("?customerId=2&itemId=" + itemId, {
+            fetch("?itemId=" + itemId, {
                 method: "DELETE",
                 headers: {
                     'Accept': '*/*'
@@ -168,8 +168,8 @@
                 alert(reason);
             })
     }
-    function incrementQuantity(cartId,productId) {
-        fetch("./increment/?cartId="+cartId+"&productId=" + productId, {
+    function incrementQuantity(productId) {
+        fetch("./increment/?productId=" + productId, {
             method: "PUT",
             headers: {
                 'Accept': '*/*'
@@ -183,8 +183,8 @@
             alert(reason);
         })
     }
-    function decrementQuantity(cartId,productId) {
-        fetch("./decrement/?cartId="+cartId+"&productId=" + productId, {
+    function decrementQuantity(productId) {
+        fetch("./decrement/?productId=" + productId, {
             method: "PUT",
             headers: {
                 'Accept': '*/*'
@@ -201,7 +201,7 @@
     function checkout() {
         let result = confirm("Are you sure?");
         if(result) {
-            fetch("./submitOrder.htm?customerId=2", {
+            fetch("./submitOrder.htm", {
                 method: "POST",
                 headers: {
                     'Accept': '*/*'

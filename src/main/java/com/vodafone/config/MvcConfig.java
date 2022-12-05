@@ -3,6 +3,7 @@ package com.vodafone.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -16,6 +17,8 @@ import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
+import javax.validation.Validator;
+import java.util.Locale;
 
 @EnableWebMvc
 @Configuration
@@ -56,4 +59,15 @@ public class MvcConfig implements WebMvcConfigurer, WebApplicationInitializer {
 
         appServlet.setMultipartConfig(multipartConfigElement);
     }
+    @Bean(name = "messageSource")
+    public ResourceBundleMessageSource messageSource() {
+        ResourceBundleMessageSource resourceBundleMessageSource = new ResourceBundleMessageSource();
+        resourceBundleMessageSource.setBasenames("errors");
+        resourceBundleMessageSource.setFallbackToSystemLocale(true);
+        resourceBundleMessageSource.setDefaultLocale(new Locale("en_US"));
+        resourceBundleMessageSource.setDefaultEncoding("UTF-8");
+        resourceBundleMessageSource.setCacheSeconds(3600);
+        return resourceBundleMessageSource;
+    }
+
 }
