@@ -5,6 +5,8 @@ import com.vodafone.model.Product;
 import com.vodafone.model.Role;
 import com.vodafone.model.dto.CreateAdmin;
 import com.vodafone.model.dto.CreateProduct;
+import com.vodafone.model.dto.CreateUser;
+import com.vodafone.model.dto.SetAdminPassword;
 import com.vodafone.service.AdminService;
 import com.vodafone.service.ProductService;
 import org.springframework.stereotype.Controller;
@@ -19,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/admins")
@@ -30,6 +33,7 @@ public class AdminController {
     public AdminController(AdminService adminService, ProductService productService) {
         this.adminService = adminService;
         this.productService = productService;
+        //todo: save super admin config in config file as a bean
         //create super admin
         Admin admin = new Admin();
         admin.setEmail("admin@gmail.com");
@@ -93,7 +97,7 @@ public class AdminController {
     }
 
     @PostMapping("/createAdmin.htm")
-    public String addUser(@Valid @ModelAttribute("admin") CreateAdmin createAdmin, BindingResult bindingResult) {
+    public String create(@Valid @ModelAttribute("admin") CreateAdmin createAdmin, BindingResult bindingResult) {
         Map<String, Object> model = bindingResult.getModel();
         if (bindingResult.hasErrors()) {
             System.out.println(model);
@@ -123,14 +127,14 @@ public class AdminController {
 
     //    Products End Points
     @GetMapping("/products/show.htm")
-    public String show(Model model) {
+    public String showAllProducts(Model model) {
         model.addAttribute("products", this.productService.getAll());
         model.addAttribute("id", 0L);
         return "products/products";
     }
 
     @GetMapping("/products/update.htm")
-    public String update(Model model, @RequestParam Long id) {
+    public String updateProduct(Model model, @RequestParam Long id) {
         Product selectedProduct = this.productService.get(id);
         model.addAttribute("product", selectedProduct);
         return "products/update";
@@ -173,7 +177,7 @@ public class AdminController {
     }
 
     @GetMapping("/products/create.htm")
-    public String create(Model model) {
+    public String createProduct(Model model) {
         model.addAttribute("product", new CreateProduct());
         return "products/create";
     }
@@ -221,20 +225,18 @@ public class AdminController {
         return "false";
     }
 
-    @PutMapping("/{id]/resetPassword.htm")
+    @PutMapping("/{id}/resetPassword.htm")
     public String updatePassword(@PathVariable Long id, @Valid @ModelAttribute("password") String newPassword, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             Map<String, Object> model = bindingResult.getModel();
             System.out.println(model);
             //if input has error forward to same page
-            return "/{id]/resetPassword.htm";
+            return "/{id}/resetPassword.htm";
         }
         if (adminService.updatePassword(id, newPassword)) {
-            //todo forward to admin home page
-            return null;
+            return "redirect:/products";
         }
-        //todo forward to admin home page
-        return null;
+        return "redirect:/login";
     }
 
     @PostMapping("/updateAdmin.htm")
@@ -251,5 +253,33 @@ public class AdminController {
         if (result)
             return "redirect:/admins/admins.htm";
         return "admin/updateAdmin";
+    }
+
+    @GetMapping
+    public String setAdminPasswordLoader(Model model) {
+        model.addAttribute("resetAdmin", new SetAdminPassword());
+        return "setAdminPassword";
+    }
+
+    @PostMapping
+    public String setAdminPassword(@Valid @ModelAttribute("resetAdmin") SetAdminPassword admin, BindingResult bindingResult,
+                                   HttpSession session) {
+        if (bindingResult.hasErrors()) {
+            Map<String, Object> modelBind = bindingResult.getModel();
+            System.out.println(modelBind);
+            return "login";
+        }
+        String email = session.getAttribute("email").toString();
+        Admin existingAdmin = adminService.getByEmail(email);
+        //get user's email from session
+        if (!Objects.equals(admin.getOldPassword(), existingAdmin.getPassword())) {
+            System.out.println("Non-matching passwords!!");
+            return "login";
+            //todo: throw and catch exception
+        }
+        String newPassword = admin.getNewPassword();
+        existingAdmin.setPassword(newPassword);
+        adminService.update(existingAdmin.getId(), existingAdmin);
+        return "setAdminPassword";
     }
 }
