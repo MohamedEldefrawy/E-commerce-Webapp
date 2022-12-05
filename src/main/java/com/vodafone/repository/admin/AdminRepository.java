@@ -8,6 +8,7 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.NoResultException;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -155,19 +156,35 @@ public class AdminRepository implements IAdminRepository {
             e.printStackTrace();
         }
     }
-    public Admin getByUsername(String userName) {
-        List<Admin> admins = getAll().stream()
-                .filter(a -> a.getUserName().equals(userName))
-                .collect(Collectors.toList());
-        if(admins.isEmpty()) return null;
-        return admins.get(0);
+    public Admin getByUsername(String username) {
+        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
+            try {
+                Admin admin = session.createQuery("SELECT a from Admin a where a.userName=: username", Admin.class)
+                        .setParameter("username", username).getSingleResult();
+                return admin;
+            }
+            catch (NoResultException e){
+                return null;
+            }
+        } catch (HibernateException hibernateException) {
+            hibernateException.printStackTrace();
+            return null;
+        }
     }
     public Admin getByEmail(String email) {
-        List<Admin> admins = getAll().stream()
-                .filter(a -> a.getEmail().equals(email))
-                .collect(Collectors.toList());
-        if(admins.isEmpty()) return null;
-        return admins.get(0);
+        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
+            try {
+                Admin admin = session.createQuery("SELECT a from Admin a where a.email=: email", Admin.class)
+                        .setParameter("email", email).getSingleResult();
+                return admin;
+            }
+            catch (NoResultException e){
+                return null;
+            }
+        } catch (HibernateException hibernateException) {
+            hibernateException.printStackTrace();
+            return null;
+        }
     }
 }
 

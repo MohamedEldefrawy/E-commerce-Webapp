@@ -47,11 +47,10 @@
                     <form:input type="email" class="form-control" id="inputEmail3" placeholder="Email"
                                 path="email"/>
                 </div>
-                <div class="col-sm-5 m-auto">
-                    <form:errors path="email" cssClass="error"/>
-                </div>
             </div>
-
+            <div class="d-flex justify-content-end align-content-start">
+                <form:errors path="email" cssClass="error"/>
+            </div>
             <div class="form-group row">
                 <label for="inputPassword3" class="col-sm-3 col-form-label">Password</label>
                 <div class="col-sm-9">
@@ -59,9 +58,9 @@
                                 placeholder="Password"
                                 path="password"/>
                 </div>
-                <div class="col-sm-5 m-auto">
-                    <form:errors path="password" cssClass="error"/>
-                </div>
+            </div>
+            <div class="d-flex justify-content-end align-content-center">
+                <form:errors path="password" cssClass="error"/>
             </div>
             <!-- /.card-body -->
             <div class="card-footer d-flex justify-content-center mb-3 bg-white">

@@ -18,7 +18,7 @@ public class CustomerService {
         customer.setEmail("mi@gmail.com");
         customer.setUserName("mi");
         customer.setRole(Role.Customer);
-        customer.setPassword("1234");
+        customer.setPassword("12345678");
         customer.setUserStatus(UserStatus.ACTIVATED);
         customerRepository.create(customer);
 
