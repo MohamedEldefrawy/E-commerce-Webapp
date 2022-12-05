@@ -13,17 +13,16 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateUser {
-    @NotNull
-    @NotBlank
+
     private String userName;
     @NotNull
     @NotBlank
     private String email;
     @NotNull
     @NotBlank
-    @Size(min = 8, message = "Password can't be less than 8 characters")
+    @Size(min = 4, message = "Password can't be less than 8 characters")
     @Size(max = 30, message = "Password exceeded 30 characters")
     private String password;
-    @NotNull
+
     private Role role;
 }
