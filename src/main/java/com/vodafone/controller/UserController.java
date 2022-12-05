@@ -71,4 +71,11 @@ public class UserController {
         }
         return "login";
     }
+
+    @GetMapping("logout.htm")
+    public String logout(HttpSession session){
+        session.invalidate();
+        return "login";
+    }
 }
+//todo: add logout function
