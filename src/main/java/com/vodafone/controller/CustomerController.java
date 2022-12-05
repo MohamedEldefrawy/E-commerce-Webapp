@@ -264,8 +264,7 @@ public class CustomerController {
         Runnable otpExpirationThread = () -> {
             try {
                 Thread.sleep(60000);
-                Customer customer = this.customerService.getByUserName(session.getAttribute("username").toString());
-                customer.setCode(null);
+                this.customerService.expireOtp(session.getAttribute("username").toString());
             } catch (InterruptedException e) {
                 System.out.println(e.getMessage());
             }
