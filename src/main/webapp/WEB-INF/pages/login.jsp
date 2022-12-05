@@ -14,6 +14,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login</title>
+    <style>
+        span.error {
+            color: red;
+            display: block;
+            float: right;
+        }
+    </style>
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
@@ -33,21 +40,28 @@
         <!-- /.card-header -->
         <!-- form start -->
         <form:form class="form-horizontal" modelAttribute="loginModel" method="post">
-            <div class="card-body">
-                <div class="form-group row">
-                    <label for="inputEmail3" class="col-sm-3 col-form-label">Email</label>
-                    <div class="col-sm-9">
-                        <form:input type="email" class="form-control" id="inputEmail3" placeholder="Email"
-                                    path="email"/>
-                    </div>
+        <div class="card-body">
+            <div class="form-group row">
+                <label for="inputEmail3" class="col-sm-3 col-form-label">Email</label>
+                <div class="col-sm-9">
+                    <form:input type="email" class="form-control" id="inputEmail3" placeholder="Email"
+                                path="email"/>
                 </div>
-                <div class="form-group row">
-                    <label for="inputPassword3" class="col-sm-3 col-form-label">Password</label>
-                    <div class="col-sm-9">
-                        <form:input type="password" class="form-control" id="inputPassword3" placeholder="Password"
-                                    path="password"/>
-                    </div>
+            </div>
+            <div class="d-flex justify-content-end align-content-center">
+                <form:errors path="email" cssClass="error"/>
+            </div>
+            <div class="form-group row">
+                <label for="inputPassword3" class="col-sm-3 col-form-label">Password</label>
+                <div class="col-sm-9">
+                    <form:input maxlength="30" minlength="8" size="8" type="password" class="form-control" id="inputPassword3"
+                                placeholder="Password"
+                                path="password"/>
                 </div>
+                <div class="d-flex justify-content-end align-content-center">
+                    <form:errors path="password" cssClass="error"/>
+                </div>
+            </div>
             <!-- /.card-body -->
             <div class="card-footer d-flex justify-content-center mb-3 bg-white">
                 <button type="submit" class="btn btn-info mr-2 w-25 ">Sign in</button>
@@ -56,21 +70,19 @@
                 </button>
             </div>
             <!-- /.card-footer -->
-        </form:form>
+            </form:form>
+        </div>
+        <!-- /.card -->
     </div>
-    <!-- /.card -->
-</div>
-<!-- ./wrapper -->
+    <!-- ./wrapper -->
 
-<!-- jQuery -->
-<script src="<c:url value="/resources/static/js/jquery.min.js"/>"></script>
-<!-- Bootstrap 4 -->
-<script src="<c:url value="/resources/static/js/bootstrap.bundle.min.js"/>"></script>
-<!-- bs-custom-file-input -->
-<script src="<c:url value="/resources/static/plugins/bs-custom-file-input/bs-custom-file-input.min.js"/>"></script>
-<!-- AdminLTE App -->
-<script src="<c:url value="/resources/static/js/adminlte.min.js"/>"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="<c:url value="/resources/static/js/demo.js"/>"></script>
+    <!-- jQuery -->
+    <script src="<c:url value="/resources/static/js/jquery.min.js"/>"></script>
+    <!-- Bootstrap 4 -->
+    <script src="<c:url value="/resources/static/js/bootstrap.bundle.min.js"/>"></script>
+    <!-- bs-custom-file-input -->
+    <script src="<c:url value="/resources/static/plugins/bs-custom-file-input/bs-custom-file-input.min.js"/>"></script>
+    <!-- AdminLTE App -->
+    <script src="<c:url value="/resources/static/js/adminlte.min.js"/>"></script>
 </body>
 </html>
