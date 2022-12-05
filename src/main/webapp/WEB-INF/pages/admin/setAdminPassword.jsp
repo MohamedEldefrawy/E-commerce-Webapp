@@ -34,12 +34,14 @@
         </div>
         <!-- /.card-header -->
         <!-- form start -->
-        <form:form class="form-horizontal" method="post" modelAttribute="resetAdmin">
+        <form class="form-horizontal" method="post">
             <div class="card-body">
-                <label for="inputPassword3" class="col-sm-3 col-form-label">Password</label>
                 <div class="form-group row">
-                    <form:input type="password" class="form-control" id="inputPassword3" placeholder="Password"
-                                path="resetAdmin"/>
+                    <label for="inputPassword" class="col-sm-3 col-form-label">Password</label>
+                    <div class="col-sm-9">
+                        <input maxlength="30" minlength="8" type="password" class="form-control" name="newPassword"
+                               id="inputPassword" placeholder="New Password" required />
+                    </div>
                 </div>
             </div>
             <!-- /.card-body -->
@@ -47,7 +49,7 @@
                 <button type="submit" class="btn btn-info m-auto  w-25 d-block ">Reset</button>
             </div>
             <!-- /.card-footer -->
-        </form:form>
+        </form>
     </div>
     <!-- /.card -->
 </div>
@@ -61,8 +63,6 @@
 <script src="<c:url value="/resources/static/plugins/bs-custom-file-input/bs-custom-file-input.min.js"/>"></script>
 <!-- AdminLTE App -->
 <script src="<c:url value="/resources/static/js/adminlte.min.js"/>"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="<c:url value="/resources/static/js/demo.js"/>"></script>
 </body>
 </html>
 
