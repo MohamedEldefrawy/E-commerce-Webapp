@@ -5,16 +5,19 @@ import com.vodafone.model.EmailType;
 import com.vodafone.model.User;
 import com.vodafone.model.UserStatus;
 import com.vodafone.model.dto.CreateUser;
+import com.vodafone.model.dto.LoginDTO;
 import com.vodafone.service.AdminService;
 import com.vodafone.service.SendEmailService;
 import com.vodafone.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/")
@@ -28,15 +31,20 @@ public class UserController {
 
     @GetMapping("login.htm")
     public String login(Model model) {
-        model.addAttribute("loginModel", new CreateUser());
+        model.addAttribute("loginModel", new LoginDTO());
         return "login";
     }
 
     @PostMapping("login.htm")
-    public String login(@Valid @ModelAttribute("loginModel") CreateUser createUser, HttpSession session) {
-        User user = userService.getUserByEmail(createUser.getEmail());
-        boolean isCredentialsValid = userService.verifyUserCredentials(createUser.getEmail(), createUser.getPassword());
-        session.setAttribute("email", createUser.getEmail());
+    public String login(@Valid @ModelAttribute("loginModel") LoginDTO login, BindingResult bindingResult, HttpSession session) {
+        if (bindingResult.hasErrors()) {
+            Map<String, Object> model = bindingResult.getModel();
+            return "login";
+        }
+
+        User user = userService.getUserByEmail(login.getEmail());
+        boolean isCredentialsValid = userService.verifyUserCredentials(login.getEmail(), login.getPassword());
+        session.setAttribute("email", login.getEmail());
         if (user == null) //exception occurred
         {
             System.out.println("Error occurred while logging in....");
@@ -73,7 +81,7 @@ public class UserController {
     }
 
     @GetMapping("logout.htm")
-    public String logout(HttpSession session){
+    public String logout(HttpSession session) {
         session.invalidate();
         return "login";
     }
