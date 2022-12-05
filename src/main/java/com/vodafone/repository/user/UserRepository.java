@@ -82,24 +82,4 @@ public class UserRepository implements IUserRepository {
         }
         return loginDTO;
     }
-    public User getByMail(String email) {
-        User user = null;
-        try (Session session = config.getSessionFactory().openSession()) {
-            user = session.createQuery("SELECT user from User user where user.email=: email", User.class).setParameter("email", email).getSingleResult();
-        } catch (HibernateException hibernateException) {
-            hibernateException.printStackTrace();
-        }
-        return user;
-    }
-    public User getByMailAndPassword(String email,String password) {
-        User user = null;
-        try (Session session = config.getSessionFactory().openSession()) {
-            user = session.createQuery("SELECT user from User user where user.email=: email and user.password=: password", User.class)
-                    .setParameter("email", email)
-                    .setParameter("password",password).getSingleResult();
-        } catch (HibernateException hibernateException) {
-            hibernateException.printStackTrace();
-        }
-        return user;
-    }
 }
