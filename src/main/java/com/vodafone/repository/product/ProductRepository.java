@@ -27,7 +27,6 @@ public class ProductRepository implements IProductRepository {
             transaction.commit();
             return true;
         } catch (HibernateException e) {
-            e.printStackTrace();
             return false;
         }
     }
@@ -50,7 +49,6 @@ public class ProductRepository implements IProductRepository {
             transaction.commit();
             return true;
         } catch (HibernateException e) {
-            e.printStackTrace();
             return false;
         }
     }
@@ -67,7 +65,6 @@ public class ProductRepository implements IProductRepository {
             transaction.commit();
             return true;
         } catch (HibernateException e) {
-            e.printStackTrace();
             return false;
         }
     }
@@ -77,7 +74,6 @@ public class ProductRepository implements IProductRepository {
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
             return session.get(Product.class, id);
         } catch (HibernateException e) {
-            e.printStackTrace();
             return null;
         }
     }
@@ -87,7 +83,6 @@ public class ProductRepository implements IProductRepository {
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
             return session.createQuery("from Product ", Product.class).list();
         } catch (HibernateException e) {
-            e.printStackTrace();
             return new ArrayList<>();
         }
     }
@@ -95,9 +90,12 @@ public class ProductRepository implements IProductRepository {
     @Override
     public Product getByName(String name) {
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
-            return session.get(Product.class, name);
+            List<Product> products = session.createQuery("FROM  Product p where p.name = :name", Product.class).setParameter("name", name).list();
+            if (products.size() > 0)
+                return products.get(0);
+            else
+                return null;
         } catch (HibernateException e) {
-            e.printStackTrace();
             return null;
         }
     }

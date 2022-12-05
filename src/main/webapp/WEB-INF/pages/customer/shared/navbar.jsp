@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <!-- Topbar Start -->
 <div class="container-fluid">
@@ -40,16 +41,14 @@
             </a>
         </div>
         <div class="col-lg-6 col-6 text-left">
-            <form action="">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search for products">
-                    <div class="input-group-append">
-                            <span class="input-group-text bg-transparent text-primary">
-                                <i class="fa fa-search"></i>
-                            </span>
-                    </div>
+            <div class="input-group">
+                <input id="Search" type="text" class="form-control" placeholder="Search for products"/>
+                <div class="input-group-append">
+                    <button id="btnSearch" class="input-group-text bg-transparent text-primary">
+                        <b class="fa fa-search"></b>
+                    </button>
                 </div>
-            </form>
+            </div>
         </div>
         <div class="col-lg-3 col-6 text-right">
             <a href="" class="btn border">
@@ -151,7 +150,3 @@
     </div>
 </div>
 <!-- Navbar End -->
-
-<script>
-    document.getElementById("CarouselItems").firstElementChild.classList.add("active");
-</script>

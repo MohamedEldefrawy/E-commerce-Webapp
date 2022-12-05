@@ -10,6 +10,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -32,6 +33,16 @@ public class CustomerController {
             products = this.productService.getByCategory(category);
         else
             products = this.productService.getAll();
+        model.addAttribute("products", products);
+        return "/customer/shared/home";
+    }
+
+    @GetMapping("/search/home.htm")
+    public String search(Model model, @RequestParam(required = false) String category, @RequestParam(required = false) String name) {
+        List<Product> products = new ArrayList<>(this.productService.getByCategory(category));
+        Product selectedProduct = this.productService.getByName(name);
+        if (selectedProduct != null)
+            products.add(selectedProduct);
         model.addAttribute("products", products);
         return "/customer/shared/home";
     }
