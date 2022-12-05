@@ -62,13 +62,7 @@ public class AdminController {
         else{
             return "redirect:/login.htm";
         }
-
     }
-
-    /*@GetMapping("/admins.htm/{id}")
-    public Admin get(@PathVariable("id") Long id) {
-        return adminService.get(id);
-    }*/
 
     @DeleteMapping("/admins.htm")
     @ResponseBody
@@ -83,7 +77,6 @@ public class AdminController {
             return "redirect:/login.htm";
         }
     }
-
 
     @GetMapping("/updateAdmin.htm")
     public String updateAdmin(HttpSession session,Model model, @RequestParam Long id) {
@@ -284,27 +277,6 @@ public class AdminController {
         }
     }
 
-    //todo: change url in frontend
-    @PutMapping("/resetPassword.htm")
-    public String updatePassword(HttpSession session, @Valid @ModelAttribute("password") String newPassword, BindingResult bindingResult) {
-        if(userAuthorizer.authorizeAdmin(session)) {
-            Long id = (long) session.getAttribute("id");
-            if (bindingResult.hasErrors()) {
-                Map<String, Object> model = bindingResult.getModel();
-                System.out.println(model);
-                //if input has error forward to same page
-                return "/{id}/resetPassword.htm";
-            }
-            if (adminService.updatePassword(id, newPassword)) {
-                return "redirect:/products";
-            }
-            return "redirect:/login.htm";
-        }
-        else{
-            return "redirect:/login.htm";
-        }
-    }
-
     @PostMapping("/updateAdmin.htm")
     public String submit(@Valid @ModelAttribute("admin") CreateAdmin admin, HttpSession session,
                          BindingResult bindingResult,
@@ -327,7 +299,6 @@ public class AdminController {
         }
     }
 
-    //todo: remove this method?
     @GetMapping("setPassword.htm")
     public String setAdminPassword(Model model, HttpSession session) {
         if(userAuthorizer.authorizeAdmin(session)) {
