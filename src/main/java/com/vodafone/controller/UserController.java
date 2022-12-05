@@ -9,6 +9,7 @@ import com.vodafone.model.dto.LoginDTO;
 import com.vodafone.service.AdminService;
 import com.vodafone.service.SendEmailService;
 import com.vodafone.service.UserService;
+import com.vodafone.validators.LoginValidator;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,8 +27,8 @@ import java.util.Map;
 public class UserController {
     private UserService userService;
     private AdminService adminService;
-
     private SendEmailService emailService;
+    private LoginValidator validator;
 
     @GetMapping("login.htm")
     public String login(Model model) {
@@ -37,8 +38,12 @@ public class UserController {
 
     @PostMapping("login.htm")
     public String login(@Valid @ModelAttribute("loginModel") LoginDTO login, BindingResult bindingResult, HttpSession session) {
+        Map<String, Object> model = bindingResult.getModel();
         if (bindingResult.hasErrors()) {
-            Map<String, Object> model = bindingResult.getModel();
+            return "login";
+        }
+        validator.validate(login, bindingResult);
+        if (bindingResult.hasErrors()) {
             return "login";
         }
 

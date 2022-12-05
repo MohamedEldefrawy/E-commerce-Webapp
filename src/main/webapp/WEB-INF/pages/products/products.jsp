@@ -64,7 +64,8 @@
                     } else
                         alert("Something Wrong!!")
                 }).catch((reason) => {
-                    alert(reason);
+                    //todo: redirect to error page
+                    alert("Authorization required");
                 })
             }
         }
