@@ -43,8 +43,10 @@
         </div>
       </div>
       <!-- /.card-body -->
-      <div class="card-footer d-flex justify-content-center mb-3 bg-white">
-        <button type="submit" class="btn btn-info w-25 " value="verify">Verify</button>
+      <div class="card-footer   bg-white">
+        <button type="submit" class="btn btn-info w-25 d-block m-auto  " value="verify">Verify</button>
+        <div class="mb-2"></div>
+        <button type="button" class="btn btn-info w-25 d-block m-auto" value="resend">Re-send</button>
       </div>
       <!-- /.card-footer -->
     </form:form>
