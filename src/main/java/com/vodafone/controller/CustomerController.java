@@ -30,6 +30,8 @@ public class CustomerController {
     private CartService cartService;
     private SendEmailService sendEmailService;
 
+    private HashService hashService;
+
     // Home
     @GetMapping("home.htm")
     public String home(Model model, @RequestParam(required = false) String category) {
@@ -234,8 +236,7 @@ public class CustomerController {
         session.setAttribute("email", customerDTO.getEmail());
         session.setAttribute("username", customerDTO.getUserName());
         session.setAttribute("verificationCode", otp);
-        int salt = new Random().nextInt(10) + customerDTO.getUserName().length();
-        customerDTO.setPassword(new Argon2PasswordEncoder(salt, 16, 1, 2 * 1024, 2).encode(customerDTO.getPassword()));
+        customerDTO.setPassword(hashService.encryptPassword(customerDTO.getPassword(),customerDTO.getUserName()));
         customerService.create(customerDTO);
         if (sendEmailService.sendEmail(customerDTO, EmailType.ACTIVATION, session)) {
             return "redirect:/customer/verify.htm";

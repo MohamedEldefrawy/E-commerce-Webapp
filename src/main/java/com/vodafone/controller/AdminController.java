@@ -6,10 +6,10 @@ import com.vodafone.model.Role;
 import com.vodafone.model.dto.CreateAdmin;
 import com.vodafone.model.dto.CreateProduct;
 import com.vodafone.service.AdminService;
+import com.vodafone.service.HashService;
 import com.vodafone.service.ProductService;
 import com.vodafone.validators.AdminValidator;
 import com.vodafone.validators.UserAuthorizer;
-import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -25,7 +25,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 @Controller
 @RequestMapping("/admins")
@@ -36,69 +35,69 @@ public class AdminController {
     private UserAuthorizer userAuthorizer;
     private AdminValidator validator;
 
+    private HashService hashService;
+
     public AdminController(AdminService adminService, ProductService productService,
-                           AdminValidator adminValidator,UserAuthorizer userAuthorizer) {
+                           AdminValidator adminValidator, UserAuthorizer userAuthorizer, HashService hashService) {
         this.adminService = adminService;
         this.productService = productService;
         this.validator = adminValidator;
         this.userAuthorizer = userAuthorizer;
+        this.hashService = hashService;
         //todo: save super admin config in config file as a bean
         //create super admin
         Admin admin = new Admin();
         admin.setEmail("admin@gmail.com");
-        admin.setPassword("12345678");
         admin.setRole(Role.Admin);
         admin.setUserName("admoona");
+        admin.setPassword(hashService.encryptPassword("12345678", admin.getUserName()));
+        System.out.println(admin.getPassword());
         admin.setFirstLogin(false);
         this.adminService.create(admin);
     }
 
 
     @GetMapping("/admins.htm")
-    public String getAll(HttpSession session,Model model) {
-        if(userAuthorizer.authorizeAdmin(session)) {
+    public String getAll(HttpSession session, Model model) {
+        if (userAuthorizer.authorizeAdmin(session)) {
             List<Admin> adminList = this.adminService.getAll();
             model.addAttribute("admins", adminList);
             return "admin/viewAllAdmins";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
 
     @DeleteMapping("/admins.htm")
     @ResponseBody
-    public String delete(HttpSession session,@RequestParam(required = false) Long id) {
-        if(userAuthorizer.authorizeAdmin(session)) {
+    public String delete(HttpSession session, @RequestParam(required = false) Long id) {
+        if (userAuthorizer.authorizeAdmin(session)) {
             boolean deleted = adminService.delete(id);
             if (deleted)
                 return "true";
             return "false";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
 
     @GetMapping("/updateAdmin.htm")
-    public String updateAdmin(HttpSession session,Model model, @RequestParam Long id) {
-        if(userAuthorizer.authorizeAdmin(session)) {
+    public String updateAdmin(HttpSession session, Model model, @RequestParam Long id) {
+        if (userAuthorizer.authorizeAdmin(session)) {
             Admin admin = adminService.get(id);
             model.addAttribute("admin", admin);
             return "admin/updateAdmin";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
 
     @GetMapping("/createAdmin.htm")
     public String getCreateAdminPage(HttpSession session, Model model) {
-        if(userAuthorizer.authorizeAdmin(session)) {
+        if (userAuthorizer.authorizeAdmin(session)) {
             model.addAttribute("admin", new CreateAdmin());
             return "admin/createAdmin";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
@@ -106,7 +105,7 @@ public class AdminController {
     @PostMapping("/createAdmin.htm")
     public String create(@ModelAttribute("admin") @Validated CreateAdmin createAdmin,
                          HttpSession session, BindingResult bindingResult) {
-        if(userAuthorizer.authorizeAdmin(session)) {
+        if (userAuthorizer.authorizeAdmin(session)) {
             Map<String, Object> model = bindingResult.getModel();
             //check input is correct
             if (bindingResult.hasErrors()) {
@@ -130,46 +129,42 @@ public class AdminController {
                 //model.put("errors","Duplicate");
                 return "admin/createAdmin";
             }
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
 
     // Home
     @GetMapping("home.htm")
-    public String home(HttpSession session,Model model) {
-        if(userAuthorizer.authorizeAdmin(session)) {
+    public String home(HttpSession session, Model model) {
+        if (userAuthorizer.authorizeAdmin(session)) {
             List<Product> productList = this.productService.getAll();
             model.addAttribute("products", productList);
             return "shared/home";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
 
     //    Products End Points
     @GetMapping("/products/show.htm")
-    public String showAllProducts(HttpSession session,Model model) {
-        if(userAuthorizer.authorizeAdmin(session)) {
+    public String showAllProducts(HttpSession session, Model model) {
+        if (userAuthorizer.authorizeAdmin(session)) {
             model.addAttribute("products", this.productService.getAll());
             model.addAttribute("id", 0L);
             return "products/products";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
 
     @GetMapping("/products/update.htm")
     public String updateProduct(HttpSession session, Model model, @RequestParam Long id) {
-        if(userAuthorizer.authorizeAdmin(session)) {
+        if (userAuthorizer.authorizeAdmin(session)) {
             Product selectedProduct = this.productService.get(id);
             model.addAttribute("product", selectedProduct);
             return "products/update";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
@@ -181,7 +176,7 @@ public class AdminController {
                          @RequestParam("image") CommonsMultipartFile image,
                          HttpSession session,
                          @RequestParam Long id) {
-        if(userAuthorizer.authorizeAdmin(session)) {
+        if (userAuthorizer.authorizeAdmin(session)) {
             if (bindingResult.hasErrors()) {
                 return "products/update";
             }
@@ -209,19 +204,17 @@ public class AdminController {
             if (result)
                 return "redirect:/product/show.htm";
             return "products/update";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
 
     @GetMapping("/products/create.htm")
-    public String createProduct(HttpSession session,Model model) {
-        if(userAuthorizer.authorizeAdmin(session)) {
+    public String createProduct(HttpSession session, Model model) {
+        if (userAuthorizer.authorizeAdmin(session)) {
             model.addAttribute("product", new CreateProduct());
             return "products/create";
-        }
-        else {
+        } else {
             return "redirect:/login.htm";
         }
     }
@@ -231,7 +224,7 @@ public class AdminController {
                        BindingResult bindingResult,
                        @RequestParam("image") CommonsMultipartFile image,
                        HttpSession session) {
-        if(userAuthorizer.authorizeAdmin(session)) {
+        if (userAuthorizer.authorizeAdmin(session)) {
             if (bindingResult.hasErrors()) {
                 Map<String, Object> model = bindingResult.getModel();
                 return "products/createProduct";
@@ -258,8 +251,7 @@ public class AdminController {
             newProduct.setInStock(product.getInStock());
             this.productService.create(newProduct);
             return "redirect:/admins/products/show.htm";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
@@ -267,14 +259,13 @@ public class AdminController {
 
     @DeleteMapping("/products/show.htm")
     @ResponseBody
-    public String deleteProduct(HttpSession session,@RequestParam(required = false) Long id) {
-        if(userAuthorizer.authorizeAdmin(session)) {
+    public String deleteProduct(HttpSession session, @RequestParam(required = false) Long id) {
+        if (userAuthorizer.authorizeAdmin(session)) {
             boolean result = this.productService.delete(id);
             if (result)
                 return "true";
             return "false";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
@@ -283,7 +274,7 @@ public class AdminController {
     public String submit(@Valid @ModelAttribute("admin") CreateAdmin admin, HttpSession session,
                          BindingResult bindingResult,
                          @RequestParam Long id) {
-        if(userAuthorizer.authorizeAdmin(session)) {
+        if (userAuthorizer.authorizeAdmin(session)) {
             if (bindingResult.hasErrors()) {
                 return "admin/updateAdmin";
             }
@@ -295,34 +286,30 @@ public class AdminController {
             if (result)
                 return "redirect:/admins/admins.htm";
             return "admin/updateAdmin";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
 
     @GetMapping("setPassword.htm")
     public String setAdminPassword(Model model, HttpSession session) {
-        if(userAuthorizer.authorizeAdmin(session)) {
+        if (userAuthorizer.authorizeAdmin(session)) {
             return "admin/setAdminPassword";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
 
     @PostMapping("setPassword.htm")
     public String setAdminPassword(@Valid @NotNull @NotBlank @RequestParam("newPassword") String newPassword, HttpSession session) {
-        if(userAuthorizer.authorizeAdmin(session)) {
+        if (userAuthorizer.authorizeAdmin(session)) {
             String email = session.getAttribute("email").toString();
             Admin admin = adminService.getByEmail(email);
+            hashService.encryptPassword(newPassword, (String) session.getAttribute("username"));
             admin.setPassword(newPassword);
-            int salt = new Random().nextInt(10) + admin.getUserName().length();
-            newPassword = new Argon2PasswordEncoder(salt, 16, 1, 2 * 1024, 2).encode(newPassword);
             adminService.updatePassword(admin.getId(), newPassword);
             return "redirect:/admins/home.htm";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
