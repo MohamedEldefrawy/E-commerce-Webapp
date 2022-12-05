@@ -4,6 +4,11 @@
 <html xmlns:form="http://www.springframework.org/tags/form">
 
 <rapid:override name="content">
+<style>
+    span.error {
+        color: red;
+    }
+</style>
 <div class="card card-info">
     <div class="card-header">
         <h3 class="card-title">Create Admin</h3>
@@ -13,10 +18,12 @@
             <div class="input-group mb-3">
                 <label for="email" class="col-sm-2 col-form-label">E-mail</label>
                 <form:input id="email" class="form-control" path="email"/>
+                <form:errors path="email" cssClass="error"/>
             </div>
             <div class="input-group mb-3">
                 <label for="userName" class="col-sm-2 col-form-label">Username</label>
                 <form:input id="userName" class="form-control" path="userName"/>
+                <form:errors path="userName" cssClass="error"/>
             </div>
 
             <div class="d-flex justify-content-center align-content-center">
