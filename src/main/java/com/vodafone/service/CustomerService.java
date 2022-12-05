@@ -1,11 +1,9 @@
 package com.vodafone.service;
 
 import com.vodafone.model.Customer;
-import com.vodafone.model.Email;
 import com.vodafone.model.Role;
 import com.vodafone.model.UserStatus;
 import com.vodafone.repository.customer.CustomerRepository;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,7 +11,6 @@ import java.util.List;
 @Service
 public class CustomerService {
     private final CustomerRepository customerRepository;
-
 
     public CustomerService(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
@@ -61,6 +58,10 @@ public class CustomerService {
 
     public boolean resetPassword(String email, String password) {
         return customerRepository.resetPassword(email, password);
+    }
+
+    public boolean expireOtp(String userName) {
+        return this.customerRepository.expireOtp(userName);
     }
 
 }
