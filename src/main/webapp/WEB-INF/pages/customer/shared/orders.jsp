@@ -42,19 +42,8 @@
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
                             <a href="<c:url value="/customer/home.htm"/>" class="nav-item nav-link active">Home</a>
-                            <a href="<c:url value="/customer/home.htm#products"/>" class="nav-item nav-link">Shop</a>
-                            <div class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
-                                <div class="dropdown-menu rounded-0 m-0">
-                                    <a href="<c:url value="/customer/showCart.htm"/>" class="dropdown-item">Shopping Cart</a>
-                                    <a href="checkout.html" class="dropdown-item">Checkout</a>
-                                </div>
-                            </div>
-                            <a href="contact.html" class="nav-item nav-link">Contact</a>
-                        </div>
-                        <div class="navbar-nav ml-auto py-0">
-                            <a href="" class="nav-item nav-link">Login</a>
-                            <a href="" class="nav-item nav-link">Register</a>
+                            <a href="<c:url value="/customer/showCart.htm"/>" class="nav-item nav-link ">Shopping Cart</a>
+                            <a href="<c:url value="/customer/orders.htm"/>" class="nav-item nav-link ">Orders</a>
                         </div>
                     </div>
                 </nav>
@@ -68,33 +57,62 @@
     <div class="container-fluid pt-5">
         <div class="row px-xl-5 pb-3">
             <c:forEach items="${orders}" var="order">
-                <div class="card border-secondary mb-5">
-                    <div class="card-header bg-secondary border-0">
-                        <h4 class="font-weight-semi-bold m-0">Order #${order.getId()}</h4>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="font-weight-medium mb-3">Products</h5>
-                        <c:forEach items="${order.getOrderItems()}" var="orderItem">
-                            <div class="d-flex justify-content-between">
-                                <p>${orderItem.getProduct().getName()}</p>
-                                <p>   ${orderItem.getQuantity()}x   </p>
-                                <p>$${orderItem.getTotal()}</p>
+                <div class="col-lg-4">
+                    <div class="card border-secondary mb-5">
+                        <div class="card-header bg-secondary border-0">
+                            <h4 class="font-weight-semi-bold m-0">Order #${order.getId()}</h4>
+                        </div>
+                        <div class="card-header bg-secondary border-0">
+                            <h6 class="font-weight-medium">${order.getDate()}</h6>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="font-weight-medium mb-3">Products</h5>
+                            <c:forEach items="${order.getOrderItems()}" var="orderItem">
+                                <div class="d-flex justify-content-between">
+                                    <div class="container">
+                                        <div>
+                                            <h5 class="font-weight-semi-bold m-0">${orderItem.getProduct().getName()}</h5>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6 col-md-4">
+                                                <img src="<c:url value="/resources/static/images/${orderItem.getProduct().getImage()}"/>" alt="" style="width: 50px;">
+                                            </div>
+                                            <div class="col-6 col-md-4 d-flex align-items-end">
+                                                <p>${orderItem.getProduct().getRate()}/5</p>
+                                            </div>
+                                            <div class="col-6 col-md-4 d-flex align-items-end">
+                                                <p>${orderItem.getProduct().getCategory()}</p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6 col-md-4">
+                                                <p>$${orderItem.getProduct().getPrice()}</p>
+                                            </div>
+                                            <div class="col-6 col-md-4">
+                                                <p>${orderItem.getQuantity()}x</p>
+                                            </div>
+                                            <div class="col-6 col-md-4">
+                                                <p>$${orderItem.getTotal()}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </c:forEach>
+                            <hr class="mt-0">
+                            <div class="d-flex justify-content-between mb-3 pt-1">
+                                <h6 class="font-weight-medium">Subtotal</h6>
+                                <h6 class="font-weight-medium">$${order.getTotal()}</h6>
                             </div>
-                        </c:forEach>
-                        <hr class="mt-0">
-                        <div class="d-flex justify-content-between mb-3 pt-1">
-                            <h6 class="font-weight-medium">Subtotal</h6>
-                            <h6 class="font-weight-medium">$${order.getTotal()}</h6>
+                            <div class="d-flex justify-content-between">
+                                <h6 class="font-weight-medium">Shipping</h6>
+                                <h6 class="font-weight-medium">$0</h6>
+                            </div>
                         </div>
-                        <div class="d-flex justify-content-between">
-                            <h6 class="font-weight-medium">Shipping</h6>
-                            <h6 class="font-weight-medium">$0</h6>
-                        </div>
-                    </div>
-                    <div class="card-footer border-secondary bg-transparent">
-                        <div class="d-flex justify-content-between mt-2">
-                            <h5 class="font-weight-bold">Total</h5>
-                            <h5 class="font-weight-bold">$${order.getTotal()}</h5>
+                        <div class="card-footer border-secondary bg-transparent">
+                            <div class="d-flex justify-content-between mt-2">
+                                <h5 class="font-weight-bold">Total</h5>
+                                <h5 class="font-weight-bold">$${order.getTotal()}</h5>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -110,7 +110,7 @@ public class OrderRepository implements IOrderRepository {
     public List<Order> getByCustomerId(Long customerId) {
         List<Order> list;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            Query query = session.createQuery("SELECT o from Order o where o.customer.id=:id order by o.date desc", Order.class);
+            Query query = session.createQuery("SELECT o from Order o where o.customer.id=:id order by o.id desc", Order.class);
             query.setParameter("id", customerId);
             list = query.getResultList();
         } catch (HibernateException e) {

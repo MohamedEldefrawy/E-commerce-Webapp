@@ -50,8 +50,9 @@ public class CustomerRepository implements ICustomerRepository {
             if (customer == null) {
                 return false;
             } else {
-                session.update(updatedCustomer);
-                session.beginTransaction().commit();
+                customer.setCode(updatedCustomer.getCode());
+                session.update(customer);
+                transaction.commit();
                 return true;
             }
         } catch (HibernateException hibernateException) {

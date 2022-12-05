@@ -15,6 +15,8 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 @AllArgsConstructor
@@ -215,11 +217,6 @@ public class CustomerController {
         return "registration";
     }
 
-    @GetMapping("login.htm")
-    public String login() {
-        return "login";
-    }
-
     //todo: change customer param type to CreateUser DTO
     @PostMapping("registration.htm")
     public String register(@Valid @ModelAttribute("customerDTO") Customer customerDTO, BindingResult bindingResult,
@@ -250,6 +247,8 @@ public class CustomerController {
         Customer selectedCustomer = this.customerService.getByUserName(session.getAttribute("username").toString());
         String otp = this.sendEmailService.getRandom();
         selectedCustomer.setCode(otp);
+        session.setAttribute("verificationCode", otp);
+        this.customerService.update(selectedCustomer.getId(),selectedCustomer);
         if (sendEmailService.sendEmail(selectedCustomer, EmailType.ACTIVATION, session)) {
 
             return "redirect:/customer/verify.htm";
@@ -261,17 +260,12 @@ public class CustomerController {
     @GetMapping("/verify.htm")
     public String verify(Model model, HttpSession session) {
         model.addAttribute("customer", new Customer());
-        Runnable otpExpirationThread = () -> {
-            try {
-                Thread.sleep(60000);
-                Customer customer = this.customerService.getByUserName(session.getAttribute("username").toString());
-                customer.setCode(null);
-            } catch (InterruptedException e) {
-                System.out.println(e.getMessage());
-            }
-        };
 
-        otpExpirationThread.run();
+        final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
+        executor.schedule(() -> {
+            customerService.expireOtp(session.getAttribute("username").toString());
+        }, 1, TimeUnit.MINUTES);
+
         return "verify";
     }
 

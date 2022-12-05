@@ -51,7 +51,7 @@
                         <button type="submit" class="btn btn-info m-auto  w-25 d-block ">Sign Up</button>
                         <label class="m-2 text-center d-block" for="signIn">Already have account</label>
                         <button type="button" class="btn btn-default m-auto w-25 d-block " id="signIn">
-                            <a href="<c:url value="login.htm" />" >Sign In</a>
+                            <a href="<c:url value="/login.htm" />" >Sign In</a>
                         </button>
                     </div>
                     <!-- /.card-footer -->

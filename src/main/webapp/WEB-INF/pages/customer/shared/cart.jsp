@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: voisDev
-  Date: 2022-12-03
-  Time: 5:05 p.m.
-  To change this template use File | Settings | File Templates.
---%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -37,7 +30,50 @@
 
 <body>
 <!-- Navbar Start -->
-<jsp:include page="navbar.jsp"/>
+<div class="container-fluid">
+    <div class="row border-top px-xl-5">
+        <div class="col-lg-3 d-none d-lg-block">
+            <a class="btn shadow-none d-flex align-items-center justify-content-between bg-primary text-white w-100"
+               data-toggle="collapse" href="#navbar-vertical"
+               style="height: 65px; margin-top: -1px; padding: 0 30px;">
+                <h6 class="m-0">Categories</h6>
+                <i class="fa fa-angle-down text-dark"></i>
+            </a>
+            <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0"
+                 id="navbar-vertical">
+                <div class="navbar-nav w-100 overflow-hidden" style="height: 410px">
+                    <a href="<c:url value="/customer/home.htm?category=Cats"/>" class="nav-item nav-link">Cats</a>
+                    <a href="<c:url value="/customer/home.htm?category=Dogs"/>" class="nav-item nav-link">Dogs</a>
+                    <a href="<c:url value="/customer/home.htm?category=Birds"/>" class="nav-item nav-link">Birds</a>
+                    <a href="<c:url value="/customer/home.htm?category=Turtles"/>"
+                       class="nav-item nav-link">Turtles</a>
+                    <a href="<c:url value="/customer/home.htm?category=Hamsters"/>"
+                       class="nav-item nav-link">Hamsters</a>
+                    <a href="<c:url value="/customer/home.htm"/>"
+                       class="nav-item nav-link">All Products</a>
+                </div>
+            </nav>
+        </div>
+        <div class="col-lg-9">
+            <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0">
+                <a href="" class="text-decoration-none d-block d-lg-none">
+                    <h1 class="m-0 display-5 font-weight-semi-bold"><span
+                            class="text-primary font-weight-bold border px-3 mr-1">E</span>Shopper</h1>
+                </a>
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                    <div class="navbar-nav mr-auto py-0">
+                        <a href="<c:url value="/customer/home.htm"/>" class="nav-item nav-link active">Home</a>
+                        <a href="<c:url value="/customer/showCart.htm"/>" class="nav-item nav-link ">Shopping Cart</a>
+                        <a href="<c:url value="/customer/orders.htm"/>" class="nav-item nav-link ">Orders</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
 <!-- Navbar End -->
 
 <!-- Products Start -->
@@ -153,20 +189,20 @@
 <script>
     function deleteRow(itemId) {
         let row = document.getElementById(itemId);
-            fetch("?itemId=" + itemId, {
-                method: "DELETE",
-                headers: {
-                    'Accept': '*/*'
-                }
-            }).then(response => response.json()).then(data => {
-                if (data) {
-                    row.remove();
-                    window.location.reload();
-                } else
-                    alert("Something Wrong!!")
-            }).catch((reason) => {
-                alert(reason);
-            })
+        fetch("?itemId=" + itemId, {
+            method: "DELETE",
+            headers: {
+                'Accept': '*/*'
+            }
+        }).then(response => response.json()).then(data => {
+            if (data) {
+                row.remove();
+                window.location.reload();
+            } else
+                alert("Something Wrong!!")
+        }).catch((reason) => {
+            alert(reason);
+        })
     }
     function incrementQuantity(productId) {
         fetch("./increment/?productId=" + productId, {
@@ -220,4 +256,3 @@
 </script>
 
 </html>
-
