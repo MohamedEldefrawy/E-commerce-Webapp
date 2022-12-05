@@ -80,14 +80,14 @@ public class CustomerController {
     }
 
     @PostMapping("reset.htm")
-    public String resetPassword(@Valid @ModelAttribute("resetUser") CreateUser user, BindingResult bindingResult) {
+    public String resetPassword(@Valid @ModelAttribute("resetUser") CreateUser user, BindingResult bindingResult,HttpSession session) {
         if (bindingResult.hasErrors()) {
             Map<String, Object> modelBind = bindingResult.getModel();
             System.out.println(modelBind);
             return "registration";
         }
         System.out.println(user);
-        if (customerService.resetPassword(user.getEmail(), user.getPassword()))
+        if (customerService.resetPassword(session.getAttribute("email").toString(), user.getPassword()))
             return "login";
         return "resetPassword";
     }
@@ -294,3 +294,5 @@ public class CustomerController {
 
     }
 }
+
+//todo: remove unused DTOs -> any dto that pass only one parameter to be used then remove it

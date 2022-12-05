@@ -30,7 +30,7 @@ public class UserController {
         model.addAttribute("loginModel", new CreateUser());
         return "login";
     }
-
+    //todo: add counter for login in the session
     @PostMapping("login.htm")
     public String login(@Valid @ModelAttribute("loginModel") CreateUser createUser, HttpSession session) {
         User user = userService.getUserByEmail(createUser.getEmail());
