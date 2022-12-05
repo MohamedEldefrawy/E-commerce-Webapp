@@ -292,7 +292,9 @@ public class CustomerController {
             return "404";
         } else {
             if (customer1.getCode().equals(customer.getCode())) {
-                customerService.updateStatusActivated(customer.getEmail());
+                System.out.println(customer1.getEmail());
+                System.out.println("updated " + customerService.updateStatusActivated(customer1.getEmail()));
+                customerService.updateStatusActivated(customer1.getEmail());
                 return "redirect:/customer/home.htm";
             } else {
                 return "404";
