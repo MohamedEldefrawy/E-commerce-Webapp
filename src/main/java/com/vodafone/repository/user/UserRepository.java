@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.NoResultException;
 import java.util.HashMap;
-import java.util.List;
 
 @AllArgsConstructor
 @Repository
@@ -34,6 +33,29 @@ public class UserRepository implements IUserRepository {
                     .setParameter("password", password)
                     .getSingleResult() != null;
         } catch (HibernateException|NoResultException  hibernateException) {
+            hibernateException.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public User getByEmail(String email) {
+        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
+            return session.createQuery("SELECT user from User user where user.email=: email", Customer.class).setParameter("email", email).getSingleResult();
+        } catch (HibernateException hibernateException) {
+            hibernateException.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public boolean verifyUserCredentials(String email, String password) {
+        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
+            return session.createQuery("SELECT user from User user where user.email=: email and user.password =:password", Customer.class)
+                    .setParameter("email", email)
+                    .setParameter("password", password)
+                    .getSingleResult() != null;
+        } catch (HibernateException hibernateException) {
             hibernateException.printStackTrace();
             return false;
         }
