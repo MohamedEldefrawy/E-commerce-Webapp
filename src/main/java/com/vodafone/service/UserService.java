@@ -12,9 +12,8 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-@NoArgsConstructor
 public class UserService {
-    IUserRepository userRepository;
+    private IUserRepository userRepository;
 
     public LoginDTO login(String email, String password) {
         return userRepository.login(email,password);

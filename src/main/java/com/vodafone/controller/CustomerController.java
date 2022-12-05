@@ -160,8 +160,8 @@ public class CustomerController {
     public String addItemToCart(@RequestParam int customerId, @RequestParam int itemId,
                                 @RequestParam int quantity) {
 
-        Cart customerCart = customerService.get(Long.valueOf(customerId)).getCart();
-        Product product = productService.get(Long.valueOf(itemId));
+        Cart customerCart = customerService.get((long) customerId).getCart();
+        Product product = productService.get((long) itemId);
         CartItem cartItem = new CartItem(quantity, product, customerCart);
         boolean added = cartService.addItem(customerCart.getId(), cartItem);
         if (added)
@@ -198,6 +198,7 @@ public class CustomerController {
         return "login";
     }
 
+    //todo: change customer param type to CreateUser DTO
     @PostMapping("registration.htm")
     public String register(@Valid @ModelAttribute("customerDTO") Customer customerDTO, BindingResult bindingResult,
                            HttpServletRequest request, HttpSession session) {
@@ -210,19 +211,18 @@ public class CustomerController {
         String otp = sendEmailService.getRandom();
         customerDTO.setCode(otp);
         //todo: check for username and email uniqueness
-        if (customerService.getByMail(customerDTO.getEmail()) == null) {
+        if (customerService.getByMail(customerDTO.getEmail()) != null) {
             System.out.println("Email exists");
             return "";
             //todo: display error for not unique email
         }
-        if (customerService.getByUserName(customerDTO.getUserName()) == null) {
+        if (customerService.getByUserName(customerDTO.getUserName()) != null) {
             System.out.println("Username exists");
             return "";
             //todo: display error for not unique username
         }
         customerService.create(customerDTO);
         if (sendEmailService.sendEmail(customerDTO, EmailType.ACTIVATION, session)) {
-//            HttpSession session = request.getSession();
             session.setAttribute("email", customerDTO.getEmail());
             session.setAttribute("password", customerDTO.getPassword());
             session.setAttribute("userName", customerDTO.getUserName());
