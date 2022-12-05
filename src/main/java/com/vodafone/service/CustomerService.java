@@ -14,13 +14,15 @@ public class CustomerService {
 
     public CustomerService(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
-        Customer customer = new Customer();
+        /*Customer customer = new Customer();
         customer.setEmail("mi@gmail.com");
         customer.setUserName("mi");
         customer.setRole(Role.Customer);
         customer.setPassword("1234");
         customer.setUserStatus(UserStatus.ACTIVATED);
         customerRepository.create(customer);
+
+         */
     }
 
 

@@ -40,6 +40,9 @@
           <div class="col-sm-9">
             <form:input type="text"  cssClass="form-control" id="inputVerificationCode" name="verificationCode" placeholder="Verification Code" path="code"/>
           </div>
+          <div class="col-sm-5 m-auto">
+            <form:errors path="code" cssClass="text-danger"/>
+          </div>
         </div>
       </div>
       <!-- /.card-body -->

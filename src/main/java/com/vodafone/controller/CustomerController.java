@@ -277,15 +277,15 @@ public class CustomerController {
             System.out.println(modelBind);
             return "verify";
         }
-        Customer customer1 = customerService.getByMail((String) session.getAttribute("email"));
-        if (customer1 == null) {
+        Customer selectedCustomer = customerService.getByMail((String) session.getAttribute("email"));
+        if (selectedCustomer == null) {
             //todo: display email not found error
             return "404";
         } else {
-            if (customer1.getCode().equals(customer.getCode())) {
-                System.out.println(customer1.getEmail());
-                System.out.println("updated " + customerService.updateStatusActivated(customer1.getEmail()));
-                customerService.updateStatusActivated(customer1.getEmail());
+            if (selectedCustomer.getCode().equals(customer.getCode())) {
+                System.out.println(selectedCustomer.getEmail());
+                System.out.println("updated " + customerService.updateStatusActivated(selectedCustomer.getEmail()));
+                customerService.updateStatusActivated(selectedCustomer.getEmail());
                 return "redirect:/customer/home.htm";
             } else {
                 return "404";
