@@ -4,6 +4,7 @@ import com.vodafone.model.*;
 import com.vodafone.model.dto.CreateUser;
 import com.vodafone.service.*;
 import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,6 +16,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -232,9 +234,10 @@ public class CustomerController {
         session.setAttribute("email", customerDTO.getEmail());
         session.setAttribute("username", customerDTO.getUserName());
         session.setAttribute("verificationCode", otp);
+        int salt = new Random().nextInt(10) + customerDTO.getUserName().length();
+        customerDTO.setPassword(new Argon2PasswordEncoder(salt, 16, 1, 2 * 1024, 2).encode(customerDTO.getPassword()));
         customerService.create(customerDTO);
         if (sendEmailService.sendEmail(customerDTO, EmailType.ACTIVATION, session)) {
-
             return "redirect:/customer/verify.htm";
         } else {
             return "registration";
@@ -248,7 +251,7 @@ public class CustomerController {
         String otp = this.sendEmailService.getRandom();
         selectedCustomer.setCode(otp);
         session.setAttribute("verificationCode", otp);
-        this.customerService.update(selectedCustomer.getId(),selectedCustomer);
+        this.customerService.update(selectedCustomer.getId(), selectedCustomer);
         if (sendEmailService.sendEmail(selectedCustomer, EmailType.ACTIVATION, session)) {
 
             return "redirect:/customer/verify.htm";
