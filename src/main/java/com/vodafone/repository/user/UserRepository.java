@@ -17,28 +17,30 @@ public class UserRepository implements IUserRepository {
 
     @Override
     public User getByEmail(String email) {
+        User user;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            return session.createQuery("SELECT user from User user where user.email=: email", User.class).setParameter("email", email).getSingleResult();
-        } catch (HibernateException |NoResultException hibernateException) {
+            user = session.createQuery("SELECT user from User user where user.email=: email", User.class).setParameter("email", email).getSingleResult();
+        } catch (HibernateException | NoResultException hibernateException) {
             hibernateException.printStackTrace();
             return null;
         }
+        return user;
     }
 
     @Override
     public boolean verifyUserCredentials(String email, String password) {
+        boolean isValid = false;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            return session.createQuery("SELECT user from User user where user.email=: email and user.password =:password", User.class)
+            isValid = session.createQuery("SELECT user from User user where user.email=: email and user.password =:password", User.class)
                     .setParameter("email", email)
                     .setParameter("password", password)
                     .getSingleResult() != null;
-        } catch (HibernateException|NoResultException  hibernateException) {
+        } catch (HibernateException | NoResultException hibernateException) {
             hibernateException.printStackTrace();
             return false;
         }
+        return isValid;
     }
-
-
 
 
 }
