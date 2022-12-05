@@ -244,31 +244,36 @@ public class CustomerController {
         } else {
             return "registration";
         }
+    }
 
+    @GetMapping("resendOtp.htm")
+    public String sendOtp(HttpSession session) {
+        String otp = sendEmailService.getRandom();
+        Customer selectedCustomer = this.customerService.getByUserName(session.getAttribute("username").toString());
+        selectedCustomer.setCode(otp);
+        if (sendEmailService.sendEmail(selectedCustomer, EmailType.ACTIVATION, session)) {
+            session.setAttribute("verificationCode", otp);
+            System.out.println(session);
+            return "redirect:/customer/verify.htm";
+        } else {
+            return "registration";
+        }
     }
 
     @GetMapping("/verify.htm")
-    public String verify(Model model) {
+    public String verify(Model model, HttpSession session) {
         model.addAttribute("customer", new Customer());
+        String userName = session.getAttribute("username").toString();
+        Runnable otpExpirationThread = () -> {
+            try {
+                Thread.sleep(1000);
+                this.customerService.expireOtp(userName);
+            } catch (InterruptedException e) {
+                System.out.println(e.getMessage());
+            }
+        };
+        otpExpirationThread.run();
         return "verify";
-    }
-
-    @PutMapping("/increment")
-    @ResponseBody
-    public String incrementProductQuantity(@RequestParam Long cartId, @RequestParam Long productId) {
-        int newQuantity = cartService.incrementProductQuantity(cartId, productId, 1);
-        if (newQuantity > 0)
-            return "true";
-        return "false";
-    }
-
-    @PutMapping("/decrement")
-    @ResponseBody
-    public String decrementProductQuantity(@RequestParam Long cartId, @RequestParam Long productId) {
-        int newQuantity = cartService.decrementProductQuantity(cartId, productId);
-        if (newQuantity >= 0)
-            return "true";
-        return "false";
     }
 
     @PostMapping("verify.htm")
@@ -292,5 +297,23 @@ public class CustomerController {
 
         }
 
+    }
+
+    @PutMapping("/increment")
+    @ResponseBody
+    public String incrementProductQuantity(@RequestParam Long cartId, @RequestParam Long productId) {
+        int newQuantity = cartService.incrementProductQuantity(cartId, productId, 1);
+        if (newQuantity > 0)
+            return "true";
+        return "false";
+    }
+
+    @PutMapping("/decrement")
+    @ResponseBody
+    public String decrementProductQuantity(@RequestParam Long cartId, @RequestParam Long productId) {
+        int newQuantity = cartService.decrementProductQuantity(cartId, productId);
+        if (newQuantity >= 0)
+            return "true";
+        return "false";
     }
 }
