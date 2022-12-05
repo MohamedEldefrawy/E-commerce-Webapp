@@ -15,6 +15,8 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 @AllArgsConstructor
@@ -261,6 +263,12 @@ public class CustomerController {
     @GetMapping("/verify.htm")
     public String verify(Model model, HttpSession session) {
         model.addAttribute("customer", new Customer());
+
+        final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
+        executor.schedule(() -> {
+            customerService.expireOtp(session.getAttribute("username").toString());
+        }, 1, TimeUnit.MINUTES);
+
         return "verify";
     }
 
@@ -272,15 +280,6 @@ public class CustomerController {
             System.out.println(modelBind);
             return "verify";
         }
-        Runnable otpExpirationThread = () -> {
-            try {
-                Thread.sleep(60000);
-                this.customerService.expireOtp(session.getAttribute("username").toString());
-            } catch (InterruptedException e) {
-                System.out.println(e.getMessage());
-            }
-        };
-        otpExpirationThread.run();
         Customer customer1 = customerService.getByMail((String) session.getAttribute("email"));
         if (customer1 == null) {
             //todo: display email not found error
