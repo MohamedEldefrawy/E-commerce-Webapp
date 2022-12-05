@@ -5,8 +5,6 @@ import com.vodafone.model.Product;
 import com.vodafone.model.Role;
 import com.vodafone.model.dto.CreateAdmin;
 import com.vodafone.model.dto.CreateProduct;
-import com.vodafone.model.dto.CreateUser;
-import com.vodafone.model.dto.SetAdminPassword;
 import com.vodafone.service.AdminService;
 import com.vodafone.service.ProductService;
 import com.vodafone.validators.AdminValidator;
@@ -19,11 +17,12 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Controller
 @RequestMapping("/admins")
@@ -104,7 +103,7 @@ public class AdminController {
     @PostMapping("/createAdmin.htm")
     public String create(@ModelAttribute("admin") @Validated CreateAdmin createAdmin, BindingResult bindingResult) {
         Map<String, Object> model = bindingResult.getModel();
-        validator.validate(createAdmin,bindingResult);
+        validator.validate(createAdmin, bindingResult);
         if (bindingResult.hasErrors()) {
             return "admin/createAdmin";
         }
@@ -266,31 +265,18 @@ public class AdminController {
         return "admin/updateAdmin";
     }
 
-    @GetMapping
-    public String setAdminPasswordLoader(Model model) {
-        model.addAttribute("resetAdmin", new SetAdminPassword());
-        return "setAdminPassword";
+    @GetMapping("setPassword.htm")
+    public String setAdminPassword(Model model, HttpSession session) {
+        session.setAttribute("email", "admin@gmail.com");
+        return "admin/setAdminPassword";
     }
 
-    @PostMapping
-    public String setAdminPassword(@Valid @ModelAttribute("resetAdmin") SetAdminPassword admin, BindingResult bindingResult,
-                                   HttpSession session) {
-        if (bindingResult.hasErrors()) {
-            Map<String, Object> modelBind = bindingResult.getModel();
-            System.out.println(modelBind);
-            return "login";
-        }
+    @PostMapping("setPassword.htm")
+    public String setAdminPassword(@Valid @NotNull @NotBlank @RequestParam("newPassword") String newPassword, HttpSession session) {
         String email = session.getAttribute("email").toString();
-        Admin existingAdmin = adminService.getByEmail(email);
-        //get user's email from session
-        if (!Objects.equals(admin.getOldPassword(), existingAdmin.getPassword())) {
-            System.out.println("Non-matching passwords!!");
-            return "login";
-            //todo: throw and catch exception
-        }
-        String newPassword = admin.getNewPassword();
-        existingAdmin.setPassword(newPassword);
-        adminService.update(existingAdmin.getId(), existingAdmin);
-        return "setAdminPassword";
+        Admin admin = adminService.getByEmail(email);
+        admin.setPassword(newPassword);
+        adminService.updatePassword(admin.getId(), newPassword);
+        return "redirect:/admins/home.htm";
     }
 }
