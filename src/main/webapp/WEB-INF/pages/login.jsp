@@ -66,7 +66,7 @@
             <div class="card-footer d-flex justify-content-center mb-3 bg-white">
                 <button type="submit" class="btn btn-info mr-2 w-25 ">Sign in</button>
                 <button type="button" class="btn btn-default w-25 ">
-                    <a href="<c:url value="registration.htm" />">Sign Up</a>
+                    <a href="<c:url value="/customer/registration.htm" />">Sign Up</a>
                 </button>
             </div>
             <!-- /.card-footer -->
