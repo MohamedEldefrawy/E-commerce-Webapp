@@ -1,9 +1,11 @@
 package com.vodafone.service;
 
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
+@Service
 public class HashService {
     int salt = new Random().nextInt(10);
     private final Argon2PasswordEncoder encoder;
