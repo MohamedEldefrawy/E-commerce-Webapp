@@ -1,64 +1,88 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib uri="http://www.rapid-framework.org.cn/rapid" prefix="rapid" %>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>EShopper - Bootstrap Shop Template</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
 
-<rapid:override name="content">
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
 
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+          rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="<c:url value="/resources/static/css/owl.carousel.min.css" />" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="<c:url value="/resources/static/css/style.min.css" />" rel="stylesheet">
+
+</head>
+
+<body>
 <!-- Navbar Start -->
-    <div class="container-fluid">
-        <div class="row border-top px-xl-5">
-            <div class="col-lg-3 d-none d-lg-block">
+<div class="container-fluid">
+    <div class="row border-top px-xl-5">
+        <div class="col-lg-3 d-none d-lg-block">
             <a class="btn shadow-none d-flex align-items-center justify-content-between bg-primary text-white w-100"
-                data-toggle="collapse" href="#navbar-vertical"
-                style="height: 65px; margin-top: -1px; padding: 0 30px;">
+               data-toggle="collapse" href="#navbar-vertical"
+               style="height: 65px; margin-top: -1px; padding: 0 30px;">
                 <h6 class="m-0">Categories</h6>
                 <i class="fa fa-angle-down text-dark"></i>
             </a>
             <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0"
-                id="navbar-vertical">
+                 id="navbar-vertical">
                 <div class="navbar-nav w-100 overflow-hidden" style="height: 410px">
                     <a href="<c:url value="/customer/home.htm?category=Cats"/>" class="nav-item nav-link">Cats</a>
                     <a href="<c:url value="/customer/home.htm?category=Dogs"/>" class="nav-item nav-link">Dogs</a>
                     <a href="<c:url value="/customer/home.htm?category=Birds"/>" class="nav-item nav-link">Birds</a>
                     <a href="<c:url value="/customer/home.htm?category=Turtles"/>"
-                    class="nav-item nav-link">Turtles</a>
+                       class="nav-item nav-link">Turtles</a>
                     <a href="<c:url value="/customer/home.htm?category=Hamsters"/>"
-                    class="nav-item nav-link">Hamsters</a>
+                       class="nav-item nav-link">Hamsters</a>
                     <a href="<c:url value="/customer/home.htm"/>"
-                    class="nav-item nav-link">All Products</a>
+                       class="nav-item nav-link">All Products</a>
                 </div>
             </nav>
-            </div>
-            <div class="col-lg-9">
-                <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0">
-                    <a href="" class="text-decoration-none d-block d-lg-none">
-                        <h1 class="m-0 display-5 font-weight-semi-bold"><span
-                        class="text-primary font-weight-bold border px-3 mr-1">E</span>Shopper</h1>
-                    </a>
-                    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
-                        <div class="navbar-nav mr-auto py-0">
-                            <a href="<c:url value="/customer/home.htm"/>" class="nav-item nav-link active">Home</a>
-                            <a href="<c:url value="/customer/showCart.htm"/>" class="nav-item nav-link">Shopping Cart</a>
-                            <a href="<c:url value="/customer/orders.htm"/>" class="nav-item nav-link">Orders</a>
-                        </div>
+        </div>
+        <div class="col-lg-9">
+            <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0">
+                <a href="" class="text-decoration-none d-block d-lg-none">
+                    <h1 class="m-0 display-5 font-weight-semi-bold"><span
+                            class="text-primary font-weight-bold border px-3 mr-1">E</span>Shopper</h1>
+                </a>
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                    <div class="navbar-nav mr-auto py-0">
+                        <a href="<c:url value="/customer/home.htm"/>" class="nav-item nav-link active">Home</a>
+                        <a href="<c:url value="/customer/showCart.htm"/>" class="nav-item nav-link ">Shopping Cart</a>
+                        <a href="<c:url value="/customer/orders.htm"/>" class="nav-item nav-link ">Orders</a>
                     </div>
-                </nav>
-            </div>
+                </div>
+            </nav>
         </div>
     </div>
+</div>
 <!-- Navbar End -->
 
-
+<!-- Products Start -->
 <!-- Page Header Start -->
 <div class="container-fluid bg-secondary mb-5">
     <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
         <h1 class="font-weight-semi-bold text-uppercase mb-3">Shopping Cart</h1>
         <div class="d-inline-flex">
-            <p class="m-0"><a href="<c:url value="/customer/home.htm"/>" >Home</a></p>
+            <p class="m-0"><a href="">Home</a></p>
             <p class="m-0 px-2">-</p>
             <p class="m-0">Shopping Cart</p>
         </div>
@@ -136,25 +160,49 @@
         </div>
     </div>
 </div>
+<!-- Cart End -->
 <!-- Products End -->
 
+
+<!-- Footer Start -->
+<jsp:include page="footer.jsp"/>
+<!-- Footer End -->
+
+
+<!-- Back to Top -->
+<a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+
+
+<!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+<script src="<c:url value="/resources/static/js/easing.min.js" />"></script>
+<script src="<c:url value="/resources/static/js/owl.carousel.min.js" />"></script>
+
+<!-- Contact Javascript File -->
+<script src="<c:url value="/resources/static/js/jqBootstrapValidation.min.js" />"></script>
+<script src="<c:url value="/resources/static/js/contact.js" />"></script>
+
+<!-- Template Javascript -->
+<script src="<c:url value="/resources/static/js/main.js" />"></script>
+</body>
 <script>
     function deleteRow(itemId) {
         let row = document.getElementById(itemId);
-            fetch("?itemId=" + itemId, {
-                method: "DELETE",
-                headers: {
-                    'Accept': '*/*'
-                }
-            }).then(response => response.json()).then(data => {
-                if (data) {
-                    row.remove();
-                    window.location.reload();
-                } else
-                    alert("Something Wrong!!")
-            }).catch((reason) => {
-                alert(reason);
-            })
+        fetch("?itemId=" + itemId, {
+            method: "DELETE",
+            headers: {
+                'Accept': '*/*'
+            }
+        }).then(response => response.json()).then(data => {
+            if (data) {
+                row.remove();
+                window.location.reload();
+            } else
+                alert("Something Wrong!!")
+        }).catch((reason) => {
+            alert(reason);
+        })
     }
     function incrementQuantity(productId) {
         fetch("./increment/?productId=" + productId, {
@@ -205,7 +253,6 @@
         }
     }
 
-</rapid:override>
+</script>
 
-<jsp:include page="../shared/home.jsp"/>
-
+</html>
