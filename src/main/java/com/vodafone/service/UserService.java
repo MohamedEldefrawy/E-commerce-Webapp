@@ -18,4 +18,7 @@ public class UserService {
     public LoginDTO login(String email, String password) {
         return userRepository.login(email,password);
     }
+
+    public User getUserByEmail(String email){ return userRepository.getByEmail(email); }
+    public boolean verifyUserCredentials(String email,String password){ return userRepository.verifyUserCredentials(email,password); }
 }
