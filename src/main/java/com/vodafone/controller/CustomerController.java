@@ -15,7 +15,6 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Controller
 @AllArgsConstructor
@@ -132,7 +131,7 @@ public class CustomerController {
     }
 
     @GetMapping("/orders.htm")
-    public String getCustomerOrders(Model model,@RequestParam Long customerId) {
+    public String getCustomerOrders(Model model, @RequestParam Long customerId) {
         List<Order> orders = orderService.getByCustomerId(customerId);
         model.addAttribute("orders", orders);
         return "/customer/shared/orders";
@@ -151,7 +150,7 @@ public class CustomerController {
         Cart customerCart = customerService.get(customerId).getCart();
         Order submittedOrder = cartService.submitFinalOrder(customerCart.getId());
         boolean created = orderService.create(submittedOrder);
-        if(created)
+        if (created)
             return "true";
         //todo redirect to error page
         return "false";
@@ -173,8 +172,8 @@ public class CustomerController {
     public String addItemToCart(@RequestParam int customerId, @RequestParam int itemId,
                                 @RequestParam int quantity) {
 
-        Cart customerCart = customerService.get(Long.valueOf(customerId)).getCart();
-        Product product = productService.get(Long.valueOf(itemId));
+        Cart customerCart = customerService.get((long) customerId).getCart();
+        Product product = productService.get((long) itemId);
         CartItem cartItem = new CartItem(quantity, product, customerCart);
         boolean added = cartService.addItem(customerCart.getId(), cartItem);
         if (added)
@@ -205,12 +204,13 @@ public class CustomerController {
         model.addAttribute("customerDTO", new Customer());
         return "registration";
     }
-    
+
     @GetMapping("login.htm")
     public String login() {
         return "login";
     }
 
+    //todo: change customer param type to CreateUser DTO
     @PostMapping("registration.htm")
     public String register(@Valid @ModelAttribute("customerDTO") Customer customerDTO, BindingResult bindingResult,
                            HttpServletRequest request, HttpSession session) {
@@ -223,22 +223,21 @@ public class CustomerController {
         String otp = sendEmailService.getRandom();
         customerDTO.setCode(otp);
         //todo: check for username and email uniqueness
-        if (customerService.getByMail(customerDTO.getEmail()) == null) {
+        if (customerService.getByMail(customerDTO.getEmail()) != null) {
             System.out.println("Email exists");
             return "";
             //todo: display error for not unique email
         }
-        if (customerService.getByUserName(customerDTO.getUserName()) == null) {
+        if (customerService.getByUserName(customerDTO.getUserName()) != null) {
             System.out.println("Username exists");
             return "";
             //todo: display error for not unique username
         }
         customerService.create(customerDTO);
         if (sendEmailService.sendEmail(customerDTO, EmailType.ACTIVATION, session)) {
-//            HttpSession session = request.getSession();
             session.setAttribute("email", customerDTO.getEmail());
             session.setAttribute("password", customerDTO.getPassword());
-            session.setAttribute("userName", customerDTO.getUserName());
+            session.setAttribute("username", customerDTO.getUserName());
             session.setAttribute("verificationCode", otp);
             System.out.println(session);
             return "redirect:/customer/verify.htm";
@@ -257,34 +256,37 @@ public class CustomerController {
     @PutMapping("/increment")
     @ResponseBody
     public String incrementProductQuantity(@RequestParam Long cartId, @RequestParam Long productId) {
-        int newQuantity = cartService.incrementProductQuantity(cartId, productId,1);
-        if (newQuantity>0)
+        int newQuantity = cartService.incrementProductQuantity(cartId, productId, 1);
+        if (newQuantity > 0)
             return "true";
         return "false";
     }
+
     @PutMapping("/decrement")
     @ResponseBody
     public String decrementProductQuantity(@RequestParam Long cartId, @RequestParam Long productId) {
         int newQuantity = cartService.decrementProductQuantity(cartId, productId);
-        if (newQuantity>=0)
+        if (newQuantity >= 0)
             return "true";
         return "false";
     }
+
     @PostMapping("verify.htm")
-    public String verifyCustomer(@Valid @ModelAttribute("customer") Customer customer, BindingResult bindingResult) {
+    public String verifyCustomer(@Valid @ModelAttribute("customer") Customer customer, BindingResult bindingResult, HttpSession session) {
         if (bindingResult.hasErrors()) {
-            Map<String, Object>  modelBind = bindingResult.getModel();
+            Map<String, Object> modelBind = bindingResult.getModel();
             System.out.println(modelBind);
             return "verify";
         }
-        Customer customer1 = customerService.getByMail(customer.getEmail());
-        if(customer1==null){
+        Customer customer1 = customerService.getByMail((String) session.getAttribute("email"));
+        if (customer1 == null) {
+            //todo: display email not found error
             return "404";
         } else {
-            if(customer1.getCode().equals(customer.getCode())){
+            if (customer1.getCode().equals(customer.getCode())) {
                 customerService.updateStatusActivated(customer.getEmail());
                 return "redirect:/customer/home.htm";
-            }else {
+            } else {
                 return "404";
             }
 
