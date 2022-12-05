@@ -243,11 +243,10 @@ public class CustomerController {
             //todo: display error for not unique username
         }
         customerService.create(customerDTO);
+        session.setAttribute("email", customerDTO.getEmail());
+        session.setAttribute("username", customerDTO.getUserName());
+        session.setAttribute("verificationCode", otp);
         if (sendEmailService.sendEmail(customerDTO, EmailType.ACTIVATION, session)) {
-            session.setAttribute("email", customerDTO.getEmail());
-            session.setAttribute("password", customerDTO.getPassword());
-            session.setAttribute("username", customerDTO.getUserName());
-            session.setAttribute("verificationCode", otp);
             System.out.println(session);
             return "redirect:/customer/verify.htm";
         } else {
