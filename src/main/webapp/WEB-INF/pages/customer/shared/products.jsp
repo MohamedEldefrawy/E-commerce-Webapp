@@ -57,7 +57,7 @@
 <script>
     function addToCart(id) {
         let quantity = document.getElementById(id).value;
-        fetch("./addToCart/itemId=" + id + "&quantity=" + quantity, {
+        fetch("./addToCart/?itemId=" + id + "&quantity=" + quantity, {
             method: "POST",
             headers: {
                 'Accept': '*/*'
