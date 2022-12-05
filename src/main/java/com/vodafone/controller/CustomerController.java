@@ -129,24 +129,26 @@ public class CustomerController {
         List<Product> products = productService.getByCategory(category);
         return null;
     }
-
+    //edit in frontend
     @GetMapping("/orders.htm")
-    public String getCustomerOrders(Model model, @RequestParam Long customerId) {
+    public String getCustomerOrders(HttpSession session, Model model) {
+        Long customerId = (long) session.getAttribute("id");
         List<Order> orders = orderService.getByCustomerId(customerId);
         model.addAttribute("orders", orders);
         return "/customer/shared/orders";
     }
 
-    @GetMapping("{customerId}/finalOrder")
+    /*@GetMapping("{customerId}/finalOrder")
     public String showFinalOrder(@PathVariable Long customerId) {
         Cart customerCart = customerService.get(customerId).getCart();
         Order finalOrder = cartService.showFinalOrder(customerCart.getId());
         return null;
-    }
-
+    }*/
+    //change in front end
     @PostMapping("/submitOrder.htm")
     @ResponseBody
-    public String submitFinalOrder(@RequestParam Long customerId) {
+    public String submitFinalOrder(HttpSession session){
+        Long customerId = (long) session.getAttribute("id");
         Cart customerCart = customerService.get(customerId).getCart();
         Order submittedOrder = cartService.submitFinalOrder(customerCart.getId());
         boolean created = orderService.create(submittedOrder);
@@ -156,8 +158,10 @@ public class CustomerController {
         return "false";
     }
 
+    //change in front end
     @GetMapping("showCart.htm")
-    public String showCustomerCart(Model model, @RequestParam Long customerId) {
+    public String showCustomerCart(Model model, HttpSession session) {
+        Long customerId = (long) session.getAttribute("id");
         Cart customerCart = customerService.get(customerId).getCart();
         List<CartItem> cartItems = customerCart.getItems();
         double totalCartPrice = cartItems.stream().mapToDouble(CartItem::getTotal).sum();
@@ -167,13 +171,16 @@ public class CustomerController {
         return "/customer/shared/cart";
     }
 
+    //change in front end
     @PostMapping("/addToCart")
     @ResponseBody
-    public String addItemToCart(@RequestParam int customerId, @RequestParam int itemId,
+    public String addItemToCart(HttpSession session, @RequestParam Long itemId,
                                 @RequestParam int quantity) {
 
-        Cart customerCart = customerService.get((long) customerId).getCart();
-        Product product = productService.get((long) itemId);
+        Long customerId = (long) session.getAttribute("id");
+        Cart customerCart = customerService.get(customerId).getCart();
+        Product product = productService.get(itemId);
+
         CartItem cartItem = new CartItem(quantity, product, customerCart);
         boolean added = cartService.addItem(customerCart.getId(), cartItem);
         if (added)
@@ -181,9 +188,11 @@ public class CustomerController {
         return "false";
     }
 
+    //change in front end
     @DeleteMapping("showCart.htm")
     @ResponseBody
-    public String removeItemFromCart(@RequestParam Long customerId, @RequestParam Long itemId) {
+    public String removeItemFromCart(HttpSession session, @RequestParam Long itemId) {
+        Long customerId = (long) session.getAttribute("id");
         Cart customerCart = customerService.get(customerId).getCart();
         boolean deleted = cartService.removeItem(customerCart.getId(), itemId);
         if (deleted)
@@ -191,12 +200,12 @@ public class CustomerController {
         return "false";
     }
 
-    @PutMapping("{customerId}/cart/clear")
+    /*@PutMapping("{customerId}/cart/clear")
     public String clearCustomerCart(@PathVariable Long customerId) {
         Cart customerCart = customerService.get(customerId).getCart();
         cartService.clearCart(customerCart.getId());
         return null;
-    }
+    }*/
 
 
     @GetMapping("registration.htm")
@@ -255,16 +264,23 @@ public class CustomerController {
 
     @PutMapping("/increment")
     @ResponseBody
-    public String incrementProductQuantity(@RequestParam Long cartId, @RequestParam Long productId) {
-        int newQuantity = cartService.incrementProductQuantity(cartId, productId, 1);
-        if (newQuantity > 0)
+
+    public String incrementProductQuantity(HttpSession session, @RequestParam Long productId) {
+        //retrieve cartId from session
+        Long customerId = (long) session.getAttribute("id");
+        Long cartId = customerService.get(customerId).getCart().getId();
+        int newQuantity = cartService.incrementProductQuantity(cartId, productId,1);
+        if (newQuantity>0)
+
             return "true";
         return "false";
     }
 
     @PutMapping("/decrement")
     @ResponseBody
-    public String decrementProductQuantity(@RequestParam Long cartId, @RequestParam Long productId) {
+    public String decrementProductQuantity(HttpSession session, @RequestParam Long productId) {
+        Long customerId = (long) session.getAttribute("id");
+        Long cartId = customerService.get(customerId).getCart().getId();
         int newQuantity = cartService.decrementProductQuantity(cartId, productId);
         if (newQuantity >= 0)
             return "true";
@@ -289,8 +305,6 @@ public class CustomerController {
             } else {
                 return "404";
             }
-
         }
-
     }
 }

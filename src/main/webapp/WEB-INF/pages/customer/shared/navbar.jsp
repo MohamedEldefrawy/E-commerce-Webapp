@@ -104,8 +104,8 @@
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
                             <div class="dropdown-menu rounded-0 m-0">
-                                <a href="./showCart.htm?customerId=2" class="dropdown-item">Shopping Cart</a>
-                                <a href="./orders.htm?customerId=2" class="dropdown-item">Orders</a>
+                                <a href="./showCart.htm" class="dropdown-item">Shopping Cart</a>
+                                <a href="./orders.htm" class="dropdown-item">Orders</a>
                             </div>
                         </div>
                         <a href="contact.html" class="nav-item nav-link">Contact</a>
