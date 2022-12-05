@@ -8,6 +8,7 @@ import com.vodafone.model.dto.CreateProduct;
 import com.vodafone.service.AdminService;
 import com.vodafone.service.ProductService;
 import com.vodafone.validators.AdminValidator;
+import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 @Controller
 @RequestMapping("/admins")
@@ -275,6 +277,8 @@ public class AdminController {
     public String setAdminPassword(@Valid @NotNull @NotBlank @RequestParam("newPassword") String newPassword, HttpSession session) {
         String email = session.getAttribute("email").toString();
         Admin admin = adminService.getByEmail(email);
+        int salt = new Random().nextInt(10) + admin.getUserName().length();
+        newPassword = new Argon2PasswordEncoder(salt, 16, 1, 2 * 1024, 2).encode(newPassword);
         admin.setPassword(newPassword);
         adminService.updatePassword(admin.getId(), newPassword);
         return "redirect:/admins/home.htm";
