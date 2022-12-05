@@ -9,9 +9,11 @@ import com.vodafone.model.dto.CreateUser;
 import com.vodafone.model.dto.SetAdminPassword;
 import com.vodafone.service.AdminService;
 import com.vodafone.service.ProductService;
+import com.vodafone.validators.AdminValidator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
@@ -30,9 +32,12 @@ public class AdminController {
     AdminService adminService;
     ProductService productService;
 
-    public AdminController(AdminService adminService, ProductService productService) {
+    private AdminValidator validator;
+
+    public AdminController(AdminService adminService, ProductService productService, AdminValidator adminValidator) {
         this.adminService = adminService;
         this.productService = productService;
+        this.validator = adminValidator;
         //todo: save super admin config in config file as a bean
         //create super admin
         Admin admin = new Admin();
@@ -97,12 +102,17 @@ public class AdminController {
     }
 
     @PostMapping("/createAdmin.htm")
-    public String create(@Valid @ModelAttribute("admin") CreateAdmin createAdmin, BindingResult bindingResult) {
+    public String create(@ModelAttribute("admin") @Validated CreateAdmin createAdmin, BindingResult bindingResult) {
         Map<String, Object> model = bindingResult.getModel();
+        validator.validate(createAdmin,bindingResult);
+        if (bindingResult.hasErrors()) {
+            return "admin/createAdmin";
+        }
+        /*validator.validate(createAdmin,bindingResult);
         if (bindingResult.hasErrors()) {
             System.out.println(model);
             return "admin/createAdmin";
-        }
+        }*/
         Admin admin = new Admin();
         admin.setUserName(createAdmin.getUserName());
         admin.setRole(Role.Admin);
@@ -242,6 +252,7 @@ public class AdminController {
     @PostMapping("/updateAdmin.htm")
     public String submit(@Valid @ModelAttribute("admin") CreateAdmin admin, BindingResult bindingResult,
                          @RequestParam Long id) {
+
         if (bindingResult.hasErrors()) {
             return "admin/updateAdmin";
         }

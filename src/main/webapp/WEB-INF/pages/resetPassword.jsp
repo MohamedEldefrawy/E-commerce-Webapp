@@ -29,10 +29,6 @@
         <!-- form start -->
         <form:form class="form-horizontal" method="post" modelAttribute="resetUser">
             <div class="card-body">
-                    <label for="inputEmail" class="col-sm-3 col-form-label">Email</label>
-                    <div class="form-group row">
-                        <form:input type="email" class="form-control" id="inputEmail" placeholder="Enter your email" path="email"/>
-                    </div>
                     <label for="inputPassword3" class="col-sm-3 col-form-label">Password</label>
                     <div class="form-group row">
                         <form:input type="password" class="form-control" id="inputPassword3" placeholder="Password" path="password"/>

@@ -18,6 +18,7 @@ import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/")
+
 @AllArgsConstructor
 public class UserController {
     private UserService userService;

@@ -80,14 +80,14 @@ public class CustomerController {
     }
 
     @PostMapping("reset.htm")
-    public String resetPassword(@Valid @ModelAttribute("resetUser") CreateUser user, BindingResult bindingResult) {
+    public String resetPassword(@Valid @ModelAttribute("resetUser") CreateUser user, BindingResult bindingResult, HttpSession session) {
         if (bindingResult.hasErrors()) {
             Map<String, Object> modelBind = bindingResult.getModel();
             System.out.println(modelBind);
             return "registration";
         }
         System.out.println(user);
-        if (customerService.resetPassword(user.getEmail(), user.getPassword()))
+        if (customerService.resetPassword(session.getAttribute("email").toString(), user.getPassword()))
             return "login";
         return "resetPassword";
     }
@@ -130,23 +130,26 @@ public class CustomerController {
         return null;
     }
 
+    //edit in frontend
     @GetMapping("/orders.htm")
-    public String getCustomerOrders(Model model, @RequestParam Long customerId) {
+    public String getCustomerOrders(HttpSession session, Model model) {
+        Long customerId = (long) session.getAttribute("id");
         List<Order> orders = orderService.getByCustomerId(customerId);
         model.addAttribute("orders", orders);
         return "/customer/shared/orders";
     }
 
-    @GetMapping("{customerId}/finalOrder")
+    /*@GetMapping("{customerId}/finalOrder")
     public String showFinalOrder(@PathVariable Long customerId) {
         Cart customerCart = customerService.get(customerId).getCart();
         Order finalOrder = cartService.showFinalOrder(customerCart.getId());
         return null;
-    }
-
+    }*/
+    //change in front end
     @PostMapping("/submitOrder.htm")
     @ResponseBody
-    public String submitFinalOrder(@RequestParam Long customerId) {
+    public String submitFinalOrder(HttpSession session) {
+        Long customerId = (long) session.getAttribute("id");
         Cart customerCart = customerService.get(customerId).getCart();
         Order submittedOrder = cartService.submitFinalOrder(customerCart.getId());
         boolean created = orderService.create(submittedOrder);
@@ -156,8 +159,10 @@ public class CustomerController {
         return "false";
     }
 
+    //change in front end
     @GetMapping("showCart.htm")
-    public String showCustomerCart(Model model, @RequestParam Long customerId) {
+    public String showCustomerCart(Model model, HttpSession session) {
+        Long customerId = (long) session.getAttribute("id");
         Cart customerCart = customerService.get(customerId).getCart();
         List<CartItem> cartItems = customerCart.getItems();
         double totalCartPrice = cartItems.stream().mapToDouble(CartItem::getTotal).sum();
@@ -167,13 +172,16 @@ public class CustomerController {
         return "/customer/shared/cart";
     }
 
+    //change in front end
     @PostMapping("/addToCart")
     @ResponseBody
-    public String addItemToCart(@RequestParam int customerId, @RequestParam int itemId,
+    public String addItemToCart(HttpSession session, @RequestParam Long itemId,
                                 @RequestParam int quantity) {
 
-        Cart customerCart = customerService.get((long) customerId).getCart();
-        Product product = productService.get((long) itemId);
+        Long customerId = (long) session.getAttribute("id");
+        Cart customerCart = customerService.get(customerId).getCart();
+        Product product = productService.get(itemId);
+
         CartItem cartItem = new CartItem(quantity, product, customerCart);
         boolean added = cartService.addItem(customerCart.getId(), cartItem);
         if (added)
@@ -181,9 +189,11 @@ public class CustomerController {
         return "false";
     }
 
+    //change in front end
     @DeleteMapping("showCart.htm")
     @ResponseBody
-    public String removeItemFromCart(@RequestParam Long customerId, @RequestParam Long itemId) {
+    public String removeItemFromCart(HttpSession session, @RequestParam Long itemId) {
+        Long customerId = (long) session.getAttribute("id");
         Cart customerCart = customerService.get(customerId).getCart();
         boolean deleted = cartService.removeItem(customerCart.getId(), itemId);
         if (deleted)
@@ -191,12 +201,12 @@ public class CustomerController {
         return "false";
     }
 
-    @PutMapping("{customerId}/cart/clear")
+    /*@PutMapping("{customerId}/cart/clear")
     public String clearCustomerCart(@PathVariable Long customerId) {
         Cart customerCart = customerService.get(customerId).getCart();
         cartService.clearCart(customerCart.getId());
         return null;
-    }
+    }*/
 
 
     @GetMapping("registration.htm")
@@ -219,61 +229,54 @@ public class CustomerController {
             System.out.println(modelBind);
             return "registration";
         }
-        System.out.println(customerDTO);
         String otp = sendEmailService.getRandom();
         customerDTO.setCode(otp);
-        //todo: check for username and email uniqueness
-        if (customerService.getByMail(customerDTO.getEmail()) != null) {
-            System.out.println("Email exists");
-            return "";
-            //todo: display error for not unique email
-        }
-        if (customerService.getByUserName(customerDTO.getUserName()) != null) {
-            System.out.println("Username exists");
-            return "";
-            //todo: display error for not unique username
-        }
+        //set session attributes
+        session.setAttribute("email", customerDTO.getEmail());
+        session.setAttribute("username", customerDTO.getUserName());
+        session.setAttribute("verificationCode", otp);
         customerService.create(customerDTO);
+        session.setAttribute("email", customerDTO.getEmail());
+        session.setAttribute("username", customerDTO.getUserName());
+        session.setAttribute("verificationCode", otp);
         if (sendEmailService.sendEmail(customerDTO, EmailType.ACTIVATION, session)) {
-            session.setAttribute("email", customerDTO.getEmail());
-            session.setAttribute("password", customerDTO.getPassword());
-            session.setAttribute("username", customerDTO.getUserName());
-            session.setAttribute("verificationCode", otp);
-            System.out.println(session);
-            return "redirect:/customer/verify.htm";
-        } else {
-            return "registration";
-        }
-    }
 
-    @GetMapping("resendOtp.htm")
-    public String sendOtp(HttpSession session) {
-        String otp = sendEmailService.getRandom();
-        Customer selectedCustomer = this.customerService.getByUserName(session.getAttribute("username").toString());
-        selectedCustomer.setCode(otp);
-        if (sendEmailService.sendEmail(selectedCustomer, EmailType.ACTIVATION, session)) {
-            session.setAttribute("verificationCode", otp);
-            System.out.println(session);
             return "redirect:/customer/verify.htm";
         } else {
             return "registration";
         }
+
     }
 
     @GetMapping("/verify.htm")
-    public String verify(Model model, HttpSession session) {
+    public String verify(Model model) {
         model.addAttribute("customer", new Customer());
-        String userName = session.getAttribute("username").toString();
-        Runnable otpExpirationThread = () -> {
-            try {
-                Thread.sleep(1000);
-                this.customerService.expireOtp(userName);
-            } catch (InterruptedException e) {
-                System.out.println(e.getMessage());
-            }
-        };
-        otpExpirationThread.run();
         return "verify";
+    }
+
+    @PutMapping("/increment")
+    @ResponseBody
+
+    public String incrementProductQuantity(HttpSession session, @RequestParam Long productId) {
+        //retrieve cartId from session
+        Long customerId = (long) session.getAttribute("id");
+        Long cartId = customerService.get(customerId).getCart().getId();
+        int newQuantity = cartService.incrementProductQuantity(cartId, productId, 1);
+        if (newQuantity > 0)
+
+            return "true";
+        return "false";
+    }
+
+    @PutMapping("/decrement")
+    @ResponseBody
+    public String decrementProductQuantity(HttpSession session, @RequestParam Long productId) {
+        Long customerId = (long) session.getAttribute("id");
+        Long cartId = customerService.get(customerId).getCart().getId();
+        int newQuantity = cartService.decrementProductQuantity(cartId, productId);
+        if (newQuantity >= 0)
+            return "true";
+        return "false";
     }
 
     @PostMapping("verify.htm")
@@ -294,26 +297,6 @@ public class CustomerController {
             } else {
                 return "404";
             }
-
         }
-
-    }
-
-    @PutMapping("/increment")
-    @ResponseBody
-    public String incrementProductQuantity(@RequestParam Long cartId, @RequestParam Long productId) {
-        int newQuantity = cartService.incrementProductQuantity(cartId, productId, 1);
-        if (newQuantity > 0)
-            return "true";
-        return "false";
-    }
-
-    @PutMapping("/decrement")
-    @ResponseBody
-    public String decrementProductQuantity(@RequestParam Long cartId, @RequestParam Long productId) {
-        int newQuantity = cartService.decrementProductQuantity(cartId, productId);
-        if (newQuantity >= 0)
-            return "true";
-        return "false";
     }
 }
