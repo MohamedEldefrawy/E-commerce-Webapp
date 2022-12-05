@@ -31,6 +31,7 @@ public class LoginValidator implements Validator {
                     "Incorrect username or password");
             return;
         }
+        //todo: validation exception
         if (!userService.verifyUserCredentials(loginDTO.getEmail(), hashService.encryptPassword(loginDTO.getPassword(), user.getUserName()))) {
             errors.rejectValue("password", "invalid", new Object[]{"'password'"},
                     "Incorrect username or password");
