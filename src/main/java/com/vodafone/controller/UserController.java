@@ -49,10 +49,10 @@ public class UserController {
                     return "redirect:/setAdminPassword.htm";
                 }
                 if (isCredentialsValid) {
-                    return "redirect:/products.htm";
+                    return "redirect:/admins/home.htm";
                 }
             } else if (user.getUserStatus() == UserStatus.ACTIVATED && isCredentialsValid) { //valid credentials customer
-                return "redirect:/home.htm";
+                return "redirect:/customer/home.htm";
             }
             if ((user.getUserStatus() == UserStatus.ADMIN || user.getUserStatus() == UserStatus.ACTIVATED) && !isCredentialsValid) {
                 //todo: display 'incorrect email or password is entered' message
