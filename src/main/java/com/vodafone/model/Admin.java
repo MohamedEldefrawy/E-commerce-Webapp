@@ -10,10 +10,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "admins")
 public class Admin extends User {
-
-    @Column(nullable = false)
-    @Getter
-    private UserStatus userStatus = UserStatus.ACTIVATED;
+    public Admin() {
+        userStatus = UserStatus.ADMIN;
+    }
 
     @Column
     @Getter

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -34,6 +35,16 @@ public class CustomerController {
             products = this.productService.getByCategory(category);
         else
             products = this.productService.getAll();
+        model.addAttribute("products", products);
+        return "/customer/shared/home";
+    }
+
+    @GetMapping("/search/home.htm")
+    public String search(Model model, @RequestParam(required = false) String category, @RequestParam(required = false) String name) {
+        List<Product> products = new ArrayList<>(this.productService.getByCategory(category));
+        Product selectedProduct = this.productService.getByName(name);
+        if (selectedProduct != null)
+            products.add(selectedProduct);
         model.addAttribute("products", products);
         return "/customer/shared/home";
     }
@@ -64,10 +75,30 @@ public class CustomerController {
     }
 
     @GetMapping("reset.htm")
-    public String resetPassword(Model model) {
-        customerService.resetPassword(Objects.requireNonNull(model.getAttribute("email")).toString(), Objects.requireNonNull(model.getAttribute("password")).toString());
-        model.addAttribute("user", new CreateUser());
+    public String resetPasswordLoader(Model model) {
+        model.addAttribute("resetUser", new CreateUser());
         return "resetPassword";
+    }
+
+    @PostMapping("reset.htm")
+    public String resetPassword(@Valid @ModelAttribute("resetUser") CreateUser user, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            Map<String, Object> modelBind = bindingResult.getModel();
+            System.out.println(modelBind);
+            return "registration";
+        }
+        System.out.println(user);
+        if (customerService.resetPassword(user.getEmail(), user.getPassword()))
+            return "login";
+        return "resetPassword";
+    }
+
+
+    @GetMapping("/products/{id}/details.htm")
+    public String viewProductDetails(Model model, @PathVariable Long id) {
+        Product product = this.productService.get(id);
+        model.addAttribute("product", product);
+        return "/customer/product/detail";
     }
 
     @GetMapping("products/rate")
@@ -100,10 +131,11 @@ public class CustomerController {
         return null;
     }
 
-    @GetMapping("{customerId}/orders")
-    public String getCustomerOrders(@PathVariable Long customerId) {
+    @GetMapping("/orders.htm")
+    public String getCustomerOrders(Model model,@RequestParam Long customerId) {
         List<Order> orders = orderService.getByCustomerId(customerId);
-        return null;
+        model.addAttribute("orders", orders);
+        return "/customer/shared/orders";
     }
 
     @GetMapping("{customerId}/finalOrder")
@@ -113,20 +145,25 @@ public class CustomerController {
         return null;
     }
 
-    @PostMapping("{customerId}/finalOrder")
-    public String submitFinalOrder(@PathVariable Long customerId) {
+    @PostMapping("/submitOrder.htm")
+    @ResponseBody
+    public String submitFinalOrder(@RequestParam Long customerId) {
         Cart customerCart = customerService.get(customerId).getCart();
         Order submittedOrder = cartService.submitFinalOrder(customerCart.getId());
-        return null;
+        boolean created = orderService.create(submittedOrder);
+        if(created)
+            return "true";
+        //todo redirect to error page
+        return "false";
     }
 
     @GetMapping("showCart.htm")
-    public String showCustomerCart(Model model,@RequestParam Long customerId) {
+    public String showCustomerCart(Model model, @RequestParam Long customerId) {
         Cart customerCart = customerService.get(customerId).getCart();
         List<CartItem> cartItems = customerCart.getItems();
         double totalCartPrice = cartItems.stream().mapToDouble(CartItem::getTotal).sum();
         model.addAttribute("items", cartItems);
-        model.addAttribute("orderTotal",totalCartPrice);
+        model.addAttribute("orderTotal", totalCartPrice);
 
         return "/customer/shared/cart";
     }
@@ -168,38 +205,71 @@ public class CustomerController {
         model.addAttribute("customerDTO", new Customer());
         return "registration";
     }
+    
     @GetMapping("login.htm")
     public String login() {
         return "login";
     }
 
     @PostMapping("registration.htm")
-    public String addCustomer(@Valid @ModelAttribute("customerDTO") Customer customerDTO, BindingResult bindingResult) {
+    public String register(@Valid @ModelAttribute("customerDTO") Customer customerDTO, BindingResult bindingResult,
+                           HttpServletRequest request, HttpSession session) {
         if (bindingResult.hasErrors()) {
-            Map<String, Object>  modelBind = bindingResult.getModel();
+            Map<String, Object> modelBind = bindingResult.getModel();
             System.out.println(modelBind);
             return "registration";
         }
         System.out.println(customerDTO);
         String otp = sendEmailService.getRandom();
         customerDTO.setCode(otp);
-        customerService.create(customerDTO);
-        boolean isEmailSent = sendEmailService.sendEmail(customerDTO);
-        if(isEmailSent){
-            return "redirect:/customer/verify.htm";
+        //todo: check for username and email uniqueness
+        if (customerService.getByMail(customerDTO.getEmail()) == null) {
+            System.out.println("Email exists");
+            return "";
+            //todo: display error for not unique email
         }
-        else {
+        if (customerService.getByUserName(customerDTO.getUserName()) == null) {
+            System.out.println("Username exists");
+            return "";
+            //todo: display error for not unique username
+        }
+        customerService.create(customerDTO);
+        if (sendEmailService.sendEmail(customerDTO, EmailType.ACTIVATION, session)) {
+//            HttpSession session = request.getSession();
+            session.setAttribute("email", customerDTO.getEmail());
+            session.setAttribute("password", customerDTO.getPassword());
+            session.setAttribute("userName", customerDTO.getUserName());
+            session.setAttribute("verificationCode", otp);
+            System.out.println(session);
+            return "redirect:/customer/verify.htm";
+        } else {
             return "registration";
         }
 
     }
 
-    @GetMapping("verify.htm")
+    @GetMapping("/verify.htm")
     public String verify(Model model) {
         model.addAttribute("customer", new Customer());
         return "verify";
     }
 
+    @PutMapping("/increment")
+    @ResponseBody
+    public String incrementProductQuantity(@RequestParam Long cartId, @RequestParam Long productId) {
+        int newQuantity = cartService.incrementProductQuantity(cartId, productId,1);
+        if (newQuantity>0)
+            return "true";
+        return "false";
+    }
+    @PutMapping("/decrement")
+    @ResponseBody
+    public String decrementProductQuantity(@RequestParam Long cartId, @RequestParam Long productId) {
+        int newQuantity = cartService.decrementProductQuantity(cartId, productId);
+        if (newQuantity>=0)
+            return "true";
+        return "false";
+    }
     @PostMapping("verify.htm")
     public String verifyCustomer(@Valid @ModelAttribute("customer") Customer customer, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -221,7 +291,4 @@ public class CustomerController {
         }
 
     }
-
-
-
 }
