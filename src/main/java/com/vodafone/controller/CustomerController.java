@@ -289,7 +289,7 @@ public class CustomerController {
         Customer selectedCustomer = customerService.getByMail((String) session.getAttribute("email"));
         if (selectedCustomer == null) {
             //todo: display email not found error
-            return "404";
+            return "registration";
         }
         if(selectedCustomer.getCode()==null){
             model.addAttribute("error","OTP has been expired");
@@ -301,7 +301,8 @@ public class CustomerController {
             customerService.updateStatusActivated(selectedCustomer.getEmail());
             return "redirect:/customer/home.htm";
         } else {
-            return "404";
+            model.addAttribute("error","OTP is invalid");
+            return "verify";
         }
 
     }
