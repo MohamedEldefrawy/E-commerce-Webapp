@@ -2,6 +2,7 @@ package com.vodafone.validators;
 
 import com.vodafone.model.Customer;
 import com.vodafone.service.CustomerService;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -9,7 +10,7 @@ import org.springframework.validation.Errors;
 
 import org.springframework.validation.Validator;
 
-@NoArgsConstructor
+@AllArgsConstructor
 @Component
 public class CustomerValidator implements Validator {
     @Autowired
