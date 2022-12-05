@@ -16,6 +16,11 @@ import java.util.Random;
 @Service
 public class SendEmailService {
     static String from = "t.m.n.t.ecommerce";
+    HashService hashService;
+
+    public SendEmailService(HashService hashService) {
+        this.hashService = hashService;
+    }
 
     //generate verification code
     public String getRandom() {
@@ -57,7 +62,7 @@ public class SendEmailService {
                     break;
 
                 case SET_ADMIN_PASSWORD:
-                    emailObj = sendAdminResetMail(httpSession, user.getPassword());
+                    emailObj = sendAdminResetMail(httpSession);
                     break;
             }
             // creates a new e-mail message
@@ -109,7 +114,7 @@ public class SendEmailService {
         return emailObj;
     }
 
-    public Email sendAdminResetMail(HttpSession session, String password) {
+    public Email sendAdminResetMail(HttpSession session) {
         Email emailObj = new Email();
         emailObj.setSubject("Activate your email");
         emailObj.setTo((String) session.getAttribute("email"));
@@ -117,7 +122,7 @@ public class SendEmailService {
         //todo: test email links
         emailObj.setBody("Welcome to Admins' family" +
                 "\nWe have created your account. and you can use below password for first login:" +
-                "\n " + password +
+                "\n " + session.getAttribute("dec_password") +
                 "\nFollow this link to create new password http://localhost:8080/Ecommerce_war/admins/setAdminPassword.htm" +
                 "\nRegards," +
                 "\nTMNT super admin.");

@@ -7,6 +7,7 @@ import com.vodafone.model.UserStatus;
 import com.vodafone.model.dto.CreateUser;
 import com.vodafone.model.dto.LoginDTO;
 import com.vodafone.service.AdminService;
+import com.vodafone.service.HashService;
 import com.vodafone.service.SendEmailService;
 import com.vodafone.service.UserService;
 import com.vodafone.validators.LoginValidator;
@@ -31,6 +32,8 @@ public class UserController {
     private SendEmailService emailService;
     private LoginValidator validator;
 
+    private HashService hashService;
+
     @GetMapping("login.htm")
     public String login(Model model) {
         model.addAttribute("loginModel", new LoginDTO());
@@ -49,7 +52,8 @@ public class UserController {
         }
 
         User user = userService.getUserByEmail(login.getEmail());
-        boolean valid = new Argon2PasswordEncoder(32, 16, 1, 2 * 1024, 2).matches(login.getPassword(),user.getPassword());
+        boolean valid = hashService.isPasswordValid(login.getPassword(), user.getPassword());
+        System.out.println("valid: "+ valid + " entered: "+ login.getPassword()+ " encrypted: "+ user.getPassword());
         session.setAttribute("email", login.getEmail());
         if (user == null) //exception occurred
         {
