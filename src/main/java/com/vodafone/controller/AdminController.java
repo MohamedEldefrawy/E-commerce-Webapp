@@ -269,7 +269,6 @@ public class AdminController {
 
     @GetMapping("setPassword.htm")
     public String setAdminPassword(Model model, HttpSession session) {
-        session.setAttribute("email", "admin@gmail.com");
         return "admin/setAdminPassword";
     }
 
