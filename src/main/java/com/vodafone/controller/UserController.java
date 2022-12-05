@@ -90,5 +90,10 @@ public class UserController {
         session.invalidate();
         return "login";
     }
+
+    @GetMapping("error.htm")
+    public String showError() {
+        return "customer/shared/error";
+    }
 }
 //todo: add logout function
