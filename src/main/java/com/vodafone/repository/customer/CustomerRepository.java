@@ -7,6 +7,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.NoResultException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,7 +100,7 @@ public class CustomerRepository implements ICustomerRepository {
         Customer customer = null;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             customer = session.get(Customer.class, id);
-        } catch (HibernateException hibernateException) {
+        } catch (HibernateException | NoResultException hibernateException) {
             hibernateException.printStackTrace();
         }
         return customer;
@@ -110,7 +111,7 @@ public class CustomerRepository implements ICustomerRepository {
         Customer customer = null;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             customer = session.createQuery("SELECT customer from Customer customer where customer.email=: email", Customer.class).setParameter("email", email).getSingleResult();
-        } catch (HibernateException hibernateException) {
+        } catch (HibernateException | NoResultException hibernateException) {
             hibernateException.printStackTrace();
         }
         return customer;
@@ -121,7 +122,7 @@ public class CustomerRepository implements ICustomerRepository {
         Customer customer = null;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             customer = session.createQuery("SELECT customer from Customer customer where customer.userName=: username", Customer.class).setParameter("username", username).getSingleResult();
-        } catch (HibernateException hibernateException) {
+        } catch (HibernateException | NoResultException hibernateException) {
             hibernateException.printStackTrace();
         }
         return customer;

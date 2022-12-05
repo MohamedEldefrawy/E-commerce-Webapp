@@ -146,6 +146,7 @@ public class CartRepository implements ICartRepository {
         return order;
     }
 
+    //todo: encapsulate validation in controller not repo
     @Override
     public Order showFinalOrder(Long cartId) {
         Set<OrderItem> orderItems = new HashSet<>();
