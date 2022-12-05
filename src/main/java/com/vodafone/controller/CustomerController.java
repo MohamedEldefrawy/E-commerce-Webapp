@@ -3,6 +3,7 @@ package com.vodafone.controller;
 import com.vodafone.model.*;
 import com.vodafone.model.dto.CreateUser;
 import com.vodafone.service.*;
+import com.vodafone.validators.CustomerValidator;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +32,7 @@ public class CustomerController {
     private ProductService productService;
     private CartService cartService;
     private SendEmailService sendEmailService;
+    private CustomerValidator customerValidator;
 
     // Home
     @GetMapping("home.htm")
@@ -228,6 +232,13 @@ public class CustomerController {
             System.out.println(modelBind);
             return "registration";
         }
+        customerValidator.validate(customerDTO,bindingResult);
+        if (bindingResult.hasErrors()) {
+            Map<String, Object> modelBind = bindingResult.getModel();
+            System.out.println(modelBind);
+            return "registration";
+        }
+        System.out.println("hola");
         String otp = sendEmailService.getRandom();
         customerDTO.setCode(otp);
         //set session attributes
@@ -235,7 +246,7 @@ public class CustomerController {
         session.setAttribute("username", customerDTO.getUserName());
         session.setAttribute("verificationCode", otp);
         int salt = new Random().nextInt(10) + customerDTO.getUserName().length();
-        customerDTO.setPassword(new Argon2PasswordEncoder(salt, 16, 1, 2 * 1024, 2).encode(customerDTO.getPassword()));
+        //customerDTO.setPassword(new Argon2PasswordEncoder(salt, 16, 1, 2 * 1024, 2).encode(customerDTO.getPassword()));
         customerService.create(customerDTO);
         if (sendEmailService.sendEmail(customerDTO, EmailType.ACTIVATION, session)) {
             return "redirect:/customer/verify.htm";
@@ -274,26 +285,25 @@ public class CustomerController {
 
 
     @PostMapping("verify.htm")
-    public String verifyCustomer(@Valid @ModelAttribute("customer") Customer customer, BindingResult bindingResult, HttpSession session) {
-        if (bindingResult.hasErrors()) {
-            Map<String, Object> modelBind = bindingResult.getModel();
-            System.out.println(modelBind);
-            return "verify";
-        }
-        Customer customer1 = customerService.getByMail((String) session.getAttribute("email"));
-        if (customer1 == null) {
+    public String verifyCustomer(@Valid @NotNull @NotBlank @RequestParam("verificationCode") String verificationCode,  HttpSession session , Model model) {
+        Customer selectedCustomer = customerService.getByMail((String) session.getAttribute("email"));
+        if (selectedCustomer == null) {
             //todo: display email not found error
             return "404";
-        } else {
-            if (customer1.getCode().equals(customer.getCode())) {
-                System.out.println(customer1.getEmail());
-                System.out.println("updated " + customerService.updateStatusActivated(customer1.getEmail()));
-                customerService.updateStatusActivated(customer1.getEmail());
-                return "redirect:/customer/home.htm";
-            } else {
-                return "404";
-            }
         }
+        if(selectedCustomer.getCode()==null){
+            model.addAttribute("error","OTP has been expired");
+            return "verify";
+        }
+        if (selectedCustomer.getCode().equals(verificationCode)) {
+            System.out.println(selectedCustomer.getEmail());
+            System.out.println("updated " + customerService.updateStatusActivated(selectedCustomer.getEmail()));
+            customerService.updateStatusActivated(selectedCustomer.getEmail());
+            return "redirect:/customer/home.htm";
+        } else {
+            return "404";
+        }
+
     }
 
 
