@@ -2,22 +2,18 @@ package com.vodafone.repository.user;
 
 import com.vodafone.config.HibernateConfig;
 import com.vodafone.model.*;
-import com.vodafone.model.dto.CreateUser;
 import com.vodafone.model.dto.LoginDTO;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
-import java.util.List;
 
 @AllArgsConstructor
-@NoArgsConstructor
 @Repository
 public class UserRepository implements IUserRepository {
-    HibernateConfig config;
+    private final HibernateConfig hibernateConfig;
 
     @Override
     public LoginDTO login(String email, String password) {
@@ -42,7 +38,7 @@ public class UserRepository implements IUserRepository {
          * */
         User user;
         LoginDTO loginDTO = new LoginDTO();
-        try (Session session = config.getSessionFactory().openSession()) {
+        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             //add queries criteria
             HashMap<String, String> queries = new HashMap<>();
             queries.put("email", email);
@@ -82,5 +78,28 @@ public class UserRepository implements IUserRepository {
             return null;
         }
         return loginDTO;
+    }
+
+    @Override
+    public User getByEmail(String email) {
+        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
+            return session.createQuery("SELECT user from User user where user.email=: email", Customer.class).setParameter("email", email).getSingleResult();
+        } catch (HibernateException hibernateException) {
+            hibernateException.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public boolean verifyUserCredentials(String email, String password) {
+        try (Session session = hibernateConfig.getSessionFactory().openSession()) {
+            return session.createQuery("SELECT user from User user where user.email=: email and user.password =:password", Customer.class)
+                    .setParameter("email", email)
+                    .setParameter("password", password)
+                    .getSingleResult() != null;
+        } catch (HibernateException hibernateException) {
+            hibernateException.printStackTrace();
+            return false;
+        }
     }
 }

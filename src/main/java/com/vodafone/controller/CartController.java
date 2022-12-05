@@ -13,10 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @AllArgsConstructor
-@NoArgsConstructor
 @RequestMapping("/carts")
 public class CartController {
-    CartService cartService;
+    private CartService cartService;
 
     @PostMapping("{cartId}")
     public String addItem(@PathVariable Long cartId, @RequestBody CartItem item) {

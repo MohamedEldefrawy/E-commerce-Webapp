@@ -2,17 +2,15 @@ package com.vodafone.service;
 
 import com.vodafone.model.Order;
 import com.vodafone.repository.order.OrderRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class OrderService{
-    OrderRepository orderRepository;
-
-    public OrderService(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
-    }
+    private OrderRepository orderRepository;
 
     public List<Order> getAll(){
         return orderRepository.getAll();
