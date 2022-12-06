@@ -57,13 +57,15 @@ public class OrderRepository implements IOrderRepository {
     public boolean create(Order order) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
-            session.persist(order);
-            //Adds created customer to customer's arrayList
-            order.getCustomer().getOrders().add(order);
-            session.update(order.getCustomer());
-            //updates the quantity of stock in order item
-            for(OrderItem o:order.getOrderItems()){
-                session.update(o.getProduct());
+            if(order.getOrderItems()!=null && order.getOrderItems().size()>0) {
+                session.persist(order);
+                //Adds created customer to customer's arrayList
+                order.getCustomer().getOrders().add(order);
+                session.update(order.getCustomer());
+                //updates the quantity of stock in order item
+                for (OrderItem o : order.getOrderItems()) {
+                    session.update(o.getProduct());
+                }
             }
             tx.commit();
             return true;
