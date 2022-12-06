@@ -6,12 +6,11 @@
 <rapid:override name="content">
 
     <!-- Navbar Start -->
-    <div class="container-fluid">
+    <div class="container-fluid mb-5">
         <div class="row border-top px-xl-5">
             <div class="col-lg-3 d-none d-lg-block">
                 <a class="btn shadow-none d-flex align-items-center justify-content-between bg-primary text-white w-100"
-                   data-toggle="collapse" href="#navbar-vertical"
-                   style="height: 65px; margin-top: -1px; padding: 0 30px;">
+                   data-toggle="collapse" href="#navbar-vertical" style="height: 65px; margin-top: -1px; padding: 0 30px;">
                     <h6 class="m-0">Categories</h6>
                     <i class="fa fa-angle-down text-dark"></i>
                 </a>
@@ -21,8 +20,7 @@
                         <a href="<c:url value="/customer/home.htm?category=Cats"/>" class="nav-item nav-link">Cats</a>
                         <a href="<c:url value="/customer/home.htm?category=Dogs"/>" class="nav-item nav-link">Dogs</a>
                         <a href="<c:url value="/customer/home.htm?category=Birds"/>" class="nav-item nav-link">Birds</a>
-                        <a href="<c:url value="/customer/home.htm?category=Turtles"/>"
-                           class="nav-item nav-link">Turtles</a>
+                        <a href="<c:url value="/customer/home.htm?category=Turtles"/>" class="nav-item nav-link">Turtles</a>
                         <a href="<c:url value="/customer/home.htm?category=Hamsters"/>"
                            class="nav-item nav-link">Hamsters</a>
                         <a href="<c:url value="/customer/home.htm"/>"
@@ -42,19 +40,12 @@
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
                             <a href="<c:url value="/customer/home.htm"/>" class="nav-item nav-link active">Home</a>
-                            <a href="<c:url value="/customer/home.htm#products"/>" class="nav-item nav-link">Shop</a>
-                            <div class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
-                                <div class="dropdown-menu rounded-0 m-0">
-                                    <a href="<c:url value="/customer/showCart.htm"/>" class="dropdown-item">Shopping Cart</a>
-                                    <a href="checkout.html" class="dropdown-item">Checkout</a>
-                                </div>
-                            </div>
-                            <a href="contact.html" class="nav-item nav-link">Contact</a>
+                            <a href="<c:url value="/customer/home.htm#Products"/>" class="nav-item nav-link">Shop</a>
+                            <a href="<c:url value="/customer/showCart.htm"/>" class="nav-item nav-link">Shopping Cart</a>
+                            <a href="<c:url value="/customer/orders.htm"/>" class="nav-item nav-link">Orders</a>
                         </div>
                         <div class="navbar-nav ml-auto py-0">
-                            <a href="" class="nav-item nav-link">Login</a>
-                            <a href="" class="nav-item nav-link">Register</a>
+                            <a href="<c:url value="/logout.htm"/>" class="nav-item nav-link">Logout</a>
                         </div>
                     </div>
                 </nav>
