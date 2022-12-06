@@ -57,8 +57,8 @@ public class UserController {
         if (user.getUserStatus() == UserStatus.ADMIN) { //Admin-only logic
             Admin admin = adminService.get(user.getId());
             if (admin.isFirstLogin()) {
-                emailService.sendEmail(user, EmailType.SET_ADMIN_PASSWORD, session);
-                adminService.setFirstLoginFlag(admin.getId()); //set flag to false
+                if (emailService.sendEmail(user, EmailType.SET_ADMIN_PASSWORD, session))
+                    adminService.setFirstLoginFlag(admin.getId()); //set flag to false
                 return "redirect:/setAdminPassword.htm";
             } else {
                 return "redirect:/admins/home.htm";
@@ -68,8 +68,10 @@ public class UserController {
         } else { //User only logic
             switch (user.getUserStatus()) {
                 case SUSPENDED:
+                    emailService.sendEmail(user, EmailType.FORGET_PASSWORD, session);
                     return "redirect:/customer/resetPassword.htm";
                 case DEACTIVATED:
+                    emailService.sendEmail(user, EmailType.ACTIVATION, session);
                     return "redirect:/customer/verify.htm";
                 case NOT_REGISTERED:
                     return "redirect:/customer/registration.htm";
