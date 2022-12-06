@@ -22,7 +22,7 @@ public class CreateProduct {
     @NotBlank
     private String category;
     @NotNull
-    @Min(value = 1)
+    @Min(value = 0)
     private double price;
     @NotNull
     @Min(value = 1)

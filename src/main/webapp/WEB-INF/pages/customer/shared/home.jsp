@@ -30,6 +30,9 @@
     <!-- Customized Bootstrap Stylesheet -->
     <link href="<c:url value="/resources/static/css/style.min.css" />" rel="stylesheet">
 
+    <%-- Site Custom Style --%>
+    <link href="<c:url value="/resources/static/css/customer-custom-style.css" />" rel="stylesheet">
+
 </head>
 
 <body>
