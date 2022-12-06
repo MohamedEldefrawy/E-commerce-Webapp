@@ -12,7 +12,7 @@ import org.springframework.context.annotation.PropertySource;
 import java.util.Properties;
 
 @Configuration
-@PropertySource("classpath:database.properties")
+@PropertySource("classpath:application.properties")
 public class HibernateConfig {
     private SessionFactory sessionFactory;
     @Value("${CONNECTION_STRING}")
@@ -35,7 +35,7 @@ public class HibernateConfig {
                 settings.put(Environment.PASS, this.PASSWORD);
                 settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQL8Dialect");
                 settings.put(Environment.SHOW_SQL, "true");
-                settings.put(Environment.HBM2DDL_AUTO, "create-drop");
+                settings.put(Environment.HBM2DDL_AUTO, "create");
                 configuration.setProperties(settings);
                 configuration.addAnnotatedClass(User.class);
                 configuration.addAnnotatedClass(Product.class);
