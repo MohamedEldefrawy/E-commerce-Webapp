@@ -231,7 +231,7 @@ public class CustomerController {
         session.setAttribute("email", customerDTO.getEmail());
         session.setAttribute("username", customerDTO.getUserName());
         session.setAttribute("verificationCode", otp);
-        customerDTO.setPassword(hashService.encryptPassword(customerDTO.getPassword(),customerDTO.getUserName()));
+        customerDTO.setPassword(hashService.encryptPassword(customerDTO.getPassword(),customerDTO.getEmail()));
         customerService.create(customerDTO);
         if (sendEmailService.sendEmail(customerDTO, EmailType.ACTIVATION, session)) {
             return "redirect:/customer/verify.htm";
