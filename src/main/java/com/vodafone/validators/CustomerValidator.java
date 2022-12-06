@@ -1,6 +1,7 @@
 package com.vodafone.validators;
 
 import com.vodafone.model.Customer;
+import com.vodafone.service.AdminService;
 import com.vodafone.service.CustomerService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -13,8 +14,9 @@ import org.springframework.validation.Validator;
 @AllArgsConstructor
 @Component
 public class CustomerValidator implements Validator {
-    @Autowired
     private CustomerService customerService;
+    private AdminService adminService;
+
 
 
     @Override
@@ -47,12 +49,14 @@ public class CustomerValidator implements Validator {
             }
         }
 
-        System.out.println("checking");
-        if(customerService.getByMail(customer.getEmail())!=null){
+
+        if(customerService.getByMail(customer.getEmail())!=null ||
+                adminService.getByEmail(customer.getEmail())!=null){
             errors.rejectValue("email", "duplicated", new Object[]{"'email'"},
                     "This Email Already Exists");
         }
-        if(customerService.getByUserName(customer.getUserName())!=null){
+        if(customerService.getByUserName(customer.getUserName())!=null ||
+                adminService.getByUsername(customer.getUserName())!=null){
             errors.rejectValue("userName", "duplicated", new Object[]{"'userName'"},
                     "This Username Already Exists");
         }
