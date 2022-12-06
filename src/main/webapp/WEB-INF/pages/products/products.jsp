@@ -11,6 +11,7 @@
         <thead>
         <tr>
             <th>ID</th>
+            <th>Name</th>
             <th>Description</th>
             <th>Units</th>
             <th>Image</th>
@@ -24,6 +25,7 @@
         <c:forEach items="${products}" var="product">
             <tr id="${product.getId()}">
                 <td><c:out value="${product.getId()}"/></td>
+                <td><c:out value="${product.getName()}"/></td>
                 <td><c:out value="${product.getDescription()}"/></td>
                 <td><c:out value="${product.getInStock()}"/></td>
                 <td>
@@ -62,7 +64,7 @@
                         alert("Item has been deleted successfully");
                         row.remove();
                     } else
-                        window.location.href="../../error.htm"
+                        window.location.href = "../../error.htm"
                 }).catch((reason) => {
                     window.location.href = "../../login.htm"
                 })
