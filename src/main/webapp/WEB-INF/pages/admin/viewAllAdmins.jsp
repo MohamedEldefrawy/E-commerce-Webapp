@@ -37,8 +37,6 @@
         </c:if>
         </tbody>
     </table>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
-
     <script>
         $(function () {
             $('#admins').DataTable({
@@ -67,7 +65,7 @@
                         alert("Item has been deleted successfully");
                         row.remove();
                     } else
-                        window.location.href="../error.htm"
+                        window.location.href = "../error.htm"
                 }).catch((reason) => {
                     window.location.href = "../login.htm"
                 })
