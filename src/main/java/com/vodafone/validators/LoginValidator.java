@@ -1,7 +1,9 @@
 package com.vodafone.validators;
 
 
+import com.vodafone.model.User;
 import com.vodafone.model.dto.LoginDTO;
+import com.vodafone.service.HashService;
 import com.vodafone.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,6 +15,8 @@ import org.springframework.validation.Validator;
 public class LoginValidator implements Validator {
     private UserService userService;
 
+    private HashService hashService;
+
     @Override
     public boolean supports(Class<?> paramClass) {
         return LoginDTO.class.equals(paramClass);
@@ -21,15 +25,16 @@ public class LoginValidator implements Validator {
     @Override
     public void validate(Object obj, Errors errors) {
         LoginDTO loginDTO = (LoginDTO) obj;
-
-        if(userService.getUserByEmail(loginDTO.getEmail())==null){
+        User user = userService.getUserByEmail(loginDTO.getEmail());
+        if (user == null) {
             errors.rejectValue("password", "invalid", new Object[]{"'password'"},
-                    "Incorrect username or password");
+                    "Incorrect username");
             return;
         }
-        if(!userService.verifyUserCredentials(loginDTO.getEmail(),loginDTO.getPassword())){
+
+        if (!hashService.isPasswordValid(loginDTO.getPassword(),user.getPassword())) {
             errors.rejectValue("password", "invalid", new Object[]{"'password'"},
-                    "Incorrect username or password");
+                    "Incorrect password");
         }
     }
 }

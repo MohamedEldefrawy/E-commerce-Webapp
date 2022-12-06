@@ -54,7 +54,7 @@
             <div class="form-group row">
                 <label for="inputPassword3" class="col-sm-3 col-form-label">Password</label>
                 <div class="col-sm-9">
-                    <form:input maxlength="30" minlength="8" size="8" type="password" class="form-control" id="inputPassword3"
+                    <form:input maxlength="30" minlength="8" type="password" class="form-control" id="inputPassword3"
                                 placeholder="Password"
                                 path="password"/>
                 </div>
