@@ -21,7 +21,7 @@ public class CustomerService {
         customer.setEmail("mi@gmail.com");
         customer.setUserName("mi");
         customer.setRole(Role.Customer);
-        customer.setPassword(hashService.encryptPassword("12345678", customer.getUserName()));
+        customer.setPassword(hashService.encryptPassword("12345678", customer.getEmail()));
         customer.setUserStatus(UserStatus.ACTIVATED);
         customerRepository.create(customer);
     }
@@ -29,7 +29,7 @@ public class CustomerService {
 
     public boolean create(Customer customer) {
         String originalPassword = customer.getPassword();
-        customer.setPassword(hashService.encryptPassword(originalPassword, customer.getUserName()));
+        customer.setPassword(hashService.encryptPassword(originalPassword, customer.getEmail()));
         return customerRepository.create(customer);
     }
 
