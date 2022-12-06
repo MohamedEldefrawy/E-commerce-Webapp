@@ -45,7 +45,7 @@
             </div>
             <div class="input-group mb-3">
                 <label for="Image" class="col-sm-2 col-form-label">Image</label>
-                <input id="Image" name="image" class="form-control" type="file"/>
+                <input id="Image" name="image" class="form-control" type="file" accept=".jpg, .png, .jpeg|image/*"/>
             </div>
             <div class="input-group mb-3">
                 <label for="Price" class="col-sm-2 col-form-label">Price</label>
