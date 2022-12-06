@@ -92,7 +92,7 @@ public class CustomerController {
                 return "registration";
             }
             System.out.println(user);
-            if (customerService.resetPassword(session.getAttribute("email").toString(), hashService.encryptPassword(user.getPassword(), user.getUserName())))
+            if (customerService.resetPassword(session.getAttribute("email").toString(), hashService.encryptPassword(user.getPassword(), user.getEmail())))
                 return "login";
             return "resetPassword";
         } else {
