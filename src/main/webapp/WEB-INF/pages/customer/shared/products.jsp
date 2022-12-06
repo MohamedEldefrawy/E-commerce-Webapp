@@ -60,7 +60,7 @@
 <script>
     function addToCart(id) {
         let quantity = document.getElementById(id).value;
-        fetch("./addToCart/?itemId=" + id + "&quantity=" + quantity, {
+        fetch("/Ecommerce_war/customer/addToCart/?itemId=" + id + "&quantity=" + quantity, {
             method: "POST",
             headers: {
                 'Accept': '*/*'
@@ -73,7 +73,7 @@
                 document.getElementById(id+"e").style.display = "block"
             }
         }).catch((reason) => {
-            window.location.href = "../login.htm"
+            window.location.href = "/Ecommerce_war/login.htm"
         })
 
     }
