@@ -59,9 +59,15 @@ public class SendEmailService {
             Email emailObj = new Email();
             switch (emailType) {
                 case ACTIVATION:
-                    String otp = customerService.getByMail(user.getEmail()).getCode();
+                    Customer customer = customerService.getByMail(user.getEmail());
+                    String otp = customer.getCode();
                     if (otp == null) //if otp is expired then generate new one
+                    {
                         otp = getRandom();
+                        customer.setCode(otp);
+                        customerService.update(customer.getId(), customer);
+                        httpSession.setAttribute("verificationCode", otp);
+                    }
                     emailObj = sendActivationEmail(httpSession, otp);
                     break;
                 case FORGET_PASSWORD:
