@@ -77,9 +77,13 @@ public class AdminController {
     @ResponseBody
     public String delete(HttpSession session, @RequestParam(required = false) Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
-            boolean deleted = adminService.delete(id);
-            if (deleted)
-                return "true";
+            Long sessionId = (Long) session.getAttribute("id");
+            if(id!=2 && sessionId!=id) {
+                boolean deleted = adminService.delete(id);
+                if (deleted)
+                    return "true";
+                return "false";
+            }
             return "false";
         } else {
             return "redirect:/login.htm";

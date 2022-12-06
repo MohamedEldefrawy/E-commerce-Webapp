@@ -37,7 +37,7 @@
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <!-- Main content -->
-        <section class="d-flex justify-content-center align-items-center flex-column p-5 content">
+        <section class="justify-content-center align-items-center flex-column content">
             <rapid:block name="content">
                 <div class="text-center">
                     <h1>Welcome To TMNT Admin Panel</h1>
