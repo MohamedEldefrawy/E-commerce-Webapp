@@ -63,26 +63,6 @@ public class CustomerController {
         }
     }
 
-    @PostMapping
-    public boolean create(Customer customer) {
-        return customerService.create(customer);
-    }
-
-    @PutMapping
-    public boolean update(Long id, Customer updatedCustomer) {
-        return customerService.update(id, updatedCustomer);
-    }
-
-    @DeleteMapping
-    public boolean delete(Long id) {
-        return customerService.delete(id);
-    }
-
-    @GetMapping("{id}")
-    public Customer get(@PathVariable("id") Long id) {
-        return customerService.get(id);
-    }
-
     @GetMapping
     public List<Customer> getAll() {
         return customerService.getAll();
@@ -131,37 +111,6 @@ public class CustomerController {
         }
     }
 
-    @GetMapping("products/rate")
-    public String getProductsByRate(float rate) {
-        List<Product> products = productService.getByRate(rate);
-        return null;
-    }
-
-    @GetMapping("products/price")
-    public String getProductsByPrice(double price) {
-        List<Product> products = productService.getByPrice(price);
-        return null;
-    }
-
-    @GetMapping("products/range")
-    public String getProductsBetweenPriceRange(double low, double high) {
-        List<Product> products = productService.getByPriceRange(low, high);
-        return null;
-    }
-
-    @GetMapping("products/name")
-    public String getProductByName(String name) {
-        Product product = productService.getByName(name);
-        return null;
-    }
-
-    @GetMapping("products/category")
-    public String getProductsByCategory(String category) {
-        List<Product> products = productService.getByCategory(category);
-        return null;
-    }
-
-    //edit in frontend
     @GetMapping("/orders.htm")
     public String getCustomerOrders(HttpSession session, Model model) {
         if(userAuthorizer.isActivatedCustomer(session)) {
