@@ -51,6 +51,8 @@ public class CustomerRepository implements ICustomerRepository {
                 return false;
             } else {
                 customer.setCode(updatedCustomer.getCode());
+                customer.setLoginAttempts(updatedCustomer.getLoginAttempts());
+                customer.setUserStatus(updatedCustomer.getUserStatus());
                 session.update(customer);
                 transaction.commit();
                 return true;
