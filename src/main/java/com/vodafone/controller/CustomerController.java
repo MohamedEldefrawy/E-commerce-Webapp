@@ -279,8 +279,7 @@ public class CustomerController {
 
 
     @PostMapping("verify.htm")
-    public String verifyCustomer(@Valid @NotNull @NotBlank @RequestParam("verificationCode") String verificationCode,  HttpSession session , Model model) {        if (userAuthorizer.customerExists(session)) {
-
+    public String verifyCustomer(@Valid @NotNull @NotBlank @RequestParam("verificationCode") String verificationCode,  HttpSession session , Model model) {
         if(userAuthorizer.customerExists(session)) {
             Customer selectedCustomer = customerService.getByMail((String) session.getAttribute("email"));
             if (selectedCustomer == null) {
@@ -289,8 +288,6 @@ public class CustomerController {
             }
             if (selectedCustomer.getCode() == null) {
                 model.addAttribute("error", "OTP has been expired");
-            if(selectedCustomer.getCode()==null){
-                model.addAttribute("error","OTP has been expired");
                 return "verify";
             }
             if (selectedCustomer.getCode().equals(verificationCode)) {
@@ -302,18 +299,11 @@ public class CustomerController {
                 model.addAttribute("error", "OTP is invalid");
                 return "verify";
             }
-        } else {
-            return "redirect:/login.htm";
-        }
-    }
-                model.addAttribute("error","OTP is invalid");
-                return "verify";
-            }
         }
         else{
             return "redirect:/login.htm";
         }
-
+    }
 
     @PutMapping("/increment")
     @ResponseBody
