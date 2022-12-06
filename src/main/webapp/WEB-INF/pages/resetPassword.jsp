@@ -56,13 +56,7 @@
 <script src="<c:url value="/resources/static/plugins/bs-custom-file-input/bs-custom-file-input.min.js"/>"></script>
 <!-- AdminLTE App -->
 <script src="<c:url value="/resources/static/js/adminlte.min.js"/>"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="<c:url value="/resources/static/js/demo.js"/>"></script>
-<!-- Page specific script -->
-<script>
-    $(function () {
-        bsCustomFileInput.init();
-    });
+
 </script>
 </body>
 </html>
