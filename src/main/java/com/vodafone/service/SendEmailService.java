@@ -4,18 +4,26 @@ import com.vodafone.model.Customer;
 import com.vodafone.model.Email;
 import com.vodafone.model.EmailType;
 import com.vodafone.model.User;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.util.Date;
 import java.util.Properties;
 import java.util.Random;
 
 @Service
+@PropertySource("classpath:application.properties")
 public class SendEmailService {
+    @Value("${EMAIL}")
+    public String EMAIL;
+    @Value("${EMAIL_PASS}")
+    public String EMAIL_PASS;
     static String from = "t.m.n.t.ecommerce";
     HashService hashService;
 
@@ -36,8 +44,6 @@ public class SendEmailService {
     //send email to the user email
     public boolean sendEmail(User user, EmailType emailType, HttpSession httpSession) {
         try {
-            String userName = "t.m.n.t.ecommerce@gmail.com";
-            String password = "ekuivkoxncvvndgb";
             // sets SMTP server properties
             Properties properties = new Properties();
             properties.put("mail.smtp.host", "smtp.gmail.com");
@@ -51,7 +57,7 @@ public class SendEmailService {
             // creates a new session with an authenticator
             Authenticator auth = new Authenticator() {
                 public PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(userName, password);
+                    return new PasswordAuthentication(EMAIL, EMAIL_PASS);
                 }
             };
 
