@@ -28,13 +28,13 @@ public class LoginValidator implements Validator {
         User user = userService.getUserByEmail(loginDTO.getEmail());
         if (user == null) {
             errors.rejectValue("password", "invalid", new Object[]{"'password'"},
-                    "Incorrect username or password");
+                    "Incorrect username");
             return;
         }
-        //todo: validation exception
-        if (!userService.verifyUserCredentials(loginDTO.getEmail(), hashService.encryptPassword(loginDTO.getPassword(), user.getUserName()))) {
+
+        if (!hashService.isPasswordValid(loginDTO.getPassword(),user.getPassword())) {
             errors.rejectValue("password", "invalid", new Object[]{"'password'"},
-                    "Incorrect username or password");
+                    "Incorrect password");
         }
     }
 }
