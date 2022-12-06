@@ -90,7 +90,9 @@ public class AdminController {
     public String updateAdmin(HttpSession session, Model model, @RequestParam Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
             Admin admin = adminService.get(id);
-            model.addAttribute("admin", admin);
+            int idInt = id.intValue();
+            CreateAdmin createAdmin = new CreateAdmin(idInt,admin.getUserName(),admin.getEmail());
+            model.addAttribute("admin", createAdmin);
             return "admin/updateAdmin";
         } else {
             return "redirect:/login.htm";
@@ -284,10 +286,14 @@ public class AdminController {
     }
 
     @PostMapping("/updateAdmin.htm")
-    public String submit(@Valid @ModelAttribute("admin") CreateAdmin admin, HttpSession session,
+    public String updateAdmin(@Validated @ModelAttribute("admin") CreateAdmin admin, HttpSession session,
                          BindingResult bindingResult,
                          @RequestParam Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
+            if (bindingResult.hasErrors()) {
+                return "admin/updateAdmin";
+            }
+            validator.validate(admin,bindingResult);
             if (bindingResult.hasErrors()) {
                 return "admin/updateAdmin";
             }
