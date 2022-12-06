@@ -5,7 +5,6 @@ import com.vodafone.model.dto.CreateUser;
 import com.vodafone.service.*;
 import com.vodafone.validators.CustomerValidator;
 import lombok.AllArgsConstructor;
-import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,7 +18,6 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 

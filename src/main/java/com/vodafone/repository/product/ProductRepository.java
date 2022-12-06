@@ -90,7 +90,7 @@ public class ProductRepository implements IProductRepository {
     @Override
     public Product getByName(String name) {
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
-            List<Product> products = session.createQuery("FROM  Product p where p.name = :name", Product.class).setParameter("name", name).list();
+            List<Product> products = session.createQuery("FROM  Product p where p.name like :name", Product.class).setParameter("name", "%" + name + "%").list();
             if (products.size() > 0)
                 return products.get(0);
             else
@@ -103,7 +103,7 @@ public class ProductRepository implements IProductRepository {
     @Override
     public List<Product> getByCategory(String category) {
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
-            return session.createQuery("from Product p where p.category= :p", Product.class).setParameter("p", category).list();
+            return session.createQuery("from Product p where p.category like :p", Product.class).setParameter("p", "%" + category + "%").list();
         } catch (HibernateException e) {
             e.printStackTrace();
             return new ArrayList<>();
@@ -113,7 +113,7 @@ public class ProductRepository implements IProductRepository {
     @Override
     public List<Product> getByPrice(double price) {
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
-            return session.createQuery("from Product p where p.price= :p", Product.class).setParameter("p", price).list();
+            return session.createQuery("from Product p where p.price = :p", Product.class).setParameter("p", price).list();
         } catch (HibernateException e) {
             e.printStackTrace();
             return new ArrayList<>();
