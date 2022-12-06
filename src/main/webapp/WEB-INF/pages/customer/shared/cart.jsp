@@ -118,7 +118,7 @@
                                             <i class="fa fa-minus"></i>
                                         </button>
                                     </div>
-                                    <input type="text" class="form-control form-control-sm bg-secondary text-center" style ="height: 25px;"value="${item.getQuantity()}">
+                                    <input id="${item.getProduct().getId()}" type="text" class="form-control form-control-sm bg-secondary text-center" style ="height: 25px;"value="${item.getQuantity()}">
                                     <div class="input-group-btn">
                                         <button class="btn btn-sm btn-primary btn-plus" onclick="incrementQuantity(${item.getCart().getId()},${item.getProduct().getId()})" >
                                             <i class="fa fa-plus"></i>
@@ -213,8 +213,11 @@
         }).then(response => response.json()).then(data => {
             if (data) {
                 window.location.reload();
-            } else
-                window.location.href="../error.htm"
+            } else {
+                let oldQuantity = document.getElementById(productId).value;
+                document.getElementById(productId).value = oldQuantity -1;
+                alert("Not available in stock");
+            }
         }).catch((reason) => {
             window.location.href = "../login.htm"
         })

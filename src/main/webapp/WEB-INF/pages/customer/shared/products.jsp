@@ -26,15 +26,15 @@
                     <div class="card-footer d-flex justify-content-between bg-light border">
                         <div class="input-group quantity mr-3" style="width: 40px;">
                             <div class="input-group-btn" style="width: 40px;">
-                                <button class="btn btn-primary btn-minus">
-                                    <i class="fa fa-minus"></i>
+                                <button class="btn btn-primary btn-plus">
+                                    <i class="fa fa-plus"></i>
                                 </button>
                             </div>
                             <input id="${product.getId()}" type="text" style="width: 40px;"
                                    class="form-control bg-secondary text-center" value="1">
                             <div class="input-group-btn" style="width: 40px;">
-                                <button class="btn btn-primary btn-plus">
-                                    <i class="fa fa-plus"></i>
+                                <button class="btn btn-primary btn-minus">
+                                    <i class="fa fa-minus"></i>
                                 </button>
                             </div>
                         </div>
@@ -47,6 +47,9 @@
                                 class="fas fa-shopping-cart text-primary mr-1"></i>Add
                             To Cart
                         </button>
+                    </div>
+                    <div id ="${product.getId()}e" style="padding-left: 5px;display: none" class="justify-content-center align-items-end" d>
+                        <p class="text-center">Not Available in stock</p>
                     </div>
                 </div>
             </div>
@@ -65,8 +68,10 @@
         }).then(response => response.json()).then(data => {
             if (data) {
                 alert("Item added successfully");
-            } else
-                window.location.href="../error.htm"
+                document.getElementById(id+"e").style.display = "none"
+            } else{
+                document.getElementById(id+"e").style.display = "block"
+            }
         }).catch((reason) => {
             window.location.href = "../login.htm"
         })
