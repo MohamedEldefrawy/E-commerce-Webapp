@@ -67,7 +67,7 @@
                         alert("Admin has been deleted successfully");
                         row.remove();
                     } else {
-                        window.location.href = "../error.htm"
+                        alert("Unauthorized action");
                     }
                 }).catch((reason) => {
                     window.location.href = "../login.htm"

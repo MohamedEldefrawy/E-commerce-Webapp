@@ -6,6 +6,7 @@ import com.vodafone.model.Product;
 import com.vodafone.model.Role;
 import com.vodafone.model.dto.CreateAdmin;
 import com.vodafone.model.dto.CreateProduct;
+import com.vodafone.model.dto.UpdateProductDto;
 import com.vodafone.service.AdminService;
 import com.vodafone.service.HashService;
 import com.vodafone.service.ProductService;
@@ -32,14 +33,14 @@ import java.util.Map;
 @RequestMapping("/admins")
 
 public class AdminController {
-    AdminService adminService;
-    ProductService productService;
-    private UserAuthorizer userAuthorizer;
-    private AdminValidator validator;
+    private final AdminService adminService;
+    private final ProductService productService;
+    private final UserAuthorizer userAuthorizer;
+    private final AdminValidator validator;
 
-    private HashService hashService;
+    private final HashService hashService;
 
-    private SendEmailService emailService;
+    private final SendEmailService emailService;
 
     public AdminController(AdminService adminService, ProductService productService,
                            AdminValidator adminValidator, UserAuthorizer userAuthorizer, HashService hashService, SendEmailService emailService) {
@@ -95,7 +96,7 @@ public class AdminController {
         if (userAuthorizer.authorizeAdmin(session)) {
             Admin admin = adminService.get(id);
             int idInt = id.intValue();
-            CreateAdmin createAdmin = new CreateAdmin(idInt,admin.getUserName(),admin.getEmail());
+            CreateAdmin createAdmin = new CreateAdmin(idInt, admin.getUserName(), admin.getEmail());
             model.addAttribute("admin", createAdmin);
             return "admin/updateAdmin";
         } else {
@@ -142,7 +143,7 @@ public class AdminController {
                 admin.setPassword(encrypted);
                 adminService.updatePassword(admin.getId(), encrypted);
                 //send email
-                emailService.sendEmail(admin, EmailType.SET_ADMIN_PASSWORD,session);
+                emailService.sendEmail(admin, EmailType.SET_ADMIN_PASSWORD, session);
                 //redirect to set password
                 return "redirect:/admins/admins.htm";
             } else {
@@ -191,18 +192,19 @@ public class AdminController {
 
 
     @PostMapping("/products/update.htm")
-    public String submit(@Valid @ModelAttribute("product") CreateProduct product,
+    public String submit(@Valid @ModelAttribute("product") UpdateProductDto product,
                          BindingResult bindingResult,
-                         @RequestParam("image") CommonsMultipartFile image,
                          HttpSession session,
                          @RequestParam Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
+
             if (bindingResult.hasErrors()) {
+                System.out.println(bindingResult.getModel());
                 return "products/update";
             }
-            byte[] imageData = image.getBytes();
-            System.out.println(image.getOriginalFilename());
-            String path = session.getServletContext().getRealPath("/") + "resources/static/images/" + image.getOriginalFilename();
+            byte[] imageData = product.getImage().getBytes();
+            System.out.println(product.getImage().getOriginalFilename());
+            String path = session.getServletContext().getRealPath("/") + "resources/static/images/" + product.getImage().getOriginalFilename();
             try {
                 if (imageData.length > 0) {
                     FileOutputStream fileOutputStream = new FileOutputStream(path);
@@ -213,16 +215,17 @@ public class AdminController {
                 throw new RuntimeException(e);
             }
 
-            Product updatedProduct = new Product();
+            Product updatedProduct = this.productService.get(product.getId());
             updatedProduct.setDescription(product.getDescription());
             updatedProduct.setCategory(product.getCategory());
-            updatedProduct.setImage(image.getOriginalFilename());
+            if (imageData.length > 0)
+                updatedProduct.setImage(product.getImage().getOriginalFilename());
             updatedProduct.setPrice(product.getPrice());
             updatedProduct.setName(product.getName());
             updatedProduct.setInStock(product.getInStock());
             boolean result = this.productService.update(id, updatedProduct);
             if (result)
-                return "redirect:/product/show.htm";
+                return "redirect:/admins/products/show.htm";
             return "products/update";
         } else {
             return "redirect:/login.htm";
@@ -247,7 +250,7 @@ public class AdminController {
         if (userAuthorizer.authorizeAdmin(session)) {
             if (bindingResult.hasErrors()) {
                 Map<String, Object> model = bindingResult.getModel();
-                return "products/createProduct";
+                return "products/create";
             }
             byte[] imageData = image.getBytes();
             String path = session.getServletContext().getRealPath("/") + "resources/static/images/" + image.getOriginalFilename();
@@ -292,13 +295,13 @@ public class AdminController {
 
     @PostMapping("/updateAdmin.htm")
     public String updateAdmin(@Validated @ModelAttribute("admin") CreateAdmin admin, HttpSession session,
-                         BindingResult bindingResult,
-                         @RequestParam Long id) {
+                              BindingResult bindingResult,
+                              @RequestParam Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
             if (bindingResult.hasErrors()) {
                 return "admin/updateAdmin";
             }
-            validator.validate(admin,bindingResult);
+            validator.validate(admin, bindingResult);
             if (bindingResult.hasErrors()) {
                 return "admin/updateAdmin";
             }
