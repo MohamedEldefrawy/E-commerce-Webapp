@@ -2,7 +2,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <div id="Products" class="text-center mb-4">
-    <h2 class="section-title px-5"><span class="px-2">Products</span></h2>
+    <h2 class="section-title px-5 text-primary"><span class="px-2">Products</span></h2>
 </div>
 
 <div class="container-fluid pt-5">
@@ -60,7 +60,7 @@
 <script>
     function addToCart(id) {
         let quantity = document.getElementById(id).value;
-        fetch("./addToCart/?itemId=" + id + "&quantity=" + quantity, {
+        fetch("/Ecommerce_war/customer/addToCart/?itemId=" + id + "&quantity=" + quantity, {
             method: "POST",
             headers: {
                 'Accept': '*/*'
@@ -73,7 +73,7 @@
                 document.getElementById(id+"e").style.display = "block"
             }
         }).catch((reason) => {
-            window.location.href = "../login.htm"
+            window.location.href = "/Ecommerce_war/login.htm"
         })
 
     }

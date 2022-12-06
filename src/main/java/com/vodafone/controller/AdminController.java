@@ -56,7 +56,7 @@ public class AdminController {
         admin.setEmail("admin@gmail.com");
         admin.setRole(Role.Admin);
         admin.setUserName("admoona");
-        admin.setPassword(hashService.encryptPassword("12345678", admin.getUserName()));
+        admin.setPassword(hashService.encryptPassword("12345678", admin.getEmail()));
         System.out.println(admin.getPassword());
         admin.setFirstLogin(false);
         this.adminService.create(admin);
@@ -78,9 +78,13 @@ public class AdminController {
     @ResponseBody
     public String delete(HttpSession session, @RequestParam(required = false) Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
-            boolean deleted = adminService.delete(id);
-            if (deleted)
-                return "true";
+            Long sessionId = (Long) session.getAttribute("id");
+            if(id!=2 && sessionId!=id) {
+                boolean deleted = adminService.delete(id);
+                if (deleted)
+                    return "true";
+                return "false";
+            }
             return "false";
         } else {
             return "redirect:/login.htm";
@@ -132,15 +136,16 @@ public class AdminController {
             admin.setEmail(createAdmin.getEmail());
             admin.setFirstLogin(true);
             if (adminService.create(admin)) {
+                session.setAttribute("dec_password", admin.getPassword());
+                session.setAttribute("newAdminEmail", admin.getEmail());
                 //encrypt admin password in db
-                String encrypted = hashService.encryptPassword(admin.getPassword(), admin.getUserName());
+                String encrypted = hashService.encryptPassword(admin.getPassword(), admin.getEmail());
                 admin.setPassword(encrypted);
                 adminService.updatePassword(admin.getId(), encrypted);
-                session.setAttribute("dec_password", admin.getPassword());
                 //send email
                 emailService.sendEmail(admin, EmailType.SET_ADMIN_PASSWORD, session);
                 //redirect to set password
-                return "redirect:/admins/setAdminPassword.htm";
+                return "redirect:/admins/admins.htm";
             } else {
                 //model.put("errors","Duplicate");
                 return "admin/createAdmin";
@@ -313,26 +318,18 @@ public class AdminController {
         }
     }
 
-    @GetMapping("setPassword.htm")
+    @GetMapping("setAdminPassword.htm")
     public String setAdminPassword(Model model, HttpSession session) {
-        if (userAuthorizer.authorizeAdmin(session)) {
-            return "admin/setAdminPassword";
-        } else {
-            return "redirect:/login.htm";
-        }
+        return "admin/setAdminPassword";
     }
 
-    @PostMapping("setPassword.htm")
+    @PostMapping("setAdminPassword.htm")
     public String setAdminPassword(@Valid @NotNull @NotBlank @RequestParam("newPassword") String newPassword, HttpSession session) {
-        if (userAuthorizer.authorizeAdmin(session)) {
-            String email = session.getAttribute("email").toString();
-            Admin admin = adminService.getByEmail(email);
-            hashService.encryptPassword(newPassword, (String) session.getAttribute("username"));
-            admin.setPassword(newPassword);
-            adminService.updatePassword(admin.getId(), newPassword);
-            return "redirect:/admins/home.htm";
-        } else {
-            return "redirect:/login.htm";
-        }
+        String email = session.getAttribute("email").toString();
+        Admin admin = adminService.getByEmail(email);
+        hashService.encryptPassword(newPassword, (String) session.getAttribute("email"));
+        admin.setPassword(newPassword);
+        adminService.updatePassword(admin.getId(), newPassword);
+        return "redirect:/admins/home.htm";
     }
 }
