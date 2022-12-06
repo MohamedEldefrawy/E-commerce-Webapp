@@ -128,7 +128,7 @@ public class SendEmailService {
     public Email sendAdminResetMail(HttpSession session) {
         Email emailObj = new Email();
         emailObj.setSubject("Activate your email");
-        emailObj.setTo((String) session.getAttribute("email"));
+        emailObj.setTo((String) session.getAttribute("newAdminEmail"));
         emailObj.setFrom(from);
         emailObj.setBody("Welcome to Admins' family" +
                 "\nWe have created your account. and you can use below password for first login:" +

@@ -8,7 +8,7 @@
     <div class="card-header">
         <h3 class="card-title">Create Product</h3>
     </div>
-    <div class="card-body">
+    <div class="card-body p-5 m-auto">
         <form:form modelAttribute="product" method="post" enctype="multipart/form-data">
             <div class="input-group mb-3">
                 <label for="Name" class="col-sm-2 col-form-label">Name</label>

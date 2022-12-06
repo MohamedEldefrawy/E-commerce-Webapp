@@ -23,22 +23,22 @@
                     <td><c:out value="${admin.getEmail()}"/></td>
                     <td><c:out value="${admin.getUserName()}"/></td>
                     <td class="project-actions text-right">
-                        <div class="d-flex justify-content-center align-items-center">
-                            <a href="<c:url value="/admins/updateAdmin.htm?id=${admin.getId()}"/>"
-                               class="btn btn-warning mr-2"><i
-                                    class="far fa-edit"></i></a>
+                        <c:if test="${admin.getId() ne 2}">
+                            <div class="d-flex justify-content-center align-items-center">
+                                <a href="<c:url value="/admins/updateAdmin.htm?id=${admin.getId()}"/>"
+                                   class="btn btn-warning mr-2"><i
+                                        class="far fa-edit"></i></a>
 
-                            <button onclick="deleteById(${admin.getId()})" type="submit" class="btn btn-danger"><i
-                                    class="fas fa-trash-alt"></i></button>
-                        </div>
+                                <button onclick="deleteById(${admin.getId()})" type="submit" class="btn btn-danger"><i
+                                        class="fas fa-trash-alt"></i></button>
+                            </div>
+                        </c:if>
                     </td>
                 </tr>
             </c:forEach>
         </c:if>
         </tbody>
     </table>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
-
     <script>
         $(function () {
             $('#admins').DataTable({
@@ -64,10 +64,11 @@
                     }
                 }).then(response => response.json()).then(data => {
                     if (data) {
-                        alert("Item has been deleted successfully");
+                        alert("Admin has been deleted successfully");
                         row.remove();
-                    } else
-                        window.location.href="../error.htm"
+                    } else {
+                        window.location.href = "../error.htm"
+                    }
                 }).catch((reason) => {
                     window.location.href = "../login.htm"
                 })
