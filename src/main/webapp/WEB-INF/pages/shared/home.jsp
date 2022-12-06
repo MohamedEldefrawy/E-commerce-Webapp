@@ -22,10 +22,11 @@
     <!-- Theme style -->
     <link href="<c:url value="/resources/static/css/adminlte.min.css" />" rel="stylesheet">
     <!-- jQuery -->
-    <%--<script src="<c:url value="/resources/static/js/jquery.min.js" />"></script>--%>
+
+    <%-- Site Custom Style --%>
+    <link href="<c:url value="/resources/static/css/admin-custom-style.css" />" rel="stylesheet">
+
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
-
-
 </head>
 <body class="hold-transition sidebar-mini sidebar-collapse">
 <!-- Site wrapper -->
