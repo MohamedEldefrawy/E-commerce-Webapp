@@ -51,13 +51,8 @@
             </div>
         </div>
         <div class="col-lg-3 col-6 text-right">
-            <a href="" class="btn border">
-                <i class="fas fa-heart text-primary"></i>
-                <span class="badge">0</span>
-            </a>
-            <a href="" class="btn border">
+            <a href="<c:url value="/customer/showCart.htm"/>" class="btn border">
                 <i class="fas fa-shopping-cart text-primary"></i>
-                <span class="badge">0</span>
             </a>
         </div>
     </div>
@@ -101,18 +96,11 @@
                     <div class="navbar-nav mr-auto py-0">
                         <a href="home.htm" class="nav-item nav-link active">Home</a>
                         <a href="#Products" class="nav-item nav-link">Shop</a>
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
-                            <div class="dropdown-menu rounded-0 m-0">
-                                <a href="./showCart.htm" class="dropdown-item">Shopping Cart</a>
-                                <a href="./orders.htm" class="dropdown-item">Orders</a>
-                            </div>
-                        </div>
-                        <a href="contact.html" class="nav-item nav-link">Contact</a>
+                        <a href="<c:url value="/customer/showCart.htm"/>" class="nav-item nav-link">Shopping Cart</a>
+                        <a href="<c:url value="/customer/orders.htm"/>" class="nav-item nav-link">Orders</a>
                     </div>
                     <div class="navbar-nav ml-auto py-0">
-                        <a href="" class="nav-item nav-link">Login</a>
-                        <a href="" class="nav-item nav-link">Register</a>
+                        <a href="<c:url value="/logout.htm"/>" class="nav-item nav-link">Logout</a>
                     </div>
                 </div>
             </nav>
