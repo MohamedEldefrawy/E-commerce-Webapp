@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
 public class ResetPasswordDTO {
     @NotNull
     @NotBlank
-    @Size(min = 4, message = "Password can't be less than 8 characters")
+    @Size(min = 4, message = "Password can't be less than 4 characters")
     @Size(max = 30, message = "Password exceeded 30 characters")
     private String password;
 }
