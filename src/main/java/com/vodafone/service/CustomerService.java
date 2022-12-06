@@ -12,19 +12,24 @@ import java.util.List;
 public class CustomerService {
     private final CustomerRepository customerRepository;
 
-    public CustomerService(CustomerRepository customerRepository) {
+    private final HashService hashService;
+
+    public CustomerService(CustomerRepository customerRepository, HashService hashService) {
         this.customerRepository = customerRepository;
+        this.hashService = hashService;
         Customer customer = new Customer();
         customer.setEmail("mi@gmail.com");
         customer.setUserName("mi");
         customer.setRole(Role.Customer);
-        customer.setPassword("12345678");
+        customer.setPassword(hashService.encryptPassword("12345678", customer.getUserName()));
         customer.setUserStatus(UserStatus.ACTIVATED);
         customerRepository.create(customer);
     }
 
 
     public boolean create(Customer customer) {
+        String originalPassword = customer.getPassword();
+        customer.setPassword(hashService.encryptPassword(originalPassword, customer.getUserName()));
         return customerRepository.create(customer);
     }
 

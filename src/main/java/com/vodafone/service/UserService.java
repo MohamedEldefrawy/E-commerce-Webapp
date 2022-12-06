@@ -11,5 +11,4 @@ public class UserService {
     private IUserRepository userRepository;
 
     public User getUserByEmail(String email){ return userRepository.getByEmail(email); }
-    public boolean verifyUserCredentials(String email,String password){ return userRepository.verifyUserCredentials(email,password); }
 }
