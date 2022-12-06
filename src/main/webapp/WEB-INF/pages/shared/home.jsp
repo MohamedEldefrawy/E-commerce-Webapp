@@ -36,14 +36,12 @@
     <jsp:include page="sidebar.jsp"/>
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
-        <section class="content-header">
-            We Move The World
-        </section>
-
         <!-- Main content -->
-        <section class="content">
+        <section class="d-flex justify-content-center align-items-center flex-column p-5 content">
             <rapid:block name="content">
+                <div class="text-center">
+                    <h1>Welcome To TMNT Admin Panel</h1>
+                </div>
             </rapid:block>
         </section>
         <!-- /.content -->
@@ -51,16 +49,10 @@
     <!-- /.content-wrapper -->
 
     <footer class="main-footer">
-        <div class="float-right d-none d-sm-block">
-            <b>Version</b> 3.2.0
+        <div class="d-flex justify-content-center align-items-center">
+            <strong>Copyright &copy; 2022-2023 <span>_VO<strong>IS</strong></span>.</strong> All rights reserved.
         </div>
-        <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights reserved.
     </footer>
-
-    <!-- Control Sidebar -->
-    <aside class="control-sidebar control-sidebar-dark">
-        <!-- Control sidebar content goes here -->
-    </aside>
     <!-- /.control-sidebar -->
 </div>
 <!-- ./wrapper -->
