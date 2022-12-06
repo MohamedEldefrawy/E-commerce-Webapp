@@ -48,7 +48,7 @@ public class UserController {
                 if (customer.getUserStatus() == UserStatus.SUSPENDED) { // if user status is suspended after validation
                     session.setAttribute("email", login.getEmail());
                     if (emailService.sendEmail(customer, EmailType.FORGET_PASSWORD, session)) {
-                        return "redirect:/customer/resetPassword.htm";
+                        return "redirect:/customer/reset.htm";
                     }
                 }
             }
@@ -76,7 +76,7 @@ public class UserController {
             switch (user.getUserStatus()) {
                 case SUSPENDED:
                     if (emailService.sendEmail(user, EmailType.FORGET_PASSWORD, session))
-                        return "redirect:/customer/resetPassword.htm";
+                        return "redirect:/customer/reset.htm";
                     break;
                 case DEACTIVATED:
                     if (emailService.sendEmail(user, EmailType.ACTIVATION, session))

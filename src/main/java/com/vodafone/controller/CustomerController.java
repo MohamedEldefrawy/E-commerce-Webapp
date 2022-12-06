@@ -2,6 +2,7 @@ package com.vodafone.controller;
 
 import com.vodafone.model.*;
 import com.vodafone.model.dto.CreateUser;
+import com.vodafone.model.dto.ResetPasswordDTO;
 import com.vodafone.service.*;
 import com.vodafone.validators.UserAuthorizer;
 import com.vodafone.validators.CustomerValidator;
@@ -75,7 +76,7 @@ public class CustomerController {
     @GetMapping("reset.htm")
     public String resetPasswordLoader(HttpSession session, Model model) {
         if (userAuthorizer.customerExists(session)) {
-            model.addAttribute("resetUser", new CreateUser());
+            model.addAttribute("resetUser", new ResetPasswordDTO());
             return "resetPassword";
         } else {
             return "redirect:/login.htm";
@@ -83,7 +84,7 @@ public class CustomerController {
     }
 
     @PostMapping("reset.htm")
-    public String resetPassword(@Valid @ModelAttribute("resetUser") CreateUser user,
+    public String resetPassword(@Valid @ModelAttribute("resetUser") ResetPasswordDTO user,
                                 BindingResult bindingResult, HttpSession session) {
         if (userAuthorizer.customerExists(session)) {
             if (bindingResult.hasErrors()) {
@@ -92,8 +93,8 @@ public class CustomerController {
                 return "registration";
             }
             System.out.println(user);
-            if (customerService.resetPassword(session.getAttribute("email").toString(), hashService.encryptPassword(user.getPassword(), user.getUserName())))
-                return "login";
+            if (customerService.resetPassword(session.getAttribute("email").toString(), hashService.encryptPassword(user.getPassword(),session.getAttribute("email").toString() )))
+                return "redirect:/login.htm";
             return "resetPassword";
         } else {
             return "redirect:/login.htm";

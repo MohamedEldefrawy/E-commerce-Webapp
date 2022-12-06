@@ -115,7 +115,7 @@ public class SendEmailService {
                 "\nForget your password?" +
                 "\nWe received a request to reset your password." +
                 "\nClick on below link to redirect you to reset password page." +
-                "\n  http://localhost:8080/Ecommerce_war/customer/resetPassword.htm");
+                "\n  http://localhost:8080/Ecommerce_war/customer/reset.htm");
         return emailObj;
     }
 
