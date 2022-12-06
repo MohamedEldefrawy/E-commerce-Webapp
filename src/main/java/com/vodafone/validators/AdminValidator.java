@@ -26,6 +26,9 @@ public class AdminValidator implements Validator {
         CreateAdmin admin = (CreateAdmin) obj;
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "required");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "userName", "required");
+        if(errors.hasErrors()){
+            return;
+        }
         String emailRegEx =  "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
                 + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
         if(admin.getEmail().length()<5){
