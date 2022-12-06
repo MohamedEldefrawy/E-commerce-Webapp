@@ -62,9 +62,8 @@ public class UserController {
         if (user.getUserStatus() == UserStatus.ADMIN) { //Admin-only logic
             Admin admin = adminService.get(user.getId());
             if (admin.isFirstLogin()) {
-                if (emailService.sendEmail(user, EmailType.SET_ADMIN_PASSWORD, session))
-                    adminService.setFirstLoginFlag(admin.getId()); //set flag to false
-                return "redirect:/setAdminPassword.htm";
+                adminService.setFirstLoginFlag(admin.getId()); //set flag to false
+                return "redirect:/admins/setAdminPassword.htm";
             } else {
                 return "redirect:/admins/home.htm";
             }
