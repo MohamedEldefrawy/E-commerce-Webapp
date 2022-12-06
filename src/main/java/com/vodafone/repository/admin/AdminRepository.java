@@ -86,7 +86,6 @@ public class AdminRepository implements IAdminRepository {
 
     @Override
     public boolean update(Long id, Admin updatedEntity) {
-        if(getByUsername(updatedEntity.getUserName())==null && getByEmail(updatedEntity.getEmail())==null) {
             Transaction tx;
             Admin admin = get(id);
             if (admin == null)
@@ -104,8 +103,6 @@ public class AdminRepository implements IAdminRepository {
                 e.printStackTrace();
                 return false;
             }
-        }
-        return false;
     }
     public boolean updatePassword(Long id, String newPassword){
         Admin admin = get(id);

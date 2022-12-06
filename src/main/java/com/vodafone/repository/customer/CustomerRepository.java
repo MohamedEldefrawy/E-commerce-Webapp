@@ -131,24 +131,36 @@ public class CustomerRepository implements ICustomerRepository {
 
     @Override
     public Customer getByMail(String email) {
-        Customer customer = null;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            customer = session.createQuery("SELECT customer from Customer customer where customer.email=: email", Customer.class).setParameter("email", email).getSingleResult();
-        } catch (HibernateException | NoResultException hibernateException) {
+            try {
+                List<Customer> customers = session.createQuery("SELECT customer from Customer customer where customer.email=: email", Customer.class).setParameter("email", email).list();
+                if (customers.isEmpty()) throw new NoResultException("No customer found");
+                return customers.get(0);
+            } catch (NoResultException e) {
+                System.out.println(e.getMessage());
+                return null;
+            }
+        } catch (HibernateException hibernateException) {
             hibernateException.printStackTrace();
+            return null;
         }
-        return customer;
     }
 
     @Override
     public Customer getByUserName(String username) {
-        Customer customer = null;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            customer = session.createQuery("SELECT customer from Customer customer where customer.userName=: username", Customer.class).setParameter("username", username).getSingleResult();
-        } catch (HibernateException | NoResultException hibernateException) {
+            try {
+                List<Customer> customers = session.createQuery("SELECT customer from Customer customer where customer.userName=: username", Customer.class).setParameter("username", username).list();
+                if (customers.isEmpty()) throw new NoResultException("No customer found");
+                return customers.get(0);
+            } catch (NoResultException e) {
+                System.out.println(e.getMessage());
+                return null;
+            }
+        } catch (HibernateException hibernateException) {
             hibernateException.printStackTrace();
+            return null;
         }
-        return customer;
     }
 
     @Override

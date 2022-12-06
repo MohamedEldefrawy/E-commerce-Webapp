@@ -41,7 +41,8 @@ public class AdminController {
 
     private SendEmailService emailService;
 
-    public AdminController(AdminService adminService, ProductService productService, AdminValidator adminValidator, UserAuthorizer userAuthorizer, HashService hashService, SendEmailService emailService) {
+    public AdminController(AdminService adminService, ProductService productService,
+                           AdminValidator adminValidator, UserAuthorizer userAuthorizer, HashService hashService, SendEmailService emailService) {
         this.adminService = adminService;
         this.productService = productService;
         this.validator = adminValidator;
@@ -77,7 +78,8 @@ public class AdminController {
     public String delete(HttpSession session, @RequestParam(required = false) Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
             boolean deleted = adminService.delete(id);
-            if (deleted) return "true";
+            if (deleted)
+                return "true";
             return "false";
         } else {
             return "redirect:/login.htm";
@@ -88,7 +90,9 @@ public class AdminController {
     public String updateAdmin(HttpSession session, Model model, @RequestParam Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
             Admin admin = adminService.get(id);
-            model.addAttribute("admin", admin);
+            int idInt = id.intValue();
+            CreateAdmin createAdmin = new CreateAdmin(idInt,admin.getUserName(),admin.getEmail());
+            model.addAttribute("admin", createAdmin);
             return "admin/updateAdmin";
         } else {
             return "redirect:/login.htm";
@@ -106,7 +110,8 @@ public class AdminController {
     }
 
     @PostMapping("/createAdmin.htm")
-    public String create(@ModelAttribute("admin") @Validated CreateAdmin createAdmin, HttpSession session, BindingResult bindingResult) {
+    public String create(@ModelAttribute("admin") @Validated CreateAdmin createAdmin,
+                         HttpSession session, BindingResult bindingResult) {
         if (userAuthorizer.authorizeAdmin(session)) {
             Map<String, Object> model = bindingResult.getModel();
             //check input is correct
@@ -132,7 +137,7 @@ public class AdminController {
                 adminService.updatePassword(admin.getId(), encrypted);
                 session.setAttribute("dec_password", admin.getPassword());
                 //send email
-                emailService.sendEmail(admin, EmailType.SET_ADMIN_PASSWORD, session);
+                emailService.sendEmail(admin, EmailType.SET_ADMIN_PASSWORD,session);
                 //redirect to set password
                 return "redirect:/admins/setAdminPassword.htm";
             } else {
@@ -181,7 +186,11 @@ public class AdminController {
 
 
     @PostMapping("/products/update.htm")
-    public String submit(@Valid @ModelAttribute("product") CreateProduct product, BindingResult bindingResult, @RequestParam("image") CommonsMultipartFile image, HttpSession session, @RequestParam Long id) {
+    public String submit(@Valid @ModelAttribute("product") CreateProduct product,
+                         BindingResult bindingResult,
+                         @RequestParam("image") CommonsMultipartFile image,
+                         HttpSession session,
+                         @RequestParam Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
             if (bindingResult.hasErrors()) {
                 return "products/update";
@@ -207,7 +216,8 @@ public class AdminController {
             updatedProduct.setName(product.getName());
             updatedProduct.setInStock(product.getInStock());
             boolean result = this.productService.update(id, updatedProduct);
-            if (result) return "redirect:/product/show.htm";
+            if (result)
+                return "redirect:/product/show.htm";
             return "products/update";
         } else {
             return "redirect:/login.htm";
@@ -225,11 +235,14 @@ public class AdminController {
     }
 
     @PostMapping("/products/create.htm")
-    public String save(@Valid @ModelAttribute("product") CreateProduct product, BindingResult bindingResult, @RequestParam("image") CommonsMultipartFile image, HttpSession session) {
+    public String save(@Valid @ModelAttribute("product") CreateProduct product,
+                       BindingResult bindingResult,
+                       @RequestParam("image") CommonsMultipartFile image,
+                       HttpSession session) {
         if (userAuthorizer.authorizeAdmin(session)) {
             if (bindingResult.hasErrors()) {
                 Map<String, Object> model = bindingResult.getModel();
-                return "products/create";
+                return "products/createProduct";
             }
             byte[] imageData = image.getBytes();
             String path = session.getServletContext().getRealPath("/") + "resources/static/images/" + image.getOriginalFilename();
@@ -264,7 +277,8 @@ public class AdminController {
     public String deleteProduct(HttpSession session, @RequestParam(required = false) Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
             boolean result = this.productService.delete(id);
-            if (result) return "true";
+            if (result)
+                return "true";
             return "false";
         } else {
             return "redirect:/login.htm";
@@ -272,8 +286,14 @@ public class AdminController {
     }
 
     @PostMapping("/updateAdmin.htm")
-    public String submit(@Valid @ModelAttribute("admin") CreateAdmin admin, HttpSession session, BindingResult bindingResult, @RequestParam Long id) {
+    public String updateAdmin(@Validated @ModelAttribute("admin") CreateAdmin admin, HttpSession session,
+                         BindingResult bindingResult,
+                         @RequestParam Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
+            if (bindingResult.hasErrors()) {
+                return "admin/updateAdmin";
+            }
+            validator.validate(admin,bindingResult);
             if (bindingResult.hasErrors()) {
                 return "admin/updateAdmin";
             }
@@ -282,7 +302,8 @@ public class AdminController {
             updatedAdmin.setEmail(admin.getEmail());
             updatedAdmin.setUserName(admin.getUserName());
             boolean result = adminService.update(id, updatedAdmin);
-            if (result) return "redirect:/admins/admins.htm";
+            if (result)
+                return "redirect:/admins/admins.htm";
             return "admin/updateAdmin";
         } else {
             return "redirect:/login.htm";

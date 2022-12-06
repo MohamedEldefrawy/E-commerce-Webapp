@@ -119,26 +119,7 @@
             </c:forEach>
         </div>
     </div>
-    <!--Orders End-->
-    <script>
-        function addToCart(id) {
-            let quantity = document.getElementById(id).value;
-            fetch("../../addToCart/itemId=" + id + "&quantity=" + quantity, {
-                method: "POST",
-                headers: {
-                    'Accept': '*/*'
-                }
-            }).then(response => response.json()).then(data => {
-                if (data) {
-                    alert("Item added successfully");
-                } else
-                    alert("Something Wrong!!")
-            }).catch((reason) => {
-                alert(reason);
-            })
 
-        }
-    </script>
     <!-- Shop Detail End -->
 </rapid:override>
 

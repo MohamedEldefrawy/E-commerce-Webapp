@@ -57,8 +57,8 @@ public class UserController {
         if (user.getUserStatus() == UserStatus.ADMIN) { //Admin-only logic
             Admin admin = adminService.get(user.getId());
             if (admin.isFirstLogin()) {
-                emailService.sendEmail(user, EmailType.SET_ADMIN_PASSWORD, session);
-                adminService.setFirstLoginFlag(admin.getId()); //set flag to false
+                if (emailService.sendEmail(user, EmailType.SET_ADMIN_PASSWORD, session))
+                    adminService.setFirstLoginFlag(admin.getId()); //set flag to false
                 return "redirect:/setAdminPassword.htm";
             } else {
                 return "redirect:/admins/home.htm";
@@ -68,9 +68,13 @@ public class UserController {
         } else { //User only logic
             switch (user.getUserStatus()) {
                 case SUSPENDED:
-                    return "redirect:/customer/resetPassword.htm";
+                    if (emailService.sendEmail(user, EmailType.FORGET_PASSWORD, session))
+                        return "redirect:/customer/resetPassword.htm";
+                    break;
                 case DEACTIVATED:
-                    return "redirect:/customer/verify.htm";
+                    if (emailService.sendEmail(user, EmailType.ACTIVATION, session))
+                        return "redirect:/customer/verify.htm";
+                    break;
                 case NOT_REGISTERED:
                     return "redirect:/customer/registration.htm";
             }
@@ -82,6 +86,11 @@ public class UserController {
     public String logout(HttpSession session) {
         session.invalidate();
         return "login";
+    }
+
+    @GetMapping("error.htm")
+    public String showError() {
+        return "customer/shared/error";
     }
 }
 //todo: add logout function
