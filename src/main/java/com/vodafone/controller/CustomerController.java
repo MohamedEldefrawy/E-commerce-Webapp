@@ -200,7 +200,6 @@ public class CustomerController {
 
     }
 
-    //todo: change customer param type to CreateUser DTO
     @PostMapping("registration.htm")
     public String register(@Valid @ModelAttribute("customerDTO") Customer customerDTO, BindingResult bindingResult,
                            HttpSession session) {
@@ -222,7 +221,7 @@ public class CustomerController {
         session.setAttribute("email", customerDTO.getEmail());
         session.setAttribute("username", customerDTO.getUserName());
         session.setAttribute("verificationCode", otp);
-        customerDTO.setPassword(hashService.encryptPassword(customerDTO.getPassword(),customerDTO.getEmail()));
+        customerDTO.setPassword(customerDTO.getPassword());
         customerService.create(customerDTO);
         if (sendEmailService.sendEmail(customerDTO, EmailType.ACTIVATION, session)) {
             return "redirect:/customer/verify.htm";
@@ -268,12 +267,10 @@ public class CustomerController {
 
 
     @PostMapping("verify.htm")
-
     public String verifyCustomer(@Valid @NotNull @NotBlank @RequestParam("verificationCode") String verificationCode,  HttpSession session , Model model) {
        if(userAuthorizer.customerExists(session)) {
             Customer selectedCustomer = customerService.getByMail((String) session.getAttribute("email"));
             if (selectedCustomer == null) {
-                //todo: display email not found error
                 return "registration";
             }
             if (selectedCustomer.getCode() == null) {
