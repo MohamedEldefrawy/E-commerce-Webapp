@@ -187,6 +187,7 @@ public class CustomerRepository implements ICustomerRepository {
             customer.setPassword(password);
             //update customer's status to activated
             customer.setUserStatus(UserStatus.ACTIVATED);
+            customer.setLoginAttempts(3);
             session.update(customer);
             session.beginTransaction().commit();
             return true;
