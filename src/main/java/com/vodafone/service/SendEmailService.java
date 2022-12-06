@@ -130,7 +130,7 @@ public class SendEmailService {
     public Email sendAdminResetMail(HttpSession session) {
         Email emailObj = new Email();
         emailObj.setSubject("Activate your email");
-        emailObj.setTo((String) session.getAttribute("email"));
+        emailObj.setTo((String) session.getAttribute("newAdminEmail"));
         emailObj.setFrom(from);
         //todo: test email links
         emailObj.setBody("Welcome to Admins' family" +
