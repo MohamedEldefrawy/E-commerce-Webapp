@@ -68,8 +68,10 @@ public class UserController {
         } else { //User only logic
             switch (user.getUserStatus()) {
                 case SUSPENDED:
+                    emailService.sendEmail(user,EmailType.FORGET_PASSWORD,session);
                     return "redirect:/customer/resetPassword.htm";
                 case DEACTIVATED:
+                    emailService.sendEmail(user, EmailType.ACTIVATION, session);
                     return "redirect:/customer/verify.htm";
                 case NOT_REGISTERED:
                     return "redirect:/customer/registration.htm";
