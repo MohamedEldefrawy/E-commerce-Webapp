@@ -105,7 +105,6 @@ public class SendEmailService {
         emailObj.setSubject("Password reset");
         emailObj.setTo((String) session.getAttribute("email"));
         emailObj.setFrom(from);
-        //todo: test email links
         emailObj.setBody("Dear customer," +
                 "\nForget your password?" +
                 "\nWe received a request to reset your password." +
@@ -119,7 +118,6 @@ public class SendEmailService {
         emailObj.setSubject("Activate your email");
         emailObj.setTo((String) session.getAttribute("email"));
         emailObj.setFrom(from);
-        //todo: test email links
         emailObj.setBody("Dear customer," +
                 "\nWe are happy that you decided to use our service." +
                 "\nYou could use below code to verify your account." +
@@ -132,7 +130,6 @@ public class SendEmailService {
         emailObj.setSubject("Activate your email");
         emailObj.setTo((String) session.getAttribute("email"));
         emailObj.setFrom(from);
-        //todo: test email links
         emailObj.setBody("Welcome to Admins' family" +
                 "\nWe have created your account. and you can use below password for first login:" +
                 "\n " + session.getAttribute("dec_password") +

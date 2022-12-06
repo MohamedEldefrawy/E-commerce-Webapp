@@ -28,8 +28,6 @@ public class UserController {
     private SendEmailService emailService;
     private LoginValidator validator;
 
-    private HashService hashService;
-
     @GetMapping("login.htm")
     public String login(Model model) {
         model.addAttribute("loginModel", new LoginDTO());
@@ -103,4 +101,3 @@ public class UserController {
         return "customer/shared/error";
     }
 }
-//todo: add logout function
