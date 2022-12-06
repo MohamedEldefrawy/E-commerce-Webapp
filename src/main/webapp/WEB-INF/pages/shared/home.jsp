@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AdminLTE 3 | Collapsed Sidebar</title>
+    <title>TMNT</title>
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
@@ -37,12 +37,17 @@
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <!-- Main content -->
-        <section class="d-flex justify-content-center align-items-center flex-column p-5 content">
-            <rapid:block name="content">
-                <div class="text-center">
-                    <h1>Welcome To TMNT Admin Panel</h1>
-                </div>
-            </rapid:block>
+        <div class="col-lg-8 col-md-8 col">
+
+        </div>
+        <section class="content">
+            <div class="p-1 m-auto col-lg-10 col-md-10 col-sm-12">
+                <rapid:block name="content">
+                    <div class="text-center">
+                        <h1>Welcome To TMNT Admin Panel</h1>
+                    </div>
+                </rapid:block>
+            </div>
         </section>
         <!-- /.content -->
     </div>
@@ -50,7 +55,7 @@
 
     <footer class="main-footer">
         <div class="d-flex justify-content-center align-items-center">
-            <strong>Copyright &copy; 2022-2023 <span>_VO<strong>IS</strong></span>.</strong> All rights reserved.
+            Copyright &copy; 2022-2023 &nbsp;<span>_VO<strong>IS</strong></span>. All rights reserved.
         </div>
     </footer>
     <!-- /.control-sidebar -->

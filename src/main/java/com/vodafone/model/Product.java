@@ -16,11 +16,11 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
     private String name;
     private String description;
     private String image;
     private String category;
+    @ColumnDefault("0")
     private float rate;
     private double price;
     @ColumnDefault("10")
