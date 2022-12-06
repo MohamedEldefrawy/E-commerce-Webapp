@@ -1,10 +1,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="<c:url value="/home.htm"/>" class="brand-link">
+    <a href="<c:url value="/admins/home.htm"/>" class="brand-link">
         <img src="<c:url value="/resources/static/images/logo/logo.png"/>" alt="T.M.N.T Logo"
-             class="brand-image img-circle elevation-3"
-             style="opacity: .8">
+             class="brand-image">
         <span class="brand-text font-weight-light">TMNT</span>
     </a>
 
