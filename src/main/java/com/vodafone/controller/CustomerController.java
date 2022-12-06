@@ -39,7 +39,7 @@ public class CustomerController {
     // Home
     @GetMapping("home.htm")
     public String home(HttpSession session, Model model, @RequestParam(required = false) String category) {
-        if(userAuthorizer.isActivatedCustomer(session)) {
+        if (userAuthorizer.isActivatedCustomer(session)) {
             List<Product> products;
             if (category != null)
                 products = this.productService.getByCategory(category);
@@ -47,24 +47,22 @@ public class CustomerController {
                 products = this.productService.getAll();
             model.addAttribute("products", products);
             return "/customer/shared/home";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
 
     @GetMapping("/search/home.htm")
-    public String search(HttpSession session,Model model, @RequestParam(required = false) String category,
+    public String search(HttpSession session, Model model, @RequestParam(required = false) String category,
                          @RequestParam(required = false) String name) {
-        if(userAuthorizer.isActivatedCustomer(session)) {
+        if (userAuthorizer.isActivatedCustomer(session)) {
             List<Product> products = new ArrayList<>(this.productService.getByCategory(category));
             Product selectedProduct = this.productService.getByName(name);
             if (selectedProduct != null)
                 products.add(selectedProduct);
             model.addAttribute("products", products);
             return "/customer/shared/home";
-        }
-        else {
+        } else {
             return "redirect:/login.htm";
         }
     }
@@ -75,12 +73,11 @@ public class CustomerController {
     }
 
     @GetMapping("reset.htm")
-    public String resetPasswordLoader(HttpSession session,Model model) {
-        if(userAuthorizer.customerExists(session)) {
+    public String resetPasswordLoader(HttpSession session, Model model) {
+        if (userAuthorizer.customerExists(session)) {
             model.addAttribute("resetUser", new CreateUser());
             return "resetPassword";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
@@ -88,51 +85,49 @@ public class CustomerController {
     @PostMapping("reset.htm")
     public String resetPassword(@Valid @ModelAttribute("resetUser") CreateUser user,
                                 BindingResult bindingResult, HttpSession session) {
-        if(userAuthorizer.customerExists(session)) {
+        if (userAuthorizer.customerExists(session)) {
             if (bindingResult.hasErrors()) {
                 Map<String, Object> modelBind = bindingResult.getModel();
                 System.out.println(modelBind);
                 return "registration";
             }
             System.out.println(user);
-            if (customerService.resetPassword(session.getAttribute("email").toString(), user.getPassword()))
+            if (customerService.resetPassword(session.getAttribute("email").toString(), hashService.encryptPassword(user.getPassword(), user.getUserName())))
                 return "login";
             return "resetPassword";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
 
 
     @GetMapping("/products/{id}/details.htm")
-    public String viewProductDetails(HttpSession session,Model model, @PathVariable Long id) {
-        if(userAuthorizer.isActivatedCustomer(session)) {
+    public String viewProductDetails(HttpSession session, Model model, @PathVariable Long id) {
+        if (userAuthorizer.isActivatedCustomer(session)) {
             Product product = this.productService.get(id);
             model.addAttribute("product", product);
             return "/customer/product/detail";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
 
     @GetMapping("/orders.htm")
     public String getCustomerOrders(HttpSession session, Model model) {
-        if(userAuthorizer.isActivatedCustomer(session)) {
+        if (userAuthorizer.isActivatedCustomer(session)) {
             Long customerId = (long) session.getAttribute("id");
             List<Order> orders = orderService.getByCustomerId(customerId);
             model.addAttribute("orders", orders);
             return "/customer/shared/orders";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
+
     @PostMapping("/submitOrder.htm")
     @ResponseBody
     public String submitFinalOrder(HttpSession session) {
-        if(userAuthorizer.isActivatedCustomer(session)) {
+        if (userAuthorizer.isActivatedCustomer(session)) {
             Long customerId = (long) session.getAttribute("id");
             Cart customerCart = customerService.get(customerId).getCart();
             Order submittedOrder = cartService.submitFinalOrder(customerCart.getId());
@@ -140,15 +135,14 @@ public class CustomerController {
             if (created)
                 return "true";
             return "false";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
 
     @GetMapping("showCart.htm")
     public String showCustomerCart(Model model, HttpSession session) {
-        if(userAuthorizer.isActivatedCustomer(session)) {
+        if (userAuthorizer.isActivatedCustomer(session)) {
             Long customerId = (long) session.getAttribute("id");
             Cart customerCart = customerService.get(customerId).getCart();
             List<CartItem> cartItems = customerCart.getItems();
@@ -157,8 +151,7 @@ public class CustomerController {
             model.addAttribute("orderTotal", totalCartPrice);
 
             return "/customer/shared/cart";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
@@ -168,7 +161,7 @@ public class CustomerController {
     @ResponseBody
     public String addItemToCart(HttpSession session, @RequestParam Long itemId,
                                 @RequestParam int quantity) {
-        if(userAuthorizer.isActivatedCustomer(session)) {
+        if (userAuthorizer.isActivatedCustomer(session)) {
             Long customerId = (long) session.getAttribute("id");
             Cart customerCart = customerService.get(customerId).getCart();
             Product product = productService.get(itemId);
@@ -178,8 +171,7 @@ public class CustomerController {
             if (added)
                 return "true";
             return "false";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
@@ -188,15 +180,14 @@ public class CustomerController {
     @DeleteMapping("showCart.htm")
     @ResponseBody
     public String removeItemFromCart(HttpSession session, @RequestParam Long itemId) {
-        if(userAuthorizer.isActivatedCustomer(session)) {
+        if (userAuthorizer.isActivatedCustomer(session)) {
             Long customerId = (long) session.getAttribute("id");
             Cart customerCart = customerService.get(customerId).getCart();
             boolean deleted = cartService.removeItem(customerCart.getId(), itemId);
             if (deleted)
                 return "true";
             return "false";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
@@ -204,8 +195,8 @@ public class CustomerController {
 
     @GetMapping("registration.htm")
     public String registration(Model model) {
-            model.addAttribute("customerDTO", new Customer());
-            return "registration";
+        model.addAttribute("customerDTO", new Customer());
+        return "registration";
 
     }
 
@@ -218,7 +209,7 @@ public class CustomerController {
             System.out.println(modelBind);
             return "registration";
         }
-        customerValidator.validate(customerDTO,bindingResult);
+        customerValidator.validate(customerDTO, bindingResult);
         if (bindingResult.hasErrors()) {
             Map<String, Object> modelBind = bindingResult.getModel();
             System.out.println(modelBind);
@@ -231,7 +222,7 @@ public class CustomerController {
         session.setAttribute("email", customerDTO.getEmail());
         session.setAttribute("username", customerDTO.getUserName());
         session.setAttribute("verificationCode", otp);
-        customerDTO.setPassword(hashService.encryptPassword(customerDTO.getPassword(),customerDTO.getUserName()));
+        customerDTO.setPassword(hashService.encryptPassword(customerDTO.getPassword(), customerDTO.getUserName()));
         customerService.create(customerDTO);
         if (sendEmailService.sendEmail(customerDTO, EmailType.ACTIVATION, session)) {
             return "redirect:/customer/verify.htm";
@@ -243,26 +234,25 @@ public class CustomerController {
 
     @GetMapping("resend.htm")
     public String resendOtp(HttpSession session) {
-        if(userAuthorizer.customerExists(session)) {
-          Customer selectedCustomer = this.customerService.getByUserName(session.getAttribute("username").toString());
-          String otp = this.sendEmailService.getRandom();
-          selectedCustomer.setCode(otp);
-          session.setAttribute("verificationCode", otp);
-          this.customerService.update(selectedCustomer.getId(), selectedCustomer);
-          if (sendEmailService.sendEmail(selectedCustomer, EmailType.ACTIVATION, session)) {
-              return "redirect:/customer/verify.htm";
-          } else {
-              return "registration";
-             }
-        }
-        else{
+        if (userAuthorizer.customerExists(session)) {
+            Customer selectedCustomer = this.customerService.getByUserName(session.getAttribute("username").toString());
+            String otp = this.sendEmailService.getRandom();
+            selectedCustomer.setCode(otp);
+            session.setAttribute("verificationCode", otp);
+            this.customerService.update(selectedCustomer.getId(), selectedCustomer);
+            if (sendEmailService.sendEmail(selectedCustomer, EmailType.ACTIVATION, session)) {
+                return "redirect:/customer/verify.htm";
+            } else {
+                return "registration";
+            }
+        } else {
             return "redirect:/login.htm";
         }
     }
 
     @GetMapping("/verify.htm")
     public String verify(Model model, HttpSession session) {
-        if(userAuthorizer.customerExists(session)) {
+        if (userAuthorizer.customerExists(session)) {
             model.addAttribute("customer", new Customer());
 
             final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
@@ -271,16 +261,15 @@ public class CustomerController {
             }, 1, TimeUnit.MINUTES);
 
             return "verify";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
 
 
     @PostMapping("verify.htm")
-    public String verifyCustomer(@Valid @NotNull @NotBlank @RequestParam("verificationCode") String verificationCode,  HttpSession session , Model model) {
-        if(userAuthorizer.customerExists(session)) {
+    public String verifyCustomer(@Valid @NotNull @NotBlank @RequestParam("verificationCode") String verificationCode, HttpSession session, Model model) {
+        if (userAuthorizer.customerExists(session)) {
             Customer selectedCustomer = customerService.getByMail((String) session.getAttribute("email"));
             if (selectedCustomer == null) {
                 //todo: display email not found error
@@ -299,8 +288,7 @@ public class CustomerController {
                 model.addAttribute("error", "OTP is invalid");
                 return "verify";
             }
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
@@ -308,7 +296,7 @@ public class CustomerController {
     @PutMapping("/increment")
     @ResponseBody
     public String incrementProductQuantity(HttpSession session, @RequestParam Long productId) {
-        if(userAuthorizer.isActivatedCustomer(session)) {
+        if (userAuthorizer.isActivatedCustomer(session)) {
             //retrieve cartId from session
             Long customerId = (long) session.getAttribute("id");
             Long cartId = customerService.get(customerId).getCart().getId();
@@ -316,8 +304,7 @@ public class CustomerController {
             if (newQuantity > 0)
                 return "true";
             return "false";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }
@@ -325,15 +312,14 @@ public class CustomerController {
     @PutMapping("/decrement")
     @ResponseBody
     public String decrementProductQuantity(HttpSession session, @RequestParam Long productId) {
-        if(userAuthorizer.isActivatedCustomer(session)) {
+        if (userAuthorizer.isActivatedCustomer(session)) {
             Long customerId = (long) session.getAttribute("id");
             Long cartId = customerService.get(customerId).getCart().getId();
             int newQuantity = cartService.decrementProductQuantity(cartId, productId);
             if (newQuantity >= 0)
                 return "true";
             return "false";
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
     }

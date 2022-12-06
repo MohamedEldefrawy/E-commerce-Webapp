@@ -46,7 +46,7 @@ public class LoginValidator implements Validator {
             if (!(userService.getUserByEmail(user.getEmail()) instanceof Admin)) {
                 //handle suspend logic for customer
                 Customer customer = customerService.get(user.getId());
-                if (customer.getLoginAttempts() > 0) {//decrement attempts
+                if (customer.getLoginAttempts() > 1) {//decrement attempts
                     customer.setLoginAttempts(customer.getLoginAttempts() - 1);
                     customerService.update(customer.getId(), customer);
                 } else {
