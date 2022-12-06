@@ -14,8 +14,8 @@ public class HashService {
         encoder = new Argon2PasswordEncoder(salt, 16, 1, 2 * 1024, 2);
     }
 
-    public String encryptPassword(String password, String username) {
-        salt += username.length();
+    public String encryptPassword(String password, String email) {
+        salt += email.length();
         return encoder.encode(password);
     }
 
