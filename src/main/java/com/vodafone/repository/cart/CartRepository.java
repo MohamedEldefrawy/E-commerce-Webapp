@@ -106,7 +106,7 @@ public class CartRepository implements ICartRepository {
             cart.getItems().removeIf(item -> Objects.equals(item.getId(), itemId)); //remove desired item
             session.update(cart); //update cart
             //Remove cartItem from DB
-            CartItem cartItem = session.get(CartItem.class,itemId);
+            CartItem cartItem = session.get(CartItem.class, itemId);
             session.delete(cartItem);
             transaction.commit();
             session.close();
@@ -126,7 +126,7 @@ public class CartRepository implements ICartRepository {
             if (cart == null)
                 return false;
             //delete all cart items from database
-            cart.getItems().stream().forEach(i->session.delete(i));
+            cart.getItems().stream().forEach(i -> session.delete(i));
             //delete cart object
             cart.getItems().clear();
             session.update(cart);
@@ -140,74 +140,28 @@ public class CartRepository implements ICartRepository {
     }
 
     @Override
-    public Order submitFinalOrder(Long cartId) {
-        Order order = showFinalOrder(cartId); //calculate total and transform CartItem to OrderItem
-        clearCart(cartId); //submit and clear the cart
-        return order;
-    }
-
-    //todo: encapsulate validation in controller not repo
-    @Override
-    public Order showFinalOrder(Long cartId) {
-        Set<OrderItem> orderItems = new HashSet<>();
-        Cart cart = get(cartId);
-        Order order = new Order();
-        order.setCustomer(cart.getCustomer());
-        order.setDate(Date.valueOf(LocalDate.now()));
-        //iterate over each cart item to transform it to order item.
-        float total = 0f;
-        for (CartItem cartItem : cart.getItems()) {
-            OrderItem orderItem = new OrderItem();
-            orderItem.setOrder(order);
-            //check available quantity in stock
-            int quantity = cartItem.getQuantity();
-            int availableInStock = cartItem.getProduct().getInStock();
-            if (quantity <= availableInStock) {
-                //set product in Order
-                orderItem.setProduct(cartItem.getProduct());
-                orderItem.setQuantity(quantity);
-                //add sub-total
-                total += (float) (orderItem.getProduct().getPrice() * quantity);
-                //decrement product inStock variable
-                cartItem.getProduct().setInStock(availableInStock - quantity);
-                //add order to OrderItems
-                orderItems.add(orderItem);
-            } else {
-                //Todo("Handle unavailable product exception");
-                System.out.println("Product hasn't enough instances in stock");
-                break;
-            }
-        }
-        order.setTotal(total);
-        order.setOrderItems(orderItems);
-        return order;
-    }
-
-    @Override
     public boolean addItem(Long cartId, CartItem item) {
         try (Session session = config.getSessionFactory().openSession()) {
             Cart cart = get(cartId);
             List<CartItem> items = cart.getItems();
             //checks if item is already in cart then increments quantity
             List<CartItem> matchingProduct = items.stream()
-                    .filter(i->i.getProduct().getId().equals(item.getProduct().getId()))
+                    .filter(i -> i.getProduct().getId().equals(item.getProduct().getId()))
                     .collect(Collectors.toList());
-            if(!matchingProduct.isEmpty()){
-                int newQuantity = incrementProductQuantity(cartId,item.getProduct().getId(),item.getQuantity());
-                if(newQuantity>0)
+            if (!matchingProduct.isEmpty()) {
+                int newQuantity = incrementProductQuantity(cartId, item.getProduct().getId(), item.getQuantity());
+                if (newQuantity > 0)
                     return true;
                 return false;
-            }
-            else {
-                if(item.getProduct().getInStock()>=item.getQuantity()) {
+            } else {
+                if (item.getProduct().getInStock() >= item.getQuantity()) {
                     Transaction transaction = session.beginTransaction();
                     session.persist(item);
                     items.add(item); //add item to cart list
                     session.update(cart); //update cart
                     transaction.commit();
                     session.close();
-                }
-                else{
+                } else {
                     return false;
                 }
             }
@@ -243,20 +197,19 @@ public class CartRepository implements ICartRepository {
     }
 
     @Override
-    public int incrementProductQuantity(Long cartId, Long productId,int quantity) {
+    public int incrementProductQuantity(Long cartId, Long productId, int quantity) {
         try (Session session = config.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             Cart cart = get(cartId);
             int newQuantity = 0;
-            CartItem foundItem=null;
+            CartItem foundItem = null;
             for (CartItem item : cart.getItems()) {
                 if (item.getProduct().getId().equals(productId)) {
                     newQuantity = item.getQuantity() + quantity;
-                    if(item.getProduct().getInStock()>=newQuantity){
+                    if (item.getProduct().getInStock() >= newQuantity) {
                         item.setQuantity(newQuantity);
                         foundItem = item;
-                    }
-                    else{
+                    } else {
                         return 0;
                     }
                 }
@@ -277,7 +230,7 @@ public class CartRepository implements ICartRepository {
         try (Session session = config.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             Cart cart = get(cartId);
-            CartItem foundItem=null;
+            CartItem foundItem = null;
             int newQuantity = 0;
             for (CartItem item : cart.getItems()) {
                 if (item.getProduct().getId().equals(productId)) {
