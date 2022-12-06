@@ -15,7 +15,7 @@ public class HashService {
     }
 
     public String encryptPassword(String password, String username) {
-        salt += +username.length();
+        salt += username.length();
         return encoder.encode(password);
     }
 
