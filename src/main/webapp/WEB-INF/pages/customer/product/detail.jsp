@@ -123,6 +123,9 @@
                         </div>
                     </div>
                     <button onclick="addToCart(${product.getId()})" class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
+                    <div id ="${product.getId()}e" style="padding-left: 5px;display: none" class="justify-content-center align-items-end" d>
+                        <p class="text-center">Not Available in stock</p>
+                    </div>
                 </div>
                 <div class="d-flex pt-2">
                     <p class="text-dark font-weight-medium mb-0 mr-2">Share on:</p>
@@ -155,10 +158,13 @@
             }).then(response => response.json()).then(data => {
                 if (data) {
                     alert("Item added successfully");
-                } else
-                    alert("Something Wrong!!")
+                    document.getElementById(id+"e").style.display = "none"
+                } else{
+                    document.getElementById(id+"e").style.display = "block"
+                }
+
             }).catch((reason) => {
-                alert(reason);
+                window.location.href = "../../../login.htm"
             })
 
         }

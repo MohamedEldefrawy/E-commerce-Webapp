@@ -199,12 +199,17 @@ public class CartRepository implements ICartRepository {
                 return false;
             }
             else {
-                Transaction transaction = session.beginTransaction();
-                session.persist(item);
-                items.add(item); //add item to cart list
-                session.update(cart); //update cart
-                transaction.commit();
-                session.close();
+                if(item.getProduct().getInStock()>=item.getQuantity()) {
+                    Transaction transaction = session.beginTransaction();
+                    session.persist(item);
+                    items.add(item); //add item to cart list
+                    session.update(cart); //update cart
+                    transaction.commit();
+                    session.close();
+                }
+                else{
+                    return false;
+                }
             }
         } catch (HibernateException e) {
             e.printStackTrace();
@@ -247,8 +252,13 @@ public class CartRepository implements ICartRepository {
             for (CartItem item : cart.getItems()) {
                 if (item.getProduct().getId().equals(productId)) {
                     newQuantity = item.getQuantity() + quantity;
-                    item.setQuantity(newQuantity);
-                    foundItem = item;
+                    if(item.getProduct().getInStock()>=newQuantity){
+                        item.setQuantity(newQuantity);
+                        foundItem = item;
+                    }
+                    else{
+                        return 0;
+                    }
                 }
             }
             session.update(cart); //update cart
