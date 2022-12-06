@@ -243,7 +243,6 @@ public class CustomerController {
 
     @GetMapping("resend.htm")
     public String resendOtp(HttpSession session) {
-
         if(userAuthorizer.customerExists(session)) {
           Customer selectedCustomer = this.customerService.getByUserName(session.getAttribute("username").toString());
           String otp = this.sendEmailService.getRandom();
@@ -280,16 +279,14 @@ public class CustomerController {
 
 
     @PostMapping("verify.htm")
-
-    public String verifyCustomer(@Valid @ModelAttribute("customer") Customer customer, BindingResult bindingResult, HttpSession session) {
-        if(userAuthorizer.customerExists(session)) {
+    public String verifyCustomer(@Valid @NotNull @NotBlank @RequestParam("verificationCode") String verificationCode,  HttpSession session , Model model) {        if (userAuthorizer.customerExists(session)) {
             Customer selectedCustomer = customerService.getByMail((String) session.getAttribute("email"));
             if (selectedCustomer == null) {
                 //todo: display email not found error
                 return "registration";
             }
-            if(selectedCustomer.getCode()==null){
-                model.addAttribute("error","OTP has been expired");
+            if (selectedCustomer.getCode() == null) {
+                model.addAttribute("error", "OTP has been expired");
                 return "verify";
             }
             if (selectedCustomer.getCode().equals(verificationCode)) {
@@ -298,13 +295,13 @@ public class CustomerController {
                 customerService.updateStatusActivated(selectedCustomer.getEmail());
                 return "redirect:/customer/home.htm";
             } else {
-                model.addAttribute("error","OTP is invalid");
+                model.addAttribute("error", "OTP is invalid");
                 return "verify";
             }
-        }
-        else{
+        } else {
             return "redirect:/login.htm";
         }
+    }
 
     @PutMapping("/increment")
     @ResponseBody
