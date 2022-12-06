@@ -114,13 +114,13 @@
                             <td class="align-middle">
                                 <div class="input-group quantity mx-auto" style="width: 100px;">
                                     <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-minus" onclick="decrementQuantity(${item.getCart().getId()},${item.getProduct().getId()})">
+                                        <button class="btn btn-sm btn-primary btn-minus" onclick="decrementQuantity(${item.getProduct().getId()})">
                                             <i class="fa fa-minus"></i>
                                         </button>
                                     </div>
                                     <input id="${item.getProduct().getId()}" type="text" class="form-control form-control-sm bg-secondary text-center" style ="height: 25px;"value="${item.getQuantity()}">
                                     <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-plus" onclick="incrementQuantity(${item.getCart().getId()},${item.getProduct().getId()})" >
+                                        <button class="btn btn-sm btn-primary btn-plus" onclick="incrementQuantity(${item.getProduct().getId()})" >
                                             <i class="fa fa-plus"></i>
                                         </button>
                                     </div>
