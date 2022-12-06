@@ -26,10 +26,9 @@ public class UserAuthorizer {
     }
     public boolean customerExists(HttpSession session){
         //user isn't logged in
-        if(session.getAttribute("id")==null)
+        if(session.getAttribute("email")==null)
             return false;
-        Long id = (long) session.getAttribute("id");
-        Customer customer = customerService.get(id);
+        Customer customer = customerService.getByMail((String) session.getAttribute("email"));
         //user is not a customer
         if(customer==null)
             return false;

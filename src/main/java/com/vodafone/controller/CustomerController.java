@@ -212,7 +212,7 @@ public class CustomerController {
     //todo: change customer param type to CreateUser DTO
     @PostMapping("registration.htm")
     public String register(@Valid @ModelAttribute("customerDTO") Customer customerDTO, BindingResult bindingResult,
-                           HttpServletRequest request, HttpSession session) {
+                           HttpSession session) {
         if (bindingResult.hasErrors()) {
             Map<String, Object> modelBind = bindingResult.getModel();
             System.out.println(modelBind);
@@ -280,7 +280,7 @@ public class CustomerController {
 
     @PostMapping("verify.htm")
     public String verifyCustomer(@Valid @NotNull @NotBlank @RequestParam("verificationCode") String verificationCode,  HttpSession session , Model model) {
-        if(userAuthorizer.customerExists(session)) {
+       if(userAuthorizer.customerExists(session)) {
             Customer selectedCustomer = customerService.getByMail((String) session.getAttribute("email"));
             if (selectedCustomer == null) {
                 //todo: display email not found error
