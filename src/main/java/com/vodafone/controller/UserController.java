@@ -85,7 +85,7 @@ public class UserController {
     @GetMapping("logout.htm")
     public String logout(HttpSession session) {
         session.invalidate();
-        return "login";
+        return "redirect:login.htm";
     }
 
     @GetMapping("error.htm")
