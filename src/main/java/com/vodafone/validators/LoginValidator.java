@@ -1,8 +1,12 @@
 package com.vodafone.validators;
 
 
+import com.vodafone.model.Admin;
+import com.vodafone.model.Customer;
 import com.vodafone.model.User;
+import com.vodafone.model.UserStatus;
 import com.vodafone.model.dto.LoginDTO;
+import com.vodafone.service.CustomerService;
 import com.vodafone.service.HashService;
 import com.vodafone.service.UserService;
 import lombok.AllArgsConstructor;
@@ -10,12 +14,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import javax.servlet.http.HttpSession;
+
 @AllArgsConstructor
 @Component
 public class LoginValidator implements Validator {
     private UserService userService;
 
     private HashService hashService;
+
+    private CustomerService customerService; //to handle customer suspending-logic
 
     @Override
     public boolean supports(Class<?> paramClass) {
@@ -32,9 +40,21 @@ public class LoginValidator implements Validator {
             return;
         }
 
-        if (!hashService.isPasswordValid(loginDTO.getPassword(),user.getPassword())) {
+        if (!hashService.isPasswordValid(loginDTO.getPassword(), user.getPassword())) {
             errors.rejectValue("password", "invalid", new Object[]{"'password'"},
                     "Incorrect password");
+            if (!(userService.getUserByEmail(user.getEmail()) instanceof Admin)) {
+                //handle suspend logic for customer
+                Customer customer = customerService.get(user.getId());
+                if (customer.getLoginAttempts() > 1) {//decrement attempts
+                    customer.setLoginAttempts(customer.getLoginAttempts() - 1);
+                    customerService.update(customer.getId(), customer);
+                } else {
+                    customer.setLoginAttempts(0);
+                    customer.setUserStatus(UserStatus.SUSPENDED);
+                    customerService.update(customer.getId(), customer);
+                }
+            }
         }
     }
 }

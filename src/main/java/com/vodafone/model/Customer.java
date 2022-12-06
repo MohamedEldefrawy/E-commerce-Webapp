@@ -15,11 +15,14 @@ import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
-@Setter @Getter @AllArgsConstructor
+@Setter
+@Getter
+@AllArgsConstructor
 @Entity
-@Table ( name = "customers")
+@Table(name = "customers")
 public class Customer extends User {
 
+    private int loginAttempts;
 
     private String code;
 
@@ -30,11 +33,12 @@ public class Customer extends User {
     @OneToOne
     @JoinColumn(name = "cartId")
     private Cart cart;
-    @OneToMany(mappedBy = "customer" ,cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Order> orders;
 
     public Customer() {
         this.userStatus = UserStatus.DEACTIVATED;
-        cart = new Cart(this,new ArrayList<>());
+        this.loginAttempts = 3;
+        cart = new Cart(this, new ArrayList<>());
     }
 }

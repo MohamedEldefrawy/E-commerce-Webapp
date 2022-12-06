@@ -1,22 +1,17 @@
 package com.vodafone.controller;
 
-import com.vodafone.model.Admin;
-import com.vodafone.model.EmailType;
-import com.vodafone.model.User;
-import com.vodafone.model.UserStatus;
-import com.vodafone.model.dto.CreateUser;
+import com.vodafone.model.*;
 import com.vodafone.model.dto.LoginDTO;
-import com.vodafone.service.AdminService;
-import com.vodafone.service.HashService;
-import com.vodafone.service.SendEmailService;
-import com.vodafone.service.UserService;
+import com.vodafone.service.*;
 import com.vodafone.validators.LoginValidator;
 import lombok.AllArgsConstructor;
-import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -29,6 +24,7 @@ import java.util.Map;
 public class UserController {
     private UserService userService;
     private AdminService adminService;
+    private CustomerService customerService;
     private SendEmailService emailService;
     private LoginValidator validator;
 
@@ -48,6 +44,16 @@ public class UserController {
         }
         validator.validate(login, bindingResult);
         if (bindingResult.hasErrors()) {
+            //user is suspended but not customer
+            if (!(userService.getUserByEmail(login.getEmail()) instanceof Admin)) {
+                Customer customer = customerService.getByMail(login.getEmail());
+                if (customer.getUserStatus() == UserStatus.SUSPENDED) { // if user status is suspended after validation
+                    session.setAttribute("email", login.getEmail());
+                    if (emailService.sendEmail(customer, EmailType.FORGET_PASSWORD, session)) {
+                        return "redirect:/customer/resetPassword.htm";
+                    }
+                }
+            }
             return "login";
         }
 
@@ -64,6 +70,10 @@ public class UserController {
                 return "redirect:/admins/home.htm";
             }
         } else if (user.getUserStatus() == UserStatus.ACTIVATED) { //valid credentials customer
+            //reset attempts
+            Customer customer = customerService.get(user.getId());
+            customer.setLoginAttempts(3);
+            customerService.update(customer.getId(), customer);
             return "redirect:/customer/home.htm";
         } else { //User only logic
             switch (user.getUserStatus()) {
@@ -85,7 +95,7 @@ public class UserController {
     @GetMapping("logout.htm")
     public String logout(HttpSession session) {
         session.invalidate();
-        return "login";
+        return "redirect:login.htm";
     }
 
     @GetMapping("error.htm")

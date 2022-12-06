@@ -51,6 +51,8 @@ public class CustomerRepository implements ICustomerRepository {
                 return false;
             } else {
                 customer.setCode(updatedCustomer.getCode());
+                customer.setLoginAttempts(updatedCustomer.getLoginAttempts());
+                customer.setUserStatus(updatedCustomer.getUserStatus());
                 session.update(customer);
                 transaction.commit();
                 return true;
@@ -185,6 +187,7 @@ public class CustomerRepository implements ICustomerRepository {
             customer.setPassword(password);
             //update customer's status to activated
             customer.setUserStatus(UserStatus.ACTIVATED);
+            customer.setLoginAttempts(3);
             session.update(customer);
             session.beginTransaction().commit();
             return true;
