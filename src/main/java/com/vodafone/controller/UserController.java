@@ -45,12 +45,13 @@ public class UserController {
         validator.validate(login, bindingResult);
         if (bindingResult.hasErrors()) {
             //user is suspended but not customer
-            session.invalidate();
             if (!(userService.getUserByEmail(login.getEmail()) instanceof Admin)) {
                 Customer customer = customerService.getByMail(login.getEmail());
                 if (customer.getUserStatus() == UserStatus.SUSPENDED) { // if user status is suspended after validation
-                    if (emailService.sendEmail(customer, EmailType.FORGET_PASSWORD, session))
+                    session.setAttribute("email", login.getEmail());
+                    if (emailService.sendEmail(customer, EmailType.FORGET_PASSWORD, session)) {
                         return "redirect:/customer/resetPassword.htm";
+                    }
                 }
             }
             return "login";
