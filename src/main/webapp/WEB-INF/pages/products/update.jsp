@@ -136,7 +136,7 @@
         <div class="input-group mb-3">
             <label for="Image" class="col-sm-2 col-form-label">Image</label>
             <div class="d-flex flex-row">
-                <form:input path="image" id="Image" name="image" class="form-control" type="file"/>
+                <form:input path="image" id="Image" name="image" class="form-control" type="file" accept=".jpg, .png, .jpeg|image/*"/>
                 <img style="max-height: 120px; max-width: 120px" class="image img-thumbnail mr-auto"
                      alt="${product.getImage()}"
                      src="<c:url value="/resources/static/images/${product.getImage()}"/>">
