@@ -124,23 +124,24 @@
     <script>
         function addToCart(id) {
             let quantity = document.getElementById(id).value;
-            fetch("../../addToCart/?itemId=" + id + "&quantity=" + quantity, {
-                method: "POST",
-                headers: {
-                    'Accept': '*/*'
-                }
-            }).then(response => response.json()).then(data => {
-                if (data) {
-                    alert("Item added successfully");
-                    document.getElementById(id+"e").style.display = "none"
-                } else{
-                    document.getElementById(id+"e").style.display = "block"
-                }
+            if(quantity>0) {
+                fetch("../../addToCart/?itemId=" + id + "&quantity=" + quantity, {
+                    method: "POST",
+                    headers: {
+                        'Accept': '*/*'
+                    }
+                }).then(response => response.json()).then(data => {
+                    if (data) {
+                        alert("Item added successfully");
+                        document.getElementById(id + "e").style.display = "none"
+                    } else {
+                        document.getElementById(id + "e").style.display = "block"
+                    }
 
-            }).catch((reason) => {
-                window.location.href = "../../../login.htm"
-            })
-
+                }).catch((reason) => {
+                    window.location.href = "../../../login.htm"
+                })
+            }
         }
     </script>
     <!-- Shop Detail End -->

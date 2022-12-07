@@ -60,21 +60,22 @@
 <script>
     function addToCart(id) {
         let quantity = document.getElementById(id).value;
-        fetch("/Ecommerce_war/customer/addToCart/?itemId=" + id + "&quantity=" + quantity, {
-            method: "POST",
-            headers: {
-                'Accept': '*/*'
-            }
-        }).then(response => response.json()).then(data => {
-            if (data) {
-                alert("Item added successfully");
-                document.getElementById(id+"e").style.display = "none"
-            } else{
-                document.getElementById(id+"e").style.display = "block"
-            }
-        }).catch((reason) => {
-            window.location.href = "/Ecommerce_war/login.htm"
-        })
-
+        if (quantity > 0) {
+            fetch("/Ecommerce_war/customer/addToCart/?itemId=" + id + "&quantity=" + quantity, {
+                method: "POST",
+                headers: {
+                    'Accept': '*/*'
+                }
+            }).then(response => response.json()).then(data => {
+                if (data) {
+                    alert("Item added successfully");
+                    document.getElementById(id + "e").style.display = "none"
+                } else {
+                    document.getElementById(id + "e").style.display = "block"
+                }
+            }).catch((reason) => {
+                window.location.href = "/Ecommerce_war/login.htm"
+            })
+        }
     }
 </script>

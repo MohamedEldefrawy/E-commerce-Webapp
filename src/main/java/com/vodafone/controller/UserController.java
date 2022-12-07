@@ -102,7 +102,6 @@ public class UserController {
 
     @GetMapping
     public String defaultPage(Model model) {
-        model.addAttribute("loginModel", new LoginDTO());
-        return "login";
+        return "redirect:login.htm";
     }
 }
