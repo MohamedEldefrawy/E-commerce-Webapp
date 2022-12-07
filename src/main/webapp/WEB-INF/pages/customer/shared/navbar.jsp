@@ -30,9 +30,10 @@
         <div class="row border-top px-xl-5">
             <div class="col-lg-3 d-none d-lg-block">
                 <a class="btn shadow-none d-flex align-items-center justify-content-between bg-primary text-white w-100"
-                   data-toggle="collapse" href="#navbar-vertical" style="height: 65px; margin-top: -1px; padding: 0 30px;">
-                    <h6 class="m-0">Categories</h6>
-                    <i class="fa fa-angle-down text-dark"></i>
+                   data-toggle="collapse" href="#navbar-vertical"
+                   style="height: 65px; margin-top: -1px; padding: 0 30px;">
+                    <h6 class="m-0 text-white">Categories</h6>
+                    <i class="fa fa-angle-down text-white"></i>
                 </a>
                 <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0"
                      id="navbar-vertical">
@@ -40,7 +41,8 @@
                         <a href="<c:url value="/customer/home.htm?category=Cats"/>" class="nav-item nav-link">Cats</a>
                         <a href="<c:url value="/customer/home.htm?category=Dogs"/>" class="nav-item nav-link">Dogs</a>
                         <a href="<c:url value="/customer/home.htm?category=Birds"/>" class="nav-item nav-link">Birds</a>
-                        <a href="<c:url value="/customer/home.htm?category=Turtles"/>" class="nav-item nav-link">Turtles</a>
+                        <a href="<c:url value="/customer/home.htm?category=Turtles"/>"
+                           class="nav-item nav-link">Turtles</a>
                         <a href="<c:url value="/customer/home.htm?category=Hamsters"/>"
                            class="nav-item nav-link">Hamsters</a>
                         <a href="<c:url value="/customer/home.htm"/>"
@@ -69,7 +71,39 @@
                         </div>
                     </div>
                 </nav>
+                <div id="header-carousel" class="carousel slide" data-ride="carousel">
+                    <div id="CarouselItems" class="carousel-inner">
+                        <c:forEach items="${products}" var="product">
+                            <div class="carousel-item" style="height: 410px;">
+                                <img class="img-fluid"
+                                     src="<c:url value="/resources/static/images/${product.getImage()}"/>"
+                                     alt="${product.getName()}">
+                                <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                                    <div class="p-3" style="max-width: 700px;">
+                                        <h4 class="text-light text-uppercase font-weight-medium mb-3">10% Off Your First
+                                            Order
+                                        </h4>
+                                        <h3 class="display-4 text-white font-weight-semi-bold mb-4">${product.getName()}</h3>
+                                        <a href="#Products" class="btn btn-light py-2 px-3">Shop Now</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </c:forEach>
+
+                    </div>
+                    <a class="carousel-control-prev" href="#header-carousel" data-slide="prev">
+                        <div class="btn btn-dark" style="width: 45px; height: 45px;">
+                            <span class="carousel-control-prev-icon mb-n2"></span>
+                        </div>
+                    </a>
+                    <a class="carousel-control-next" href="#header-carousel" data-slide="next">
+                        <div class="btn btn-dark" style="width: 45px; height: 45px;">
+                            <span class="carousel-control-next-icon mb-n2"></span>
+                        </div>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
+<%--/div--%>
     <!-- Navbar End -->
