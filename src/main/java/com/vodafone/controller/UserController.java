@@ -43,7 +43,8 @@ public class UserController {
         validator.validate(login, bindingResult);
         if (bindingResult.hasErrors()) {
             //user is suspended but not customer
-            if (!(userService.getUserByEmail(login.getEmail()) instanceof Admin)) {
+            User user = userService.getUserByEmail(login.getEmail());
+            if ( user != null && !(user instanceof Admin)) {
                 Customer customer = customerService.getByMail(login.getEmail());
                 if (customer.getUserStatus() == UserStatus.SUSPENDED) { // if user status is suspended after validation
                     session.setAttribute("email", login.getEmail());
