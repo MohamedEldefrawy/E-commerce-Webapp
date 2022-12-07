@@ -52,14 +52,16 @@ public class AdminController {
         this.emailService = emailService;
         //todo: save super admin config in config file as a bean
         //create super admin
-        Admin admin = new Admin();
-        admin.setEmail("admin@gmail.com");
+      /*  Admin admin = new Admin();
+        admin.setEmail("t.m.n.t.ecommerce@gmail.com");
         admin.setRole(Role.Admin);
-        admin.setUserName("admoona");
+        admin.setUserName("TMNT Admin");
         admin.setPassword(hashService.encryptPassword("12345678", admin.getEmail()));
         System.out.println(admin.getPassword());
         admin.setFirstLogin(false);
         this.adminService.create(admin);
+
+       */
     }
 
 
