@@ -6,9 +6,9 @@
     <div class="row align-items-center py-3 px-xl-5">
         <div class="col-lg-3 d-none d-lg-block">
             <a href="" class="text-decoration-none">
-                <h1 class="m-0 display-5 font-weight-semi-bold text-primary">
+                <h1 class="m-0 display-5 font-weight-semi-bold custom-green">
                     <img style="max-height: 100px; max-width: 100px;margin-left: 10px" class="image img-circle mr-auto"
-                         src="<c:url value="/resources/static/images/logo/logo_primary.png"/>">
+                         src="<c:url value="/resources/static/images/logo/logo_green.png"/>">
                     TMNT</h1>
             </a>
         </div>
@@ -16,7 +16,7 @@
             <div class="input-group">
                 <input id="Search" type="text" class="form-control" placeholder="Search for products"/>
                 <div class="input-group-append">
-                    <button id="btnSearch" class="input-group-text bg-transparent text-primary">
+                    <button id="btnSearch" class="input-group-text bg-transparent custom-green">
                         <b class="fa fa-search"></b>
                     </button>
                 </div>
@@ -29,7 +29,7 @@
     <div class="container-fluid mb-5">
         <div class="row border-top px-xl-5">
             <div class="col-lg-3 d-none d-lg-block">
-                <a class="btn shadow-none d-flex align-items-center justify-content-between bg-primary text-white w-100"
+                <a class="btn shadow-none d-flex align-items-center justify-content-between bg-success text-white w-100"
                    data-toggle="collapse" href="#navbar-vertical"
                    style="height: 65px; margin-top: -1px; padding: 0 30px;">
                     <h6 class="m-0 text-white">Categories</h6>
@@ -53,8 +53,10 @@
             <div class="col-lg-9">
                 <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0">
                     <a href="" class="text-decoration-none d-block d-lg-none">
-                        <h1 class="m-0 display-5 font-weight-semi-bold"><span
-                                class="text-primary font-weight-bold border px-3 mr-1">E</span>Shopper</h1>
+                        <h1 class="m-0 display-5 font-weight-semi-bold custom-green">
+                            <img style="max-height: 100px; max-width: 100px;margin-left: 10px" class="image img-circle mr-auto"
+                                 src="<c:url value="/resources/static/images/logo/logo_green.png"/>">
+                            TMNT</h1>
                     </a>
                     <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
                         <span class="navbar-toggler-icon"></span>

@@ -39,7 +39,7 @@
             </div>
             <!-- /.card-body -->
             <div class="card-footer bg-white ">
-                <button type="submit" class="btn btn-info m-auto  w-25 d-block ">Reset</button>
+                <button type="submit" class="btn btn-success m-auto  w-25 d-block ">Reset</button>
             </div>
             <!-- /.card-footer -->
         </form:form>

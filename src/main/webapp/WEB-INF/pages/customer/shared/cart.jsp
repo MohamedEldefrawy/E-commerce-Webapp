@@ -33,7 +33,7 @@
 <div class="container-fluid mb-5">
     <div class="row border-top px-xl-5">
         <div class="col-lg-3 d-none d-lg-block">
-            <a class="btn shadow-none d-flex align-items-center justify-content-between bg-primary text-white w-100"
+            <a class="btn shadow-none d-flex align-items-center justify-content-between bg-success text-white w-100"
                data-toggle="collapse" href="#navbar-vertical" style="height: 65px; margin-top: -1px; padding: 0 30px;">
                 <h6 class="m-0">Categories</h6>
                 <i class="fa fa-angle-down text-dark"></i>
@@ -55,15 +55,17 @@
         <div class="col-lg-9">
             <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0">
                 <a href="" class="text-decoration-none d-block d-lg-none">
-                    <h1 class="m-0 display-5 font-weight-semi-bold"><span
-                            class="text-primary font-weight-bold border px-3 mr-1">E</span>Shopper</h1>
+                    <h1 class="m-0 display-5 font-weight-semi-bold custom-green">
+                        <img style="max-height: 100px; max-width: 100px;margin-left: 10px" class="image img-circle mr-auto"
+                             src="<c:url value="/resources/static/images/logo/logo_green.png"/>">
+                        TMNT</h1>
                 </a>
                 <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                     <div class="navbar-nav mr-auto py-0">
-                        <a href="<c:url value="/customer/home.htm"/>" class="nav-item nav-link active">Home</a>
+                        <a href="<c:url value="/customer/home.htm"/>" class="nav-item nav-link active ">Home</a>
                         <a href="<c:url value="/customer/home.htm#Products"/>" class="nav-item nav-link">Shop</a>
                         <a href="<c:url value="/customer/showCart.htm"/>" class="nav-item nav-link">Shopping Cart</a>
                         <a href="<c:url value="/customer/orders.htm"/>" class="nav-item nav-link">Orders</a>
@@ -116,20 +118,20 @@
                             <td class="align-middle">
                                 <div class="input-group quantity mx-auto" style="width: 100px;">
                                     <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-minus" onclick="decrementQuantity(${item.getProduct().getId()})">
+                                        <button class="btn btn-sm btn-success btn-minus" onclick="decrementQuantity(${item.getProduct().getId()})">
                                             <i class="fa fa-minus"></i>
                                         </button>
                                     </div>
                                     <input id="${item.getProduct().getId()}" type="text" class="form-control form-control-sm bg-secondary text-center" style ="height: 25px;"value="${item.getQuantity()}">
                                     <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-plus" onclick="incrementQuantity(${item.getProduct().getId()})" >
+                                        <button class="btn btn-sm btn-success btn-plus" onclick="incrementQuantity(${item.getProduct().getId()})" >
                                             <i class="fa fa-plus"></i>
                                         </button>
                                     </div>
                                 </div>
                             </td>
                             <td class="align-middle">$${item.getTotal()}</td>
-                            <td class="align-middle"><button class="btn btn-sm btn-primary" onclick="deleteRow(${item.getId()})"><i class="fa fa-times"></i></button></td>
+                            <td class="align-middle"><button class="btn btn-sm btn-success" onclick="deleteRow(${item.getId()})"><i class="fa fa-times"></i></button></td>
                         </tr>
                     </c:forEach>
                 </c:if>
@@ -156,7 +158,7 @@
                         <h5 class="font-weight-bold">Total</h5>
                         <h5 class="font-weight-bold">$${orderTotal}</h5>
                     </div>
-                    <button onclick="checkout()" class="btn btn-block btn-primary my-3 py-3">Proceed To Checkout</button>
+                    <button onclick="checkout()" class="btn btn-block btn-success my-3 py-3">Proceed To Checkout</button>
                 </div>
             </div>
         </div>
@@ -172,7 +174,7 @@
 
 
 <!-- Back to Top -->
-<a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+<a href="#" class="btn btn-success back-to-top"><i class="fa fa-angle-double-up"></i></a>
 
 
 <!-- JavaScript Libraries -->

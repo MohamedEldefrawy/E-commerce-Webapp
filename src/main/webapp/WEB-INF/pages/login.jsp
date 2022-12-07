@@ -32,6 +32,14 @@
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="container pt-5">
+    <div class="d-flex justify-content-center mb-3 ">
+        <a href="" class="text-decoration-none">
+            <h1 class="m-0 display-5 font-weight-semi-bold text-success">
+                <img style="max-height: 100px; max-width: 100px;margin-left: 10px" class="image  mr-auto"
+                     src="<c:url value="/resources/static/images/logo/logo_green.png"/>">
+                Welcome to TMNT Pet Shop</h1>
+        </a>
+    </div>
     <!-- Horizontal Form -->
     <div class="card card-info w-75 m-auto ">
         <div class="bg-white m-3 ">
@@ -64,7 +72,7 @@
             </div>
             <!-- /.card-body -->
             <div class="card-footer d-flex justify-content-center mb-3 bg-white">
-                <button type="submit" class="btn btn-info mr-2 w-25 ">Sign in</button>
+                <button type="submit" class="btn btn-success mr-2 w-25 ">Sign in</button>
                 <button type="button" class="btn btn-default w-25 ">
                     <a href="<c:url value="/customer/registration.htm" />">Sign Up</a>
                 </button>
