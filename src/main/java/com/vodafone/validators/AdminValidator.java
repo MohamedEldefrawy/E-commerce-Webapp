@@ -31,8 +31,7 @@ public class AdminValidator implements Validator {
         if(errors.hasErrors()){
             return;
         }
-        String emailRegEx =  "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
-                + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
+        String emailRegEx = "^\\w+([\\.]?\\w+){3,}@\\w{4,8}([\\.-]?\\w+)*(\\.\\w{2,3})+$";
         if(admin.getEmail().length()<5){
             errors.rejectValue("email", "invalid", new Object[]{"'email'"},
                     "Email address is not valid");
