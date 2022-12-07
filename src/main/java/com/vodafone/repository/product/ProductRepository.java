@@ -45,6 +45,7 @@ public class ProductRepository implements IProductRepository {
             selectedEntity.setDescription(updatedEntity.getDescription());
             selectedEntity.setPrice(updatedEntity.getPrice());
             selectedEntity.setImage(updatedEntity.getImage());
+            selectedEntity.setInStock(updatedEntity.getInStock());
             session.update(selectedEntity);
             transaction.commit();
             return true;
