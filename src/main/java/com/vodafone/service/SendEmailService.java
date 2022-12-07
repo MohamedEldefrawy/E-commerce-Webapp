@@ -113,9 +113,11 @@ public class SendEmailService {
         emailObj.setFrom(from);
         emailObj.setBody("Dear customer," +
                 "\nForget your password?" +
-                "\nWe received a request to reset your password." +
-                "\nClick on below link to redirect you to reset password page." +
-                "\n  http://localhost:8080/Ecommerce_war/customer/reset.htm");
+                "\nYou are suspended due to exceeding your login attempts [3]"+
+                "\nYour next login will let you reset your password." +
+                "\nWish you happy shopping experience." +
+                "\nRegards," +
+                "\nTMNT team.");
         return emailObj;
     }
 
@@ -139,7 +141,7 @@ public class SendEmailService {
         emailObj.setBody("Welcome to Admins' family" +
                 "\nWe have created your account. and you can use below password for first login:" +
                 "\n " + session.getAttribute("dec_password") +
-                "\nFollow this link to create new password http://localhost:8080/Ecommerce_war/admins/setAdminPassword.htm" +
+                "\nHead to TMNT to set your password" +
                 "\nRegards," +
                 "\nTMNT super admin.");
         return emailObj;
