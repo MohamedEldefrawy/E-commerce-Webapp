@@ -3,11 +3,11 @@
         <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
             <a href="" class="text-decoration-none">
                 <h1 class="mb-4 display-5 font-weight-semi-bold"><span
-                        class="text-primary font-weight-bold border border-white px-3 mr-1">TMNT</span>Shopping</h1>
+                        class="text-success font-weight-bold border border-white px-3 mr-1">TMNT</span>Shopping</h1>
             </a>
             <p>_VO<strong>IS</strong> - We Move The World</p>
-            <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>7 Corniche Elnile St.,Dallah , Cairo, Egypt</p>
-            <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>t.m.n.t.ecommerce@gmail.com</p>
+            <p class="mb-2"><i class="fa fa-map-marker-alt text-success mr-3"></i>7 Corniche Elnile St.,Dallah , Cairo, Egypt</p>
+            <p class="mb-2"><i class="fa fa-envelope text-success mr-3"></i>t.m.n.t.ecommerce@gmail.com</p>
         </div>
     </div>
     <div class="row border-top border-light mx-xl-5 py-4">
