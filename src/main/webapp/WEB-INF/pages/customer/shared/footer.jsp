@@ -6,9 +6,8 @@
                         class="text-primary font-weight-bold border border-white px-3 mr-1">TMNT</span>Shopping</h1>
             </a>
             <p>_VO<strong>IS</strong> - We Move The World</p>
-            <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>7 Corniche Elnile St., Cairo, Egypt</p>
+            <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>7 Corniche Elnile St.,Dallah , Cairo, Egypt</p>
             <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>t.m.n.t.ecommerce@gmail.com</p>
-            <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+012 345 67890</p>
         </div>
     </div>
     <div class="row border-top border-light mx-xl-5 py-4">
