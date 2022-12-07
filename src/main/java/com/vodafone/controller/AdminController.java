@@ -329,7 +329,7 @@ public class AdminController {
     public String setAdminPassword(@Valid @NotNull @NotBlank @RequestParam("newPassword") String newPassword, HttpSession session) {
         String email = session.getAttribute("email").toString();
         Admin admin = adminService.getByEmail(email);
-        hashService.encryptPassword(newPassword, (String) session.getAttribute("email"));
+        newPassword = hashService.encryptPassword(newPassword, (String) session.getAttribute("email"));
         admin.setPassword(newPassword);
         adminService.updatePassword(admin.getId(), newPassword);
         return "redirect:/admins/home.htm";
