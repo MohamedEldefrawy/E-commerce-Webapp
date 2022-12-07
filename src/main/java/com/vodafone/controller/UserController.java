@@ -99,4 +99,10 @@ public class UserController {
     public String showError() {
         return "customer/shared/error";
     }
+
+    @GetMapping
+    public String defaultPage(Model model) {
+        model.addAttribute("loginModel", new LoginDTO());
+        return "login";
+    }
 }
