@@ -18,7 +18,6 @@ public class CustomerValidator implements Validator {
     private AdminService adminService;
 
 
-
     @Override
     public boolean supports(Class<?> paramClass) {
         return Customer.class.equals(paramClass);
@@ -27,36 +26,20 @@ public class CustomerValidator implements Validator {
     @Override
     public void validate(Object obj, Errors errors) {
         Customer customer = (Customer) obj;
-        String emailRegEx =  "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
-                + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
-        if(customer.getEmail().length()<5){
+        //todo: test remove below conditions, just let .matches(regex)
+        String emailRegEx = "^\\w+([\\.]?\\w+){3,}@\\w{4,8}([\\.-]?\\w+)*(\\.\\w{2,3})+$";
+        if (!customer.getEmail().matches(emailRegEx)) {
             errors.rejectValue("email", "invalid", new Object[]{"'email'"},
                     "Email address is not valid");
         }
-        else {
-            String lastFiveChars = customer.getEmail().substring(customer.getEmail().length() - 5);
-            if (!customer.getEmail().matches(emailRegEx)) {
-                errors.rejectValue("email", "invalid", new Object[]{"'email'"},
-                        "Email address is not valid");
-            }
-            else if (!lastFiveChars.startsWith("co")) {
-                String lastThreeChars = lastFiveChars.substring(lastFiveChars.length() - 3);
-                System.out.println(lastThreeChars);
-                if (!lastThreeChars.equals("com")  && !lastThreeChars.equals("org")) {
-                    errors.rejectValue("email", "invalid", new Object[]{"'email'"},
-                            "Email address is not valid");
-                }
-            }
-        }
 
-
-        if(customerService.getByMail(customer.getEmail())!=null ||
-                adminService.getByEmail(customer.getEmail())!=null){
+        if (customerService.getByMail(customer.getEmail()) != null ||
+                adminService.getByEmail(customer.getEmail()) != null) {
             errors.rejectValue("email", "duplicated", new Object[]{"'email'"},
                     "This Email Already Exists");
         }
-        if(customerService.getByUserName(customer.getUserName())!=null ||
-                adminService.getByUsername(customer.getUserName())!=null){
+        if (customerService.getByUserName(customer.getUserName()) != null ||
+                adminService.getByUsername(customer.getUserName()) != null) {
             errors.rejectValue("userName", "duplicated", new Object[]{"'userName'"},
                     "This Username Already Exists");
         }
