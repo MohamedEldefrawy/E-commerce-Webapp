@@ -6,7 +6,7 @@
     <div class="row align-items-center py-3 px-xl-5">
         <div class="col-lg-3 d-none d-lg-block">
             <a href="" class="text-decoration-none">
-                <h1 class="m-0 display-5 font-weight-semi-bold custom-green">
+                <h1 class="m-0 display-5 font-weight-semi-bold text-success">
                     <img style="max-height: 100px; max-width: 100px;margin-left: 10px" class="image img-circle mr-auto"
                          src="<c:url value="/resources/static/images/logo/logo_green.png"/>">
                     TMNT</h1>
@@ -16,7 +16,7 @@
             <div class="input-group">
                 <input id="Search" type="text" class="form-control" placeholder="Search for products"/>
                 <div class="input-group-append">
-                    <button id="btnSearch" class="input-group-text bg-transparent custom-green">
+                    <button id="btnSearch" class="input-group-text bg-transparent text-success">
                         <b class="fa fa-search"></b>
                     </button>
                 </div>
@@ -53,7 +53,7 @@
             <div class="col-lg-9">
                 <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0">
                     <a href="" class="text-decoration-none d-block d-lg-none">
-                        <h1 class="m-0 display-5 font-weight-semi-bold custom-green">
+                        <h1 class="m-0 display-5 font-weight-semi-bold text-success">
                             <img style="max-height: 100px; max-width: 100px;margin-left: 10px" class="image img-circle mr-auto"
                                  src="<c:url value="/resources/static/images/logo/logo_green.png"/>">
                             TMNT</h1>
