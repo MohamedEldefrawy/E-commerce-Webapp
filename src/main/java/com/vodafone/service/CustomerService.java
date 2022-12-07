@@ -17,13 +17,15 @@ public class CustomerService {
     public CustomerService(CustomerRepository customerRepository, HashService hashService) {
         this.customerRepository = customerRepository;
         this.hashService = hashService;
-        Customer customer = new Customer();
+        /*Customer customer = new Customer();
         customer.setEmail("mi@gmail.com");
         customer.setUserName("mi");
         customer.setRole(Role.Customer);
         customer.setPassword(hashService.encryptPassword("12345678", customer.getEmail()));
         customer.setUserStatus(UserStatus.ACTIVATED);
         customerRepository.create(customer);
+
+         */
     }
 
 
