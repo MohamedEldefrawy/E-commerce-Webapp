@@ -20,7 +20,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpSession;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -84,12 +86,12 @@ public class AdminController {
             if(id!=2 && sessionId!=id) {
                 boolean deleted = adminService.delete(id);
                 if (deleted)
-                    return "true";
-                return "false";
+                    return "200"; //deleted successfully
+                return "500"; //server encountered error while processing request
             }
-            return "false";
+            return "405"; //Not allowed
         } else {
-            return "redirect:/login.htm";
+            return "401";  //unauthorized
         }
     }
 
@@ -286,12 +288,20 @@ public class AdminController {
     @ResponseBody
     public String deleteProduct(HttpSession session, @RequestParam(required = false) Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
-            boolean result = this.productService.delete(id);
-            if (result)
-                return "true";
-            return "false";
+            try {
+                boolean result = this.productService.delete(id);
+                System.out.println(result);
+                if (result)
+                    return "200";  //ok
+                return "500"; //server error
+            }
+            catch (PersistenceException e){
+                if(e.getCause().toString().contains("ConstraintViolationException"))
+                    return "409"; //conflict
+                return "500";
+            }
         } else {
-            return "redirect:/login.htm";
+            return "401"; //unauthorized
         }
     }
 
