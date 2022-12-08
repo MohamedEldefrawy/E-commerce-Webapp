@@ -139,8 +139,16 @@ public class CartRepository implements ICartRepository {
         return true;
     }
 
+    /***
+     *
+     * @param cartId
+     * @param item
+     * @return the quantity of item added
+     * returns 0 incase nit available in stock (0 quantity added)
+     * returns -1 incase of exception
+     */
     @Override
-    public boolean addItem(Long cartId, CartItem item) {
+    public int addItem(Long cartId, CartItem item) { //0 -> not added -1 -> exception otherwise--> eadded
         try (Session session = config.getSessionFactory().openSession()) {
             Cart cart = get(cartId);
             List<CartItem> items = cart.getItems();
@@ -148,11 +156,10 @@ public class CartRepository implements ICartRepository {
             List<CartItem> matchingProduct = items.stream()
                     .filter(i -> i.getProduct().getId().equals(item.getProduct().getId()))
                     .collect(Collectors.toList());
+            //if product alreadi in cart then add to quantity
             if (!matchingProduct.isEmpty()) {
                 int newQuantity = incrementProductQuantity(cartId, item.getProduct().getId(), item.getQuantity());
-                if (newQuantity > 0)
-                    return true;
-                return false;
+                return  newQuantity;
             } else {
                 if (item.getProduct().getInStock() >= item.getQuantity()) {
                     Transaction transaction = session.beginTransaction();
@@ -162,14 +169,14 @@ public class CartRepository implements ICartRepository {
                     transaction.commit();
                     session.close();
                 } else {
-                    return false;
+                    return 0;
                 }
             }
         } catch (HibernateException e) {
             e.printStackTrace();
-            return false;
+            return -1;
         }
-        return true;
+        return item.getQuantity();
     }
 
     @Override
@@ -221,7 +228,7 @@ public class CartRepository implements ICartRepository {
             return newQuantity;
         } catch (HibernateException e) {
             e.printStackTrace();
-            return 0;
+            return -1;
         }
     }
 
@@ -247,7 +254,7 @@ public class CartRepository implements ICartRepository {
             return newQuantity;
         } catch (HibernateException e) {
             e.printStackTrace();
-            return 0;
+            return -1;
         }
     }
 }
