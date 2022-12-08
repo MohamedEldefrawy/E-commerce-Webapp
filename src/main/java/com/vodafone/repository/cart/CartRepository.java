@@ -150,9 +150,7 @@ public class CartRepository implements ICartRepository {
                     .collect(Collectors.toList());
             if (!matchingProduct.isEmpty()) {
                 int newQuantity = incrementProductQuantity(cartId, item.getProduct().getId(), item.getQuantity());
-                if (newQuantity > 0)
-                    return true;
-                return false;
+                return newQuantity > 0;
             } else {
                 if (item.getProduct().getInStock() >= item.getQuantity()) {
                     Transaction transaction = session.beginTransaction();
