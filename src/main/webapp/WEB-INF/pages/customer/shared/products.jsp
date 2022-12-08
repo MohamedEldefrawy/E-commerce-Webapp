@@ -67,14 +67,20 @@
                     'Accept': '*/*'
                 }
             }).then(response => response.json()).then(data => {
-                if (data) {
+                if (data.toString() === "200") {
                     alert("Item added successfully");
                     document.getElementById(id + "e").style.display = "none"
-                } else {
+                }
+                else if (data.toString() === "409")
                     document.getElementById(id + "e").style.display = "block"
+                else if(data.toString() === "500")
+                    window.location.href = "/Ecommerce_war/error.htm"
+                else {//401
+                    window.location.href = "/Ecommerce_war/login.htm"
                 }
             }).catch((reason) => {
-                window.location.href = "/Ecommerce_war/login.htm"
+               // window.location.href = "/Ecommerce_war/error.htm"
+                alert(reason)
             })
         }
     }
