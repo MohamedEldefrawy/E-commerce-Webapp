@@ -289,18 +289,11 @@ public class AdminController {
     @ResponseBody
     public String deleteProduct(HttpSession session, @RequestParam(required = false) Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
-            try {
-                boolean result = this.productService.delete(id);
-                System.out.println(result);
-                if (result)
-                    return "200";  //ok
-                return "500"; //server error
-            }
-            catch (PersistenceException e){
-                if(e.getCause().toString().contains("ConstraintViolationException"))
-                    return "409"; //conflict
-                return "500";
-            }
+            boolean result = this.productService.delete(id);
+            if (result)
+                return "200";  //ok
+            return "500"; //server error
+
         } else {
             return "401"; //unauthorized
         }
