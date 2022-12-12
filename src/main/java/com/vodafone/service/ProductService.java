@@ -53,4 +53,7 @@ public class ProductService {
     public List<Product> getByPriceRange(double low, double high) {
         return this.productRepository.getByPriceRange(low, high);
     }
+    public List<Product> getAvailableProducts() {
+        return this.productRepository.getAvailableProducts();
+    }
 }

@@ -15,4 +15,6 @@ public interface IProductRepository extends Repository<Product> {
     List<Product> getByPriceRange(double low, double high);
 
     List<Product> getByRate(float rate);
+
+    List<Product> getAvailableProducts();
 }
