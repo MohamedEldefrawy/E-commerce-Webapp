@@ -65,8 +65,6 @@
                         alert("Item has been deleted successfully");
                         row.remove();
                     }
-                    else if(data.toString() === "409")
-                        alert("An order already exists for this product")
                     else if(data.toString() === "500")
                         window.location.href = "../../error.htm"
                     else{
