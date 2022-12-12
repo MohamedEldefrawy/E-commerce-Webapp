@@ -45,7 +45,7 @@ public class CustomerController {
             if (category != null)
                 products = this.productService.getByCategory(category);
             else
-                products = this.productService.getAll();
+                products = this.productService.getAvailableProducts();
             model.addAttribute("products", products);
             return "/customer/shared/home";
         } else {

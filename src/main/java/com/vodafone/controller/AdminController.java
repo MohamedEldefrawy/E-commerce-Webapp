@@ -163,7 +163,7 @@ public class AdminController {
     @GetMapping("home.htm")
     public String home(HttpSession session, Model model) {
         if (userAuthorizer.authorizeAdmin(session)) {
-            List<Product> productList = this.productService.getAll();
+            List<Product> productList = this.productService.getAvailableProducts();
             model.addAttribute("products", productList);
             return "shared/home";
         } else {
@@ -175,7 +175,7 @@ public class AdminController {
     @GetMapping("/products/show.htm")
     public String showAllProducts(HttpSession session, Model model) {
         if (userAuthorizer.authorizeAdmin(session)) {
-            model.addAttribute("products", this.productService.getAll());
+            model.addAttribute("products", this.productService.getAvailableProducts());
             model.addAttribute("id", 0L);
             return "products/products";
         } else {
@@ -276,6 +276,7 @@ public class AdminController {
             newProduct.setPrice(product.getPrice());
             newProduct.setName(product.getName());
             newProduct.setInStock(product.getInStock());
+            newProduct.setDeleted(false);
             this.productService.create(newProduct);
             return "redirect:/admins/products/show.htm";
         } else {
