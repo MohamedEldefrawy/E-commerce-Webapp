@@ -9,7 +9,7 @@
     <div class="container-fluid mb-5">
         <div class="row border-top px-xl-5">
             <div class="col-lg-3 d-none d-lg-block">
-                <a class="btn shadow-none d-flex align-items-center justify-content-between bg-primary text-white w-100"
+                <a class="btn shadow-none d-flex align-items-center justify-content-between bg-success text-white w-100"
                    data-toggle="collapse" href="#navbar-vertical" style="height: 65px; margin-top: -1px; padding: 0 30px;">
                     <h6 class="m-0">Categories</h6>
                     <i class="fa fa-angle-down text-dark"></i>
@@ -31,8 +31,10 @@
             <div class="col-lg-9">
                 <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0">
                     <a href="" class="text-decoration-none d-block d-lg-none">
-                        <h1 class="m-0 display-5 font-weight-semi-bold"><span
-                                class="text-primary font-weight-bold border px-3 mr-1">E</span>Shopper</h1>
+                        <h1 class="m-0 display-5 font-weight-semi-bold text-success">
+                            <img style="max-height: 100px; max-width: 100px;margin-left: 10px" class="image img-circle mr-auto"
+                                 src="<c:url value="/resources/static/images/logo/logo_green.png"/>">
+                            TMNT</h1>
                     </a>
                     <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
                         <span class="navbar-toggler-icon"></span>
@@ -93,7 +95,7 @@
             <div class="col-lg-7 pb-5">
                 <h3 class="font-weight-semi-bold">${product.getName()}</h3>
                 <div class="d-flex mb-3">
-                    <div class="text-primary mr-2">
+                    <div class="text-success mr-2">
                         <small class="pt-3">Rate: ${product.getRate()}/5</small>
                     </div>
                 </div>
@@ -102,37 +104,20 @@
                 <div class="d-flex align-items-center mb-4 pt-2">
                     <div class="input-group quantity mr-3" style="width: 130px;">
                         <div class="input-group-btn">
-                            <button class="btn btn-primary btn-minus">
+                            <button class="btn btn-success btn-minus">
                                 <i class="fa fa-minus"></i>
                             </button>
                         </div>
                         <input  id= ${product.getId()} type="text" class="form-control bg-secondary text-center" value="1">
                         <div class="input-group-btn">
-                            <button class="btn btn-primary btn-plus">
+                            <button class="btn btn-success btn-plus">
                                 <i class="fa fa-plus"></i>
                             </button>
                         </div>
                     </div>
-                    <button onclick="addToCart(${product.getId()})" class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
+                    <button onclick="addToCart(${product.getId()})" class="btn btn-success px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
                     <div id ="${product.getId()}e" style="padding-left: 5px;display: none" class="justify-content-center align-items-end" d>
                         <p class="text-center">Not Available in stock</p>
-                    </div>
-                </div>
-                <div class="d-flex pt-2">
-                    <p class="text-dark font-weight-medium mb-0 mr-2">Share on:</p>
-                    <div class="d-inline-flex">
-                        <a class="text-dark px-2" href="">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a class="text-dark px-2" href="">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a class="text-dark px-2" href="">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
-                        <a class="text-dark px-2" href="">
-                            <i class="fab fa-pinterest"></i>
-                        </a>
                     </div>
                 </div>
             </div>
@@ -141,23 +126,24 @@
     <script>
         function addToCart(id) {
             let quantity = document.getElementById(id).value;
-            fetch("../../addToCart/?itemId=" + id + "&quantity=" + quantity, {
-                method: "POST",
-                headers: {
-                    'Accept': '*/*'
-                }
-            }).then(response => response.json()).then(data => {
-                if (data) {
-                    alert("Item added successfully");
-                    document.getElementById(id+"e").style.display = "none"
-                } else{
-                    document.getElementById(id+"e").style.display = "block"
-                }
+            if(quantity>0) {
+                fetch("../../addToCart/?itemId=" + id + "&quantity=" + quantity, {
+                    method: "POST",
+                    headers: {
+                        'Accept': '*/*'
+                    }
+                }).then(response => response.json()).then(data => {
+                    if (data) {
+                        alert("Item added successfully");
+                        document.getElementById(id + "e").style.display = "none"
+                    } else {
+                        document.getElementById(id + "e").style.display = "block"
+                    }
 
-            }).catch((reason) => {
-                window.location.href = "../../../login.htm"
-            })
-
+                }).catch((reason) => {
+                    window.location.href = "../../../login.htm"
+                })
+            }
         }
     </script>
     <!-- Shop Detail End -->

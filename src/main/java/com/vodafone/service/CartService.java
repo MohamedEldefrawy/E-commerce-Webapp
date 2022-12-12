@@ -69,23 +69,25 @@ public class CartService {
         //iterate over each cart item to transform it to order item.
         float total = 0f;
         for (CartItem cartItem : cart.getItems()) {
-            OrderItem orderItem = new OrderItem();
-            orderItem.setOrder(order);
-            //check available quantity in stock
-            int quantity = cartItem.getQuantity();
-            int availableInStock = cartItem.getProduct().getInStock();
-            if (quantity <= availableInStock) {
-                //set product in Order
-                orderItem.setProduct(cartItem.getProduct());
-                orderItem.setQuantity(quantity);
-                total += (float) (orderItem.getProduct().getPrice() * quantity);
-                //decrement product inStock variable
-                cartItem.getProduct().setInStock(availableInStock - quantity);
-                //add order to OrderItems
-                orderItems.add(orderItem);
-            } else {
-                System.out.println("Product hasn't enough instances in stock");
-                break;
+            if(cartItem.getQuantity()>0) {
+                OrderItem orderItem = new OrderItem();
+                orderItem.setOrder(order);
+                //check available quantity in stock
+                int quantity = cartItem.getQuantity();
+                int availableInStock = cartItem.getProduct().getInStock();
+                if (quantity <= availableInStock) {
+                    //set product in Order
+                    orderItem.setProduct(cartItem.getProduct());
+                    orderItem.setQuantity(quantity);
+                    total += (float) (orderItem.getProduct().getPrice() * quantity);
+                    //decrement product inStock variable
+                    cartItem.getProduct().setInStock(availableInStock - quantity);
+                    //add order to OrderItems
+                    orderItems.add(orderItem);
+                } else {
+                    System.out.println("Product hasn't enough instances in stock");
+                    break;
+                }
             }
         }
         order.setTotal(total);

@@ -28,36 +28,20 @@ public class AdminValidator implements Validator {
         CreateAdmin admin = (CreateAdmin) obj;
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "required");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "userName", "required");
-        if(errors.hasErrors()){
+        if (errors.hasErrors()) {
             return;
         }
-        String emailRegEx =  "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
-                + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
-        if(admin.getEmail().length()<5){
+        String emailRegEx = "^\\w+([\\.]?\\w+){3,}@\\w{4,8}([\\.-]?\\w+)*(\\.\\w{2,3})+$";
+        if (!admin.getEmail().matches(emailRegEx)) {
             errors.rejectValue("email", "invalid", new Object[]{"'email'"},
                     "Email address is not valid");
         }
-        else {
-            String lastFiveChars = admin.getEmail().substring(admin.getEmail().length() - 5);
-            if (!admin.getEmail().matches(emailRegEx)) {
-                errors.rejectValue("email", "invalid", new Object[]{"'email'"},
-                        "Email address is not valid");
-            }
-            else if (!lastFiveChars.startsWith("co")) {
-                String lastThreeChars = lastFiveChars.substring(lastFiveChars.length() - 3);
-                System.out.println(lastThreeChars);
-                if (!lastThreeChars.equals("com")  && !lastThreeChars.equals("org")) {
-                    errors.rejectValue("email", "invalid", new Object[]{"'email'"},
-                            "Email address is not valid");
-                }
-            }
-        }
-        if(errors.hasErrors()){
+        if (errors.hasErrors()) {
             return;
         }
-        if(admin.getId()<=0) {
+        if (admin.getId() <= 0) {
             if (adminService.getByEmail(admin.getEmail()) != null ||
-                    customerService.getByMail(admin.getEmail())!=null) {
+                    customerService.getByMail(admin.getEmail()) != null) {
                 errors.rejectValue("email", "duplicated", new Object[]{"'email'"},
                         "This Email Already Exists");
             }
@@ -66,21 +50,20 @@ public class AdminValidator implements Validator {
                 errors.rejectValue("userName", "duplicated", new Object[]{"'userName'"},
                         "This Username Already Exists");
             }
-        }
-        else{
+        } else {
             Admin toBeUpdated = adminService.get(Long.valueOf(admin.getId()));
             //check that email field was updated
-            if (!toBeUpdated.getEmail().equals(admin.getEmail())){
+            if (!toBeUpdated.getEmail().equals(admin.getEmail())) {
                 //check updated email is not duplicated
                 if (adminService.getByEmail(admin.getEmail()) != null ||
-                        customerService.getByMail(admin.getEmail())!=null) {
+                        customerService.getByMail(admin.getEmail()) != null) {
                     errors.rejectValue("email", "duplicated", new Object[]{"'email'"},
                             "This Email Already Exists");
                 }
             }
-            if (!toBeUpdated.getUserName().equals(admin.getUserName())){
+            if (!toBeUpdated.getUserName().equals(admin.getUserName())) {
                 if (adminService.getByUsername(admin.getUserName()) != null ||
-                    customerService.getByUserName(admin.getUserName())!=null) {
+                        customerService.getByUserName(admin.getUserName()) != null) {
                     errors.rejectValue("userName", "duplicated", new Object[]{"'userName'"},
                             "This Username Already Exists");
                 }

@@ -47,7 +47,7 @@
       </div>
       <!-- /.card-body -->
       <div class="card-footer   bg-white">
-        <button type="submit" class="btn btn-info w-25 d-block m-auto  " value="verify">Verify</button>
+        <button type="submit" class="btn btn-success w-25 d-block m-auto  " value="verify">Verify</button>
         <div class="mb-2"></div>
         <button type="button" class="btn btn-default w-25 d-block m-auto" value="resend">
           <a href="<c:url value="resend.htm" />">Resend activation code</a>
@@ -68,8 +68,7 @@
 <script src="<c:url value="/resources/static/plugins/bs-custom-file-input/bs-custom-file-input.min.js"/>"></script>
 <!-- AdminLTE App -->
 <script src="<c:url value="/resources/static/js/adminlte.min.js"/>"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="<c:url value="/resources/static/js/demo.js"/>"></script>
+
 
 </body>
 </html>

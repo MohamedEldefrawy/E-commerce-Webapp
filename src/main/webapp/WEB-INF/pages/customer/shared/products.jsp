@@ -2,7 +2,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <div id="Products" class="text-center mb-4">
-    <h2 class="section-title px-5 text-primary"><span class="px-2">Products</span></h2>
+    <h2 class="section-title px-5 text-success"><span class="px-2">Products</span></h2>
 </div>
 
 <div class="container-fluid pt-5">
@@ -26,25 +26,25 @@
                     <div class="card-footer d-flex justify-content-between bg-light border">
                         <div class="input-group quantity mr-3" style="width: 40px;">
                             <div class="input-group-btn" style="width: 40px;">
-                                <button class="btn btn-primary btn-plus">
+                                <button class="btn btn-success btn-plus">
                                     <i class="fa fa-plus"></i>
                                 </button>
                             </div>
                             <input id="${product.getId()}" type="text" style="width: 40px;"
                                    class="form-control bg-secondary text-center" value="1">
                             <div class="input-group-btn" style="width: 40px;">
-                                <button class="btn btn-primary btn-minus">
+                                <button class="btn btn-success btn-minus">
                                     <i class="fa fa-minus"></i>
                                 </button>
                             </div>
                         </div>
                         <br/>
                         <a href="<c:url value="/customer/products/${product.getId()}/details.htm"/>"
-                           class="btn btn-sm text-dark p-0 m-auto"><i class="fas fa-eye text-primary mr-1"></i>View
+                           class="btn btn-sm text-dark p-0 m-auto"><i class="fas fa-eye text-success mr-1"></i>View
                             Detail
                         </a>
                         <button class="btn btn-sm text-dark p-0" onclick="addToCart(${product.getId()})"><i
-                                class="fas fa-shopping-cart text-primary mr-1"></i>Add
+                                class="fas fa-shopping-cart text-success mr-1"></i>Add
                             To Cart
                         </button>
                     </div>
@@ -60,21 +60,22 @@
 <script>
     function addToCart(id) {
         let quantity = document.getElementById(id).value;
-        fetch("/Ecommerce_war/customer/addToCart/?itemId=" + id + "&quantity=" + quantity, {
-            method: "POST",
-            headers: {
-                'Accept': '*/*'
-            }
-        }).then(response => response.json()).then(data => {
-            if (data) {
-                alert("Item added successfully");
-                document.getElementById(id+"e").style.display = "none"
-            } else{
-                document.getElementById(id+"e").style.display = "block"
-            }
-        }).catch((reason) => {
-            window.location.href = "/Ecommerce_war/login.htm"
-        })
-
+        if (quantity > 0) {
+            fetch("/Ecommerce_war/customer/addToCart/?itemId=" + id + "&quantity=" + quantity, {
+                method: "POST",
+                headers: {
+                    'Accept': '*/*'
+                }
+            }).then(response => response.json()).then(data => {
+                if (data) {
+                    alert("Item added successfully");
+                    document.getElementById(id + "e").style.display = "none"
+                } else {
+                    document.getElementById(id + "e").style.display = "block"
+                }
+            }).catch((reason) => {
+                window.location.href = "/Ecommerce_war/login.htm"
+            })
+        }
     }
 </script>

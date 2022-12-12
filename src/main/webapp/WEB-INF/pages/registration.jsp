@@ -18,6 +18,14 @@
     </head>
     <body class="hold-transition sidebar-mini">
         <div class="container pt-5">
+            <div class="d-flex justify-content-center mb-3 ">
+                <a href="" class="text-decoration-none">
+                    <h1 class="m-0 display-5 font-weight-semi-bold text-success">
+                        <img style="max-height: 100px; max-width: 100px;margin-left: 10px" class="image  mr-auto"
+                             src="<c:url value="/resources/static/images/logo/logo_green.png"/>">
+                        Welcome to TMNT Pet Shop</h1>
+                </a>
+            </div>
             <!-- Horizontal Form -->
             <div class="card card-info w-75 m-auto ">
                 <div class="bg-white m-3 ">
@@ -48,7 +56,7 @@
                         <div class="form-group row">
                             <label for="inputPassword3" class="col-sm-3 col-form-label">Password</label>
                             <div class="col-sm-9">
-                                <form:input type="password" class="form-control" id="inputPassword3" placeholder="Password" path="password"/>
+                                <form:input maxlength="30" minlength="8" type="password" class="form-control" id="inputPassword3" placeholder="Password" path="password"/>
                             </div>
                             <div class="col-sm-5 m-auto">
                                 <form:errors path="password" cssClass="text-danger"/>
@@ -57,7 +65,7 @@
                     </div>
                     <!-- /.card-body -->
                     <div class="card-footer bg-white ">
-                        <button type="submit" class="btn btn-info m-auto  w-25 d-block ">Sign Up</button>
+                        <button type="submit" class="btn btn-success m-auto  w-25 d-block ">Sign Up</button>
                         <label class="m-2 text-center d-block" for="signIn">Already have account</label>
                         <button type="button" class="btn btn-default m-auto w-25 d-block " id="signIn">
                             <a href="<c:url value="/login.htm" />" >Sign In</a>

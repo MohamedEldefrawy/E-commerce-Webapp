@@ -43,12 +43,13 @@ public class UserController {
         validator.validate(login, bindingResult);
         if (bindingResult.hasErrors()) {
             //user is suspended but not customer
-            if (!(userService.getUserByEmail(login.getEmail()) instanceof Admin)) {
+            User user = userService.getUserByEmail(login.getEmail());
+            if ( user != null && !(user instanceof Admin)) {
                 Customer customer = customerService.getByMail(login.getEmail());
                 if (customer.getUserStatus() == UserStatus.SUSPENDED) { // if user status is suspended after validation
                     session.setAttribute("email", login.getEmail());
                     if (emailService.sendEmail(customer, EmailType.FORGET_PASSWORD, session)) {
-                        return "redirect:/customer/resetPassword.htm";
+                        return "redirect:/customer/reset.htm";
                     }
                 }
             }
@@ -76,7 +77,7 @@ public class UserController {
             switch (user.getUserStatus()) {
                 case SUSPENDED:
                     if (emailService.sendEmail(user, EmailType.FORGET_PASSWORD, session))
-                        return "redirect:/customer/resetPassword.htm";
+                        return "redirect:/customer/reset.htm";
                     break;
                 case DEACTIVATED:
                     if (emailService.sendEmail(user, EmailType.ACTIVATION, session))
@@ -98,5 +99,10 @@ public class UserController {
     @GetMapping("error.htm")
     public String showError() {
         return "customer/shared/error";
+    }
+
+    @GetMapping
+    public String defaultPage(Model model) {
+        return "redirect:login.htm";
     }
 }

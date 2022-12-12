@@ -10,6 +10,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 @Setter
@@ -31,6 +32,7 @@ public abstract class User {
     String email;
     @Column(nullable = false)
     @NotNull @NotBlank
+    @Size(min = 4, message = "Password can't be less than 4 characters")
     String password;
     @Column(nullable = false)
     UserStatus userStatus;
