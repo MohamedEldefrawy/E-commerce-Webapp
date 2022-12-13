@@ -4,7 +4,6 @@ import com.vodafone.model.Product;
 import com.vodafone.repository.product.IProductRepository;
 import com.vodafone.repository.product.ProductRepository;
 import com.vodafone.service.ProductService;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -16,13 +15,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class ProductServiceUnitTest {
-    private static final IProductRepository productRepository = mock(ProductRepository.class);
-    private static ProductService productService;
+    private final IProductRepository productRepository = mock(ProductRepository.class);
+    private final ProductService productService = new ProductService(productRepository);
 
-    @BeforeAll
-    public static void setup() {
-        productService = new ProductService(productRepository);
-    }
 
     @Test
     public void createTest_sendProductObject_returnTrue() {
