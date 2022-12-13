@@ -2,14 +2,18 @@ package com.vodafone.service;
 
 import com.vodafone.model.Product;
 import com.vodafone.repository.product.ProductRepository;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@NoArgsConstructor
 public class ProductService {
-    private final ProductRepository productRepository;
+    private ProductRepository productRepository;
 
+    @Autowired
     public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
@@ -42,6 +46,7 @@ public class ProductService {
         return this.productRepository.getByCategory(category);
     }
 
+
     public List<Product> getByPrice(double price) {
         return this.productRepository.getByPrice(price);
     }
@@ -56,4 +61,5 @@ public class ProductService {
     public List<Product> getAvailableProducts() {
         return this.productRepository.getAvailableProducts();
     }
+
 }
