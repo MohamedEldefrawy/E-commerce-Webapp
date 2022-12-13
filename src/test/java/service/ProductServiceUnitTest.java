@@ -103,6 +103,15 @@ public class ProductServiceUnitTest {
         assertFalse(result);
     }
 
+    @Test
+    public void getAvailableProduct_sendNothing_returnListOfProducts() {
+        List<Product> products = createProducts();
+        when(productRepository.getAvailableProducts()).thenReturn(products);
+        List<Product> result = productService.getAvailableProducts();
+        assertNotNull(result);
+        assertEquals(products.size(), result.size());
+    }
+
 
     private static Product createProduct() {
         Product product = new Product();
