@@ -45,7 +45,7 @@ public class CustomerController {
             if (category != null)
                 products = this.productService.getByCategory(category);
             else
-                products = this.productService.getAll();
+                products = this.productService.getAvailableProducts();
             model.addAttribute("products", products);
             return "/customer/shared/home";
         } else {
@@ -134,10 +134,10 @@ public class CustomerController {
             Order submittedOrder = cartService.submitFinalOrder(customerCart.getId());
             boolean created = orderService.create(submittedOrder);
             if (created)
-                return "true";
-            return "false";
+                return "200";
+            return "500";
         } else {
-            return "redirect:/login.htm";
+            return "401";
         }
     }
 
@@ -168,12 +168,14 @@ public class CustomerController {
             Product product = productService.get(itemId);
 
             CartItem cartItem = new CartItem(quantity, product, customerCart);
-            boolean added = cartService.addItem(customerCart.getId(), cartItem);
-            if (added)
-                return "true";
-            return "false";
+            int newQuantity = cartService.addItem(customerCart.getId(), cartItem);
+            if (newQuantity == 0)
+                return "409";  //conflict
+            if(newQuantity==-1)
+                return "500";
+            return "200";
         } else {
-            return "redirect:/login.htm";
+            return "401";
         }
     }
 
@@ -186,10 +188,10 @@ public class CustomerController {
             Cart customerCart = customerService.get(customerId).getCart();
             boolean deleted = cartService.removeItem(customerCart.getId(), itemId);
             if (deleted)
-                return "true";
-            return "false";
+                return "200";
+            return "500";
         } else {
-            return "redirect:/login.htm";
+            return "401";
         }
     }
 
@@ -300,11 +302,13 @@ public class CustomerController {
             Long customerId = (long) session.getAttribute("id");
             Long cartId = customerService.get(customerId).getCart().getId();
             int newQuantity = cartService.incrementProductQuantity(cartId, productId, 1);
-            if (newQuantity > 0)
-                return "true";
-            return "false";
+            if (newQuantity == 0)
+                return "409";  //conflict
+            if(newQuantity==-1)
+                return "500";
+            return "200";
         } else {
-            return "redirect:/login.htm";
+            return "401";  //unauthorized
         }
     }
 
@@ -315,11 +319,11 @@ public class CustomerController {
             Long customerId = (long) session.getAttribute("id");
             Long cartId = customerService.get(customerId).getCart().getId();
             int newQuantity = cartService.decrementProductQuantity(cartId, productId);
-            if (newQuantity >= 0)
-                return "true";
-            return "false";
+            if (newQuantity == -1)
+                return "500";
+            return "200";
         } else {
-            return "redirect:/login.htm";
+            return "401";
         }
     }
 }

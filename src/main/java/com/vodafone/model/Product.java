@@ -25,4 +25,6 @@ public class Product {
     private double price;
     @ColumnDefault("10")
     private int inStock;
+    private boolean isDeleted;
+
 }

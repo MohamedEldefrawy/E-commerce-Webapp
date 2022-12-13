@@ -45,4 +45,21 @@ public class ProductService {
     public List<Product> getByCategory(String category) {
         return this.productRepository.getByCategory(category);
     }
+
+
+    public List<Product> getByPrice(double price) {
+        return this.productRepository.getByPrice(price);
+    }
+
+    public List<Product> getByRate(float rate) {
+        return this.productRepository.getByRate(rate);
+    }
+
+    public List<Product> getByPriceRange(double low, double high) {
+        return this.productRepository.getByPriceRange(low, high);
+    }
+    public List<Product> getAvailableProducts() {
+        return this.productRepository.getAvailableProducts();
+    }
+
 }

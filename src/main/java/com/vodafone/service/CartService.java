@@ -99,7 +99,7 @@ public class CartService {
         return cartRepository.clearCart(cartId);
     }
 
-    public boolean addItem(Long cartId, CartItem item) {
+    public int addItem(Long cartId, CartItem item) {
         return cartRepository.addItem(cartId, item);
     }
 

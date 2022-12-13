@@ -199,13 +199,16 @@
                 'Accept': '*/*'
             }
         }).then(response => response.json()).then(data => {
-            if (data) {
+            if (data.toString() === "200") {
                 row.remove();
                 window.location.reload();
-            } else
+            } else if (data.toString() === "500")
                 window.location.href="../error.htm"
+            else{//401
+                window.location.href = "../login.htm"
+            }
         }).catch((reason) => {
-            window.location.href = "../login.htm"
+            window.location.href="../error.htm"
         })
     }
     function incrementQuantity(productId) {
@@ -215,15 +218,22 @@
                 'Accept': '*/*'
             }
         }).then(response => response.json()).then(data => {
-            if (data) {
+            if (data.toString() === "200") {
                 window.location.reload();
-            } else {
+            }
+            else if (data.toString() === "409") {
                 let oldQuantity = document.getElementById(productId).value;
                 document.getElementById(productId).value = oldQuantity -1;
+                window.location.reload();
                 alert("Not available in stock");
             }
+            else if (data.toString() === "500")
+                window.location.href="../error.htm"
+            else{//401
+                window.location.href = "../login.htm"
+            }
         }).catch((reason) => {
-            window.location.href = "../login.htm"
+            window.location.href="../error.htm"
         })
     }
     function decrementQuantity(productId) {
@@ -233,12 +243,16 @@
                 'Accept': '*/*'
             }
         }).then(response => response.json()).then(data => {
-            if (data) {
+            if (data.toString() === "200"){
                 window.location.reload();
-            } else
+            }
+            else if (data.toString() === "500")
                 window.location.href="../error.htm"
+            else{//401
+                window.location.href = "../login.htm"
+            }
         }).catch((reason) => {
-            window.location.href = "../login.htm"
+            window.location.href="../error.htm"
         })
     }
     function checkout() {
@@ -250,12 +264,16 @@
                     'Accept': '*/*'
                 }
             }).then(response => response.json()).then(data => {
-                if (data) {
+                if (data.toString() === "200") {
                     window.location.reload()
-                } else
+                }
+                else if(data.toString() === "500")
                     window.location.href="../error.htm"
+                else{
+                    window.location.href = "../login.htm"
+                }
             }).catch((reason) => {
-                window.location.href = "../login.htm"
+                window.location.href = "../error.htm"
             })
         }
     }

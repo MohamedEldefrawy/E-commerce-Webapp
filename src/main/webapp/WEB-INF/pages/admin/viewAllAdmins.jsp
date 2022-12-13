@@ -63,14 +63,19 @@
                         'Accept': '*/*'
                     }
                 }).then(response => response.json()).then(data => {
-                    if (data) {
+                    if (data.toString() === "200") {
                         alert("Admin has been deleted successfully");
                         row.remove();
-                    } else {
+                    }
+                    else if(data.toString() === "500")
+                            window.location.href = "../error.htm"
+                    else if(data.toString() === "405")
                         alert("Unauthorized action");
+                    else{ //401
+                        window.location.href = "../login.htm"
                     }
                 }).catch((reason) => {
-                    window.location.href = "../login.htm"
+                    window.location.href = "../error.htm"
                 })
             }
         }
