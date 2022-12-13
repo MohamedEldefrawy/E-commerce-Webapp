@@ -6,12 +6,12 @@ import com.vodafone.repository.product.ProductRepository;
 import com.vodafone.service.ProductService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import util.TestUtils;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -21,45 +21,43 @@ public class ProductServiceUnitTest {
 
     @BeforeAll
     public static void setup() {
-        productService = new ProductService();
-        TestUtils.injectObjects(productService, "productRepository", productRepository);
+        productService = new ProductService(productRepository);
     }
 
-
     @Test
-    public void testCreateProductHappyPath() {
+    public void createTest_sendProductObject_returnTrue() {
         Product dummyProduct = createProduct();
-        when(productRepository.create(dummyProduct)).thenReturn(true);
+        when(productRepository.create(any(Product.class))).thenReturn(true);
         boolean result = productService.create(dummyProduct);
         assertTrue(result);
     }
 
     @Test
-    public void testCreateProductSadPath() {
+    public void createTest_sendProductObject_returnFalse() {
         Product dummyProduct = createProduct();
-        when(productRepository.create(dummyProduct)).thenReturn(false);
+        when(productRepository.create(any(Product.class))).thenReturn(false);
         boolean result = productService.create(dummyProduct);
         assertFalse(result);
     }
 
     @Test
-    public void testUpdateProductHappyPath() {
+    public void updateTest_sendProductIdAndProductObject_returnTrue() {
         Product dummyProduct = createProduct();
-        when(productRepository.update(dummyProduct.getId(), dummyProduct)).thenReturn(true);
+        when(productRepository.update(any(Long.class), any(Product.class))).thenReturn(true);
         boolean result = productService.update(dummyProduct.getId(), dummyProduct);
         assertTrue(result);
     }
 
     @Test
-    public void testUpdateProductSadPath() {
+    public void updateTest_sendProductIdAndProductObject_returnFalse() {
         Product dummyProduct = createProduct();
-        when(productRepository.update(dummyProduct.getId(), dummyProduct)).thenReturn(false);
+        when(productRepository.update(any(Long.class), any(Product.class))).thenReturn(false);
         boolean result = productService.update(dummyProduct.getId(), dummyProduct);
         assertFalse(result);
     }
 
     @Test
-    public void testGetAllProducts() {
+    public void getAllTest_sendNothing_returnListOfProducts() {
         List<Product> dummyProducts = createProducts();
         when(productRepository.getAll()).thenReturn(dummyProducts);
         List<Product> result = productService.getAll();
@@ -68,9 +66,9 @@ public class ProductServiceUnitTest {
     }
 
     @Test
-    public void testGetProductById() {
+    public void getTest_sendProductId_returnProduct() {
         Product dummyProduct = createProduct();
-        when(productRepository.get(dummyProduct.getId())).thenReturn(dummyProduct);
+        when(productRepository.get(any(Long.class))).thenReturn(dummyProduct);
         Product result = productService.get(dummyProduct.getId());
         assertNotNull(result);
         assertEquals(dummyProduct.getId(), result.getId());
@@ -78,9 +76,9 @@ public class ProductServiceUnitTest {
     }
 
     @Test
-    public void testGetProductByName() {
+    public void getTest_sendProductName_returnProduct() {
         Product dummyProduct = createProduct();
-        when(productRepository.getByName(dummyProduct.getName())).thenReturn(dummyProduct);
+        when(productRepository.getByName(any(String.class))).thenReturn(dummyProduct);
         Product result = productService.getByName(dummyProduct.getName());
         assertNotNull(result);
         assertEquals(dummyProduct.getId(), result.getId());
@@ -88,24 +86,24 @@ public class ProductServiceUnitTest {
     }
 
     @Test
-    public void testGetProductByCategory() {
+    public void getTest_sendProductCategory_returnProduct() {
         List<Product> dummyProducts = createProducts();
-        when(productRepository.getByCategory(dummyProducts.get(0).getCategory())).thenReturn(dummyProducts);
+        when(productRepository.getByCategory(any(String.class))).thenReturn(dummyProducts);
         List<Product> result = productService.getByCategory(dummyProducts.get(0).getCategory());
         assertNotNull(result);
         assertEquals(dummyProducts.size(), result.size());
     }
 
     @Test
-    public void testDeleteProductHappyPath() {
-        when(productRepository.delete(1L)).thenReturn(true);
+    public void deleteTest_sendProductId_returnTrue() {
+        when(productRepository.delete(any(Long.class))).thenReturn(true);
         boolean result = productService.delete(1L);
         assertTrue(result);
     }
 
     @Test
-    public void testDeleteProductSadPath() {
-        when(productRepository.delete(1L)).thenReturn(false);
+    public void deleteTest_sendProductId_returnFalse() {
+        when(productRepository.delete(any(Long.class))).thenReturn(false);
         boolean result = productService.delete(1L);
         assertFalse(result);
     }
