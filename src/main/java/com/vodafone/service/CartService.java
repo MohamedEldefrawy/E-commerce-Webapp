@@ -1,5 +1,7 @@
 package com.vodafone.service;
 
+import com.vodafone.exception.NegativeQuantityException;
+import com.vodafone.exception.NullCartException;
 import com.vodafone.model.Cart;
 import com.vodafone.model.CartItem;
 import com.vodafone.model.Order;
@@ -18,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+//todo: create custom exceptions instead of NullPointerException
 @Service
 @AllArgsConstructor
 public class CartService {
@@ -25,16 +28,25 @@ public class CartService {
 
 
     public boolean create(Cart entity) {
+        if (entity == null)
+            throw new NullPointerException("Null cart provided");
         return cartRepository.create(entity);
     }
 
 
     public boolean update(Long id, Cart updatedEntity) {
+//        if (updatedEntity == null || get(id) == null)
+        if (updatedEntity == null)
+            throw new NullPointerException("Null cart provided");
         return cartRepository.update(id, updatedEntity);
     }
 
 
     public boolean delete(Long id) {
+//        if (get(id) == null)
+//          throw new NullPointerException("No cart exists with this id");
+        if (id == null)
+            throw new NullPointerException("Null id provided");
         return cartRepository.delete(id);
     }
 
@@ -50,6 +62,15 @@ public class CartService {
 
 
     public boolean removeItem(Long cartId, Long itemId) {
+//        if (get(cartId) == null)
+//            throw new NullPointerException("No cart exists with this id");
+        if (cartId == null)
+            throw new NullPointerException("Null cart id is provided");
+        if (itemId == null)
+            throw new NullPointerException("Null item id is provided");
+//        long matches = get(cartId).getItems().stream().filter(item -> item.getId().equals(itemId)).count();
+//        if (matches == 0)
+//            throw new NullPointerException("No item exists with this id");
         return cartRepository.removeItem(cartId, itemId);
     }
 
@@ -69,7 +90,7 @@ public class CartService {
         //iterate over each cart item to transform it to order item.
         float total = 0f;
         for (CartItem cartItem : cart.getItems()) {
-            if(cartItem.getQuantity()>0) {
+            if (cartItem.getQuantity() > 0) {
                 OrderItem orderItem = new OrderItem();
                 orderItem.setOrder(order);
                 //check available quantity in stock
@@ -96,26 +117,52 @@ public class CartService {
     }
 
     public boolean clearCart(Long cartId) {
+//        if (get(cartId) == null)
+//            throw new NullPointerException("Null cart id is provided");
+        if(cartId == null)
+            throw new NullPointerException("Null cart id is provided");
         return cartRepository.clearCart(cartId);
     }
 
     public boolean addItem(Long cartId, CartItem item) {
+//        if (cartId == null)
+//            throw new NullPointerException("Null cart id is provided");
+        if(cartId == null)
+            throw new NullPointerException("Null cart id is provided");
+        if (item == null)
+            throw new NullPointerException("Null cart item is provided");
         return cartRepository.addItem(cartId, item);
     }
 
     public List<CartItem> getCartItems(Long cartId) {
+        if (cartId == null)
+            throw new NullPointerException("Null cart id is provided");
         return cartRepository.getCartItems(cartId);
     }
 
-    public int setProductQuantity(Long cartId, Long itemId, int newQuantity) {
+    public int setProductQuantity(Long cartId, Long itemId, int newQuantity){
+        if (cartId == null)
+            throw new NullPointerException("Null cart id is provided");
+        if (itemId == null)
+            throw new NullPointerException("Null cart item is provided");
+        if (newQuantity < 0)
+            throw new NegativeQuantityException("Negative quantity provided");
         return cartRepository.setProductQuantity(cartId, itemId, newQuantity);
     }
 
-    public int incrementProductQuantity(Long cartId, Long productId, int quantity) {
-        return cartRepository.incrementProductQuantity(cartId, productId, quantity);
+    public int incrementProductQuantity(Long cartId, Long itemId, int quantity) {
+        if (cartId == null)
+            throw new NullPointerException("Null cart id is provided");
+        if (itemId == null)
+            throw new NullPointerException("Null cart item is provided");
+        return cartRepository.incrementProductQuantity(cartId, itemId, quantity);
     }
 
-    public int decrementProductQuantity(Long cartId, Long productId) {
-        return cartRepository.decrementProductQuantity(cartId, productId);
+    public int decrementProductQuantity(Long cartId, Long itemId) {
+        if (cartId == null)
+            throw new NullPointerException("Null cart id is provided");
+        if (itemId == null)
+            throw new NullPointerException("Null cart item is provided");
+        return cartRepository.decrementProductQuantity(cartId, itemId);
     }
 }
