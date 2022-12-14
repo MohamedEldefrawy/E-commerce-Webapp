@@ -20,7 +20,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpSession;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -84,12 +86,12 @@ public class AdminController {
             if(id!=2 && sessionId!=id) {
                 boolean deleted = adminService.delete(id);
                 if (deleted)
-                    return "true";
-                return "false";
+                    return "200"; //deleted successfully
+                return "500"; //server encountered error while processing request
             }
-            return "false";
+            return "405"; //Not allowed
         } else {
-            return "redirect:/login.htm";
+            return "401";  //unauthorized
         }
     }
 
@@ -161,7 +163,7 @@ public class AdminController {
     @GetMapping("home.htm")
     public String home(HttpSession session, Model model) {
         if (userAuthorizer.authorizeAdmin(session)) {
-            List<Product> productList = this.productService.getAll();
+            List<Product> productList = this.productService.getAvailableProducts();
             model.addAttribute("products", productList);
             return "shared/home";
         } else {
@@ -173,7 +175,7 @@ public class AdminController {
     @GetMapping("/products/show.htm")
     public String showAllProducts(HttpSession session, Model model) {
         if (userAuthorizer.authorizeAdmin(session)) {
-            model.addAttribute("products", this.productService.getAll());
+            model.addAttribute("products", this.productService.getAvailableProducts());
             model.addAttribute("id", 0L);
             return "products/products";
         } else {
@@ -274,6 +276,7 @@ public class AdminController {
             newProduct.setPrice(product.getPrice());
             newProduct.setName(product.getName());
             newProduct.setInStock(product.getInStock());
+            newProduct.setDeleted(false);
             this.productService.create(newProduct);
             return "redirect:/admins/products/show.htm";
         } else {
@@ -288,10 +291,11 @@ public class AdminController {
         if (userAuthorizer.authorizeAdmin(session)) {
             boolean result = this.productService.delete(id);
             if (result)
-                return "true";
-            return "false";
+                return "200";  //ok
+            return "500"; //server error
+
         } else {
-            return "redirect:/login.htm";
+            return "401"; //unauthorized
         }
     }
 
