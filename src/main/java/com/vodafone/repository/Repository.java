@@ -9,7 +9,7 @@ public interface Repository<T> {
 
     boolean delete(Long id);
 
-    T get(Long id);
+    T getById(Long id);
 
     List<T> getAll();
 }

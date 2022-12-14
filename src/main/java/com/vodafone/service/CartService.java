@@ -6,10 +6,6 @@ import com.vodafone.model.Order;
 import com.vodafone.model.OrderItem;
 import com.vodafone.repository.cart.ICartRepository;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -40,7 +36,7 @@ public class CartService {
 
 
     public Cart get(Long id) {
-        return cartRepository.get(id);
+        return cartRepository.getById(id);
     }
 
 

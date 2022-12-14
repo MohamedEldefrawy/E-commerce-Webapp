@@ -1,7 +1,6 @@
 package com.vodafone.repository.orderItems;
 
 import com.vodafone.config.HibernateConfig;
-import com.vodafone.model.Admin;
 import com.vodafone.model.OrderItem;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -49,7 +48,7 @@ public class OrderItemsRepository implements IOrderItemsRepository{
     }
 
     @Override
-    public OrderItem get(Long id) {
+    public OrderItem getById(Long id) {
         OrderItem orderItem = null;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             orderItem = session.get(OrderItem.class,id);
@@ -82,7 +81,7 @@ public class OrderItemsRepository implements IOrderItemsRepository{
 
     @Override
     public boolean update(Long id, OrderItem updatedEntity) {
-        OrderItem orderItem = get(id);
+        OrderItem orderItem = getById(id);
         if (orderItem == null)
             return false;
 

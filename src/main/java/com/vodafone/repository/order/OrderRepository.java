@@ -37,7 +37,7 @@ public class OrderRepository implements IOrderRepository {
     }
 
     @Override
-    public Order get(Long orderId) {
+    public Order getById(Long orderId) {
         Order order;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
@@ -78,7 +78,7 @@ public class OrderRepository implements IOrderRepository {
 
     @Override
     public boolean update(Long orderId, Order updatedEntity) {
-        Order order = get(orderId);
+        Order order = getById(orderId);
         if (order == null)
             return false;
 

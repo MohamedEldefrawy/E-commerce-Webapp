@@ -121,7 +121,7 @@ public class CustomerRepository implements ICustomerRepository {
     }
 
     @Override
-    public Customer get(Long id) {
+    public Customer getById(Long id) {
         Customer customer = null;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             customer = session.get(Customer.class, id);

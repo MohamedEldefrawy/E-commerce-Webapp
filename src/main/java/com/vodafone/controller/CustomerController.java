@@ -44,11 +44,15 @@ public class CustomerController {
     @GetMapping("home.htm")
     public String home(HttpSession session, Model model, @RequestParam(required = false) String category) {
         if (userAuthorizer.isActivatedCustomer(session)) {
-            List<Product> products;
-            if (category != null)
-                products = this.productService.getByCategory(category);
-            else
-                products = this.productService.getAvailableProducts();
+            List<Product> products = new ArrayList<>();
+            if (category != null) {
+                try {
+                    products.addAll(this.productService.getByCategory(category));
+                } catch (GetProductException e) {
+                    logger.warn(e.getMessage());
+                }
+            } else
+                products.addAll(this.productService.getAvailableProducts());
             model.addAttribute("products", products);
             return "/customer/shared/home";
         } else {
@@ -60,13 +64,19 @@ public class CustomerController {
     public String search(HttpSession session, Model model, @RequestParam(required = false) String category,
                          @RequestParam(required = false) String name) {
         if (userAuthorizer.isActivatedCustomer(session)) {
-            List<Product> products = new ArrayList<>(this.productService.getByCategory(category));
+            List<Product> products = new ArrayList<>();
             Product selectedProduct;
+
+            try {
+                products.addAll(this.productService.getByCategory(category));
+            } catch (GetProductException e) {
+                logger.warn(e.getMessage());
+            }
+
             try {
                 selectedProduct = this.productService.getByName(name);
                 products.add(selectedProduct);
             } catch (GetProductException e) {
-                logger.warn(e.getMessage());
             }
             model.addAttribute("products", products);
             return "/customer/shared/home";

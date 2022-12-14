@@ -1,8 +1,6 @@
 package com.vodafone.service;
 
 import com.vodafone.model.Customer;
-import com.vodafone.model.Role;
-import com.vodafone.model.UserStatus;
 import com.vodafone.repository.customer.CustomerRepository;
 import org.springframework.stereotype.Service;
 
@@ -48,7 +46,7 @@ public class CustomerService {
     }
 
     public Customer get(Long id) {
-        return customerRepository.get(id);
+        return customerRepository.getById(id);
     }
 
     public Customer getByMail(String email) {

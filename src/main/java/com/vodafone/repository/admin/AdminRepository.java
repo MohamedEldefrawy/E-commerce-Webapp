@@ -5,15 +5,11 @@ import com.vodafone.model.Admin;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.NoResultException;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Repository
@@ -39,7 +35,7 @@ public class AdminRepository implements IAdminRepository {
     }
 
     @Override
-    public Admin get(Long id) {
+    public Admin getById(Long id) {
         Admin admin = null;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             admin = session.get(Admin.class, id);
@@ -54,7 +50,7 @@ public class AdminRepository implements IAdminRepository {
     public boolean delete(Long id) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
-            Admin admin = get(id);
+            Admin admin = getById(id);
             if (admin != null) {
                 session.delete(admin);
                 tx.commit();
@@ -87,7 +83,7 @@ public class AdminRepository implements IAdminRepository {
     @Override
     public boolean update(Long id, Admin updatedEntity) {
             Transaction tx;
-            Admin admin = get(id);
+            Admin admin = getById(id);
             if (admin == null)
                 return false;
 
@@ -105,7 +101,7 @@ public class AdminRepository implements IAdminRepository {
             }
     }
     public boolean updatePassword(Long id, String newPassword){
-        Admin admin = get(id);
+        Admin admin = getById(id);
         if (admin == null)
             return false;
 
