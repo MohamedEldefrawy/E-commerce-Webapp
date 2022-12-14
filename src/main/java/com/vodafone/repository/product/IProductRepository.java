@@ -11,5 +11,5 @@ public interface IProductRepository extends Repository<Long, Product> {
 
     Optional<List<Product>> getByCategory(String category);
 
-    List<Product> getAvailableProducts();
+    Optional<List<Product>> getAvailableProducts();
 }

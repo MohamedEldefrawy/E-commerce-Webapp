@@ -2,12 +2,10 @@ package com.vodafone.repository.product;
 
 import com.vodafone.config.HibernateConfig;
 import com.vodafone.model.Product;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -91,12 +89,9 @@ public class ProductRepository implements IProductRepository {
     }
 
     @Override
-    public List<Product> getAvailableProducts() {
+    public Optional<List<Product>> getAvailableProducts() {
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
-            return session.createQuery("from Product p where p.isDeleted = :p", Product.class).setParameter("p", false).list();
-        } catch (HibernateException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
+            return Optional.ofNullable(session.createQuery("from Product p where p.isDeleted = :p", Product.class).setParameter("p", false).list());
         }
     }
 }

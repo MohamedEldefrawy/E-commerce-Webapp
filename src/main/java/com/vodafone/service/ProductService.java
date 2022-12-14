@@ -66,6 +66,10 @@ public class ProductService {
     }
 
     public List<Product> getAvailableProducts() {
-        return this.productRepository.getAvailableProducts();
+        Optional<List<Product>> optionalProducts = this.productRepository.getAvailableProducts();
+        if (optionalProducts.isPresent() && optionalProducts.get().size() > 0)
+            return optionalProducts.get();
+
+        throw new GetProductException("No products found");
     }
 }
