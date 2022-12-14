@@ -144,8 +144,8 @@ public class CartRepository implements ICartRepository {
      * @param cartId
      * @param item
      * @return the quantity of item added
-     * returns 0 incase nit available in stock (0 quantity added)
-     * returns -1 incase of exception
+     * returns 0 in case nit available in stock (0 quantity added)
+     * returns -1 in case of exception
      */
     @Override
     public int addItem(Long cartId, CartItem item) { //0 -> not added -1 -> exception otherwise--> eadded
@@ -156,10 +156,9 @@ public class CartRepository implements ICartRepository {
             List<CartItem> matchingProduct = items.stream()
                     .filter(i -> i.getProduct().getId().equals(item.getProduct().getId()))
                     .collect(Collectors.toList());
-            //if product alreadi in cart then add to quantity
+            //if product already in cart then add to quantity
             if (!matchingProduct.isEmpty()) {
-                int newQuantity = incrementProductQuantity(cartId, item.getProduct().getId(), item.getQuantity());
-                return newQuantity > 0;
+                return incrementProductQuantity(cartId, item.getProduct().getId(), item.getQuantity());
             } else {
                 if (item.getProduct().getInStock() >= item.getQuantity()) {
                     Transaction transaction = session.beginTransaction();

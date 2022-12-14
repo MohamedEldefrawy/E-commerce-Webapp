@@ -209,11 +209,11 @@ public class CartServiceUnitTest {
     public void addItem_nonNullCartAndCartItem_expectTrue() {
         //Arrange
         CartItem cartItem = new CartItem(2L, 10, new Product(), new Cart(), 500);
-        when(cartRepositoryMock.addItem(1L, cartItem)).thenReturn(true);
+        when(cartRepositoryMock.addItem(1L, cartItem)).thenReturn(10);
         //Act
-        boolean isItemInserted = cartService.addItem(1L, cartItem);
+        int quantityAdded = cartService.addItem(1L, cartItem);
         //Assert
-        assertTrue(isItemInserted);
+        assertEquals(10,quantityAdded);
     }
 
     @Test(expected = NullCartItemException.class)
