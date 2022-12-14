@@ -5,10 +5,7 @@ import com.vodafone.model.Role;
 import com.vodafone.model.UserStatus;
 import com.vodafone.repository.admin.AdminRepository;
 import com.vodafone.service.AdminService;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,18 +17,9 @@ import static org.mockito.Mockito.*;
 
 public class AdminServiceUnitTest {
 
-    private final AdminService adminService;
-    private final AdminRepository adminRepositoryMock;
+    private final AdminRepository adminRepositoryMock = mock(AdminRepository.class);
+    private final AdminService adminService = new AdminService(adminRepositoryMock);
 
-    public AdminServiceUnitTest() {
-        adminRepositoryMock = Mockito.mock(AdminRepository.class);
-        adminService = new AdminService(adminRepositoryMock);
-    }
-
-    @BeforeAll
-    public void init() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     public void getAllAdminsTest_returnAllSavedAdmins() {

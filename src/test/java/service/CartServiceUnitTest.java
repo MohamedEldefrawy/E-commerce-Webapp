@@ -84,7 +84,7 @@ public class CartServiceUnitTest {
         Cart cart = new Cart(customer, items);
         when(cartRepositoryMock.update(null, cart)).thenThrow(new NullIdException("Null cart id is provided"));
         //Act
-        assertThrows(NullCartException.class, () -> cartService.update(null, cart));
+        assertThrows(NullIdException.class, () -> cartService.update(null, cart));
     }
 
     @Test
@@ -220,7 +220,7 @@ public class CartServiceUnitTest {
         //Arrange
         when(cartRepositoryMock.addItem(1L, null)).thenThrow(new NullCartItemException("Null cart item is provided"));
         //Act
-        assertThrows(NullCartException.class, () -> cartService.addItem(1L, null));
+        assertThrows(NullCartItemException.class, () -> cartService.addItem(1L, null));
     }
 
     @Test
