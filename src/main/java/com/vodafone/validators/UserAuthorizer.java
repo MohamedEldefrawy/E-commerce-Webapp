@@ -33,9 +33,7 @@ public class UserAuthorizer {
         if(customer==null)
             return false;
         //customer account isn't activated
-        if(customer.getUserStatus()!= UserStatus.NOT_REGISTERED)
-            return true;
-        return false;
+        return customer.getUserStatus() != UserStatus.NOT_REGISTERED;
     }
     public boolean isActivatedCustomer(HttpSession session){
         if(session.getAttribute("id")==null)
@@ -46,8 +44,6 @@ public class UserAuthorizer {
         if(customer==null)
             return false;
         //customer account isn't activated
-        if(customer.getUserStatus()== UserStatus.ACTIVATED)
-            return true;
-        return false;
+        return customer.getUserStatus() == UserStatus.ACTIVATED;
     }
 }
