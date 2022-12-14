@@ -1,20 +1,17 @@
 package service;
 
+import com.vodafone.model.Admin;
 import com.vodafone.model.Role;
 import com.vodafone.model.UserStatus;
 import com.vodafone.repository.admin.AdminRepository;
 import com.vodafone.service.AdminService;
-import com.vodafone.model.Admin;
-
-
-import com.vodafone.service.ProductService;
-import org.junit.jupiter.api.*;
-import org.mockito.*;
-import util.TestUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
