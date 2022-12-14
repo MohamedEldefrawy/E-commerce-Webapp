@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface IOrderRepository extends Repository<Long, Order> {
 
-    public List<Order> getByCustomerId(Long customerId);
+    List<Order> getByCustomerId(Long customerId);
 
 }
