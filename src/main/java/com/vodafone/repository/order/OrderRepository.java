@@ -7,6 +7,8 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ import java.util.Optional;
 public class OrderRepository implements IOrderRepository {
 
     private final HibernateConfig hibernateConfig;
+    private final Logger logger = LoggerFactory.getLogger(OrderRepository.class);
 
 
     public OrderRepository(HibernateConfig hibernateConfig) {
@@ -47,18 +50,19 @@ public class OrderRepository implements IOrderRepository {
             order = (Order) query.uniqueResult();
             tx.commit();
         } catch (HibernateException e) {
-            e.printStackTrace();
-            return null;
+            logger.warn(e.getMessage());
+            return Optional.empty();
         }
         return Optional.ofNullable(order);
     }
 
     @Override
-    public boolean create(Order order) {
+    public Optional<Long> create(Order order) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
+            Long orderId = null;
             if (order.getOrderItems() != null && order.getOrderItems().size() > 0) {
-                session.persist(order);
+                orderId = (Long) session.save(order);
                 //Adds created customer to customer's arrayList
                 order.getCustomer().getOrders().add(order);
                 session.update(order.getCustomer());
@@ -68,12 +72,11 @@ public class OrderRepository implements IOrderRepository {
                 }
             }
             tx.commit();
-            return true;
+            return Optional.ofNullable(orderId);
         } catch (HibernateException e) {
-            e.printStackTrace();
-            return false;
+            logger.warn(e.getMessage());
+            return Optional.empty();
         }
-
     }
 
     @Override

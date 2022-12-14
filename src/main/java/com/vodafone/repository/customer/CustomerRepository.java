@@ -8,6 +8,8 @@ import com.vodafone.model.UserStatus;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.NoResultException;
@@ -19,27 +21,30 @@ import java.util.Optional;
 public class CustomerRepository implements ICustomerRepository {
 
     private final HibernateConfig hibernateConfig;
+    private final Logger logger = LoggerFactory.getLogger(CustomerRepository.class);
 
     public CustomerRepository(HibernateConfig hibernateConfig) {
         this.hibernateConfig = hibernateConfig;
     }
 
     @Override
-    public boolean create(Customer customer) {
+    public Optional<Long> create(Customer customer) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             //set customer's default status before verification
             customer.setCart(new Cart(customer, new ArrayList<>()));
-            session.persist(customer.getCart());
+
+            session.save(customer.getCart());
+
             customer.setUserStatus(UserStatus.DEACTIVATED);
             customer.setRole(Role.Customer);
 
-            session.persist(customer);
+            Long customerId = (Long) session.save(customer);
             transaction.commit();
-            return true;
+            return Optional.ofNullable(customerId);
         } catch (HibernateException hibernateException) {
-            hibernateException.printStackTrace();
-            return false;
+            logger.warn(hibernateException.getMessage());
+            return Optional.empty();
         }
     }
 

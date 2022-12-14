@@ -21,7 +21,7 @@ public class CartService {
 
 
     public boolean create(Cart entity) {
-        return cartRepository.create(entity);
+        return cartRepository.create(entity).isPresent();
     }
 
 
@@ -65,7 +65,7 @@ public class CartService {
         //iterate over each cart item to transform it to order item.
         float total = 0f;
         for (CartItem cartItem : cart.getItems()) {
-            if(cartItem.getQuantity()>0) {
+            if (cartItem.getQuantity() > 0) {
                 OrderItem orderItem = new OrderItem();
                 orderItem.setOrder(order);
                 //check available quantity in stock

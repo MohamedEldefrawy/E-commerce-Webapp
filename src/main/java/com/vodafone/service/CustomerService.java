@@ -30,7 +30,7 @@ public class CustomerService {
     public boolean create(Customer customer) {
         String originalPassword = customer.getPassword();
         customer.setPassword(hashService.encryptPassword(originalPassword, customer.getEmail()));
-        return customerRepository.create(customer);
+        return customerRepository.create(customer).isPresent();
     }
 
     public boolean update(Long id, Customer updatedCustomer) {

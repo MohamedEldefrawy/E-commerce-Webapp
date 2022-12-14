@@ -6,6 +6,8 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,21 +16,22 @@ import java.util.Optional;
 public class OrderItemsRepository implements IOrderItemsRepository {
 
     private final HibernateConfig hibernateConfig;
+    private final Logger logger = LoggerFactory.getLogger(OrderItemsRepository.class);
 
     public OrderItemsRepository(HibernateConfig hibernateConfig) {
         this.hibernateConfig = hibernateConfig;
     }
 
     @Override
-    public boolean create(OrderItem orderItem) {
+    public Optional<Long> create(OrderItem orderItem) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
-            session.persist(orderItem);
+            Long id = (Long) session.save(orderItem);
             tx.commit();
-            return true;
+            return Optional.ofNullable(id);
         } catch (HibernateException e) {
-            e.printStackTrace();
-            return false;
+            logger.warn(e.getMessage());
+            return Optional.empty();
         }
     }
 
@@ -46,20 +49,20 @@ public class OrderItemsRepository implements IOrderItemsRepository {
 
     @Override
     public Optional<OrderItem> getById(Long id) {
-        OrderItem orderItem = null;
+        OrderItem orderItem;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             orderItem = session.get(OrderItem.class, id);
             session.close();
         } catch (HibernateException e) {
             e.printStackTrace();
-            return null;
+            return Optional.empty();
         }
         return Optional.ofNullable(orderItem);
     }
 
     @Override
     public boolean delete(Long id) {
-        int modifications = 0;
+        int modifications;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
             Query query = session.createQuery("delete OrderItem  oi where oi.id=" + id);

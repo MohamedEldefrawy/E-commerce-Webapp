@@ -19,7 +19,7 @@ public class OrderService{
         return orderRepository.getById(orderId).get();
     }
     public boolean create(Order order){
-        return orderRepository.create(order);
+        return orderRepository.create(order).isPresent();
     }
     public boolean update(Long orderId,Order order){
         return orderRepository.update(orderId,order);

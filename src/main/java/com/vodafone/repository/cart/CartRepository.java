@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,21 +19,23 @@ import java.util.stream.Collectors;
 @Repository
 @AllArgsConstructor
 public class CartRepository implements ICartRepository {
-    HibernateConfig config;
+    private HibernateConfig config;
+    private final Logger logger = LoggerFactory.getLogger(CartRepository.class);
 
 
     @Override
-    public boolean create(Cart entity) {
+    public Optional<Long> create(Cart entity) {
+        Long id;
         try (Session session = config.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            session.persist(entity);
+            id = (Long) session.save(entity);
             transaction.commit();
             session.close();
         } catch (HibernateException e) {
-            e.printStackTrace();
-            return false;
+            logger.warn(e.getMessage());
+            return Optional.empty();
         }
-        return true;
+        return Optional.ofNullable(id);
     }
 
     @Override

@@ -7,7 +7,7 @@ import com.vodafone.repository.Repository;
 
 import java.util.List;
 
-public interface ICartRepository extends Repository<Cart> {
+public interface ICartRepository extends Repository<Long,Cart> {
     boolean removeItem(Long cartId, Long itemId);
 
     boolean clearCart(Long cartId);

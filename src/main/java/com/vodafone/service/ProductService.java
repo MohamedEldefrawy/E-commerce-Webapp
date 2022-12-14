@@ -1,5 +1,6 @@
 package com.vodafone.service;
 
+import com.vodafone.exception.product.CreateProductException;
 import com.vodafone.exception.product.GetProductException;
 import com.vodafone.model.Product;
 import com.vodafone.repository.product.IProductRepository;
@@ -14,12 +15,12 @@ import java.util.Optional;
 public class ProductService {
     private IProductRepository productRepository;
 
-    public boolean create(Product product) {
+    public boolean create(Product product) throws CreateProductException {
 
         Optional<Long> optionalLong = this.productRepository.create(product);
         if (optionalLong.isPresent())
             return true;
-        return false;
+        throw new CreateProductException("Failed to create new product");
     }
 
     public boolean update(Long id, Product newProduct) throws GetProductException {

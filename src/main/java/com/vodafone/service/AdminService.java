@@ -26,7 +26,7 @@ public class AdminService {
     }
 
     public boolean create(Admin admin) {
-        return adminRepository.create(admin);
+        return adminRepository.create(admin).isPresent();
     }
 
     public boolean update(Long id, Admin admin) {

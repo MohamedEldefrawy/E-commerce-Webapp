@@ -5,6 +5,8 @@ import com.vodafone.model.Admin;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.NoResultException;
@@ -17,6 +19,7 @@ import java.util.Optional;
 public class AdminRepository implements IAdminRepository {
 
     private final HibernateConfig hibernateConfig;
+    private final Logger logger = LoggerFactory.getLogger(AdminRepository.class);
 
     public AdminRepository(HibernateConfig hibernateConfig) {
         this.hibernateConfig = hibernateConfig;
@@ -37,12 +40,12 @@ public class AdminRepository implements IAdminRepository {
 
     @Override
     public Optional<Admin> getById(Long id) {
-        Admin admin = null;
+        Admin admin;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             admin = session.get(Admin.class, id);
         } catch (HibernateException e) {
-            e.printStackTrace();
-            return null;
+            logger.warn(e.getMessage());
+            return Optional.empty();
         }
         return Optional.ofNullable(admin);
     }
@@ -65,20 +68,20 @@ public class AdminRepository implements IAdminRepository {
     }
 
     @Override
-    public boolean create(Admin admin) {
+    public Optional<Long> create(Admin admin) {
         if (admin.getPassword() == null)
             admin.setPassword(getAlphaNumericString(8));
         if (getByUsername(admin.getUserName()) == null && getByEmail(admin.getEmail()) == null) {
             try (Session session = hibernateConfig.getSessionFactory().openSession()) {
                 Transaction tx = session.beginTransaction();
-                session.persist(admin);
+                Long id = (Long) session.save(admin);
                 tx.commit();
-                return true;
+                return Optional.ofNullable(id);
             } catch (HibernateException e) {
-                e.printStackTrace();
-                return false;
+                logger.warn(e.getMessage());
+                return Optional.empty();
             }
-        } else return false;
+        } else return Optional.empty();
     }
 
     @Override
@@ -121,10 +124,7 @@ public class AdminRepository implements IAdminRepository {
     }
 
     private String getAlphaNumericString(int n) {
-        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                + "0123456789"
-                + "abcdefghijklmnopqrstuvxyz"
-                + "_&%";
+        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvxyz_&%";
 
         StringBuilder sb = new StringBuilder(n);
 
@@ -155,9 +155,8 @@ public class AdminRepository implements IAdminRepository {
     public Admin getByUsername(String username) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             try {
-                Admin admin = session.createQuery("SELECT a from Admin a where a.userName=: username", Admin.class)
+                return session.createQuery("SELECT a from Admin a where a.userName=: username", Admin.class)
                         .setParameter("username", username).getSingleResult();
-                return admin;
             } catch (NoResultException e) {
                 return null;
             }
@@ -170,9 +169,8 @@ public class AdminRepository implements IAdminRepository {
     public Admin getByEmail(String email) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             try {
-                Admin admin = session.createQuery("SELECT a from Admin a where a.email=: email", Admin.class)
+                return session.createQuery("SELECT a from Admin a where a.email=: email", Admin.class)
                         .setParameter("email", email).getSingleResult();
-                return admin;
             } catch (NoResultException e) {
                 return null;
             }

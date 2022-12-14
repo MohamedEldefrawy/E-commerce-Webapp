@@ -1,5 +1,6 @@
 package com.vodafone.controller;
 
+import com.vodafone.exception.product.CreateProductException;
 import com.vodafone.exception.product.GetProductException;
 import com.vodafone.model.Admin;
 import com.vodafone.model.EmailType;
@@ -280,7 +281,11 @@ public class AdminController {
             newProduct.setName(product.getName());
             newProduct.setInStock(product.getInStock());
             newProduct.setDeleted(false);
-            this.productService.create(newProduct);
+            try {
+                this.productService.create(newProduct);
+            } catch (CreateProductException e) {
+                logger.warn(e.getMessage());
+            }
             return "redirect:/admins/products/show.htm";
         } else {
             return "redirect:/login.htm";
