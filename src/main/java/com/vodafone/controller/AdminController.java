@@ -1,5 +1,8 @@
 package com.vodafone.controller;
 
+import com.vodafone.exception.admin.GetAdminException;
+import com.vodafone.exception.product.CreateProductException;
+import com.vodafone.exception.product.GetProductException;
 import com.vodafone.model.Admin;
 import com.vodafone.model.EmailType;
 import com.vodafone.model.Product;
@@ -13,6 +16,8 @@ import com.vodafone.service.ProductService;
 import com.vodafone.service.SendEmailService;
 import com.vodafone.validators.AdminValidator;
 import com.vodafone.validators.UserAuthorizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,16 +25,16 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpSession;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/admins")
@@ -44,6 +49,8 @@ public class AdminController {
 
     private final SendEmailService emailService;
 
+    private final Logger logger = LoggerFactory.getLogger(AdminController.class);
+
     public AdminController(AdminService adminService, ProductService productService,
                            AdminValidator adminValidator, UserAuthorizer userAuthorizer, HashService hashService, SendEmailService emailService) {
         this.adminService = adminService;
@@ -52,25 +59,18 @@ public class AdminController {
         this.userAuthorizer = userAuthorizer;
         this.hashService = hashService;
         this.emailService = emailService;
-        //todo: save super admin config in config file as a bean
-        //create super admin
-      /*  Admin admin = new Admin();
-        admin.setEmail("t.m.n.t.ecommerce@gmail.com");
-        admin.setRole(Role.Admin);
-        admin.setUserName("TMNT Admin");
-        admin.setPassword(hashService.encryptPassword("12345678", admin.getEmail()));
-        System.out.println(admin.getPassword());
-        admin.setFirstLogin(false);
-        this.adminService.create(admin);
-
-       */
     }
 
 
     @GetMapping("/admins.htm")
     public String getAll(HttpSession session, Model model) {
+        List<Admin> adminList = new ArrayList<>();
         if (userAuthorizer.authorizeAdmin(session)) {
-            List<Admin> adminList = this.adminService.getAll();
+            try {
+                adminList.addAll(this.adminService.getAll());
+            } catch (GetAdminException e) {
+                logger.warn(e.getMessage());
+            }
             model.addAttribute("admins", adminList);
             return "admin/viewAllAdmins";
         } else {
@@ -83,7 +83,7 @@ public class AdminController {
     public String delete(HttpSession session, @RequestParam(required = false) Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
             Long sessionId = (Long) session.getAttribute("id");
-            if(id!=2 && sessionId!=id) {
+            if (id != 2 && !Objects.equals(sessionId, id)) {
                 boolean deleted = adminService.delete(id);
                 if (deleted)
                     return "200"; //deleted successfully
@@ -186,7 +186,12 @@ public class AdminController {
     @GetMapping("/products/update.htm")
     public String updateProduct(HttpSession session, Model model, @RequestParam Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
-            Product selectedProduct = this.productService.get(id);
+            Product selectedProduct = null;
+            try {
+                selectedProduct = this.productService.getById(id);
+            } catch (GetProductException e) {
+                logger.warn(e.getMessage());
+            }
             model.addAttribute("product", selectedProduct);
             return "products/update";
         } else {
@@ -216,18 +221,25 @@ public class AdminController {
                     fileOutputStream.close();
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                logger.warn(e.getMessage());
             }
 
-            Product updatedProduct = this.productService.get(product.getId());
-            updatedProduct.setDescription(product.getDescription());
-            updatedProduct.setCategory(product.getCategory());
-            if (imageData.length > 0)
-                updatedProduct.setImage(product.getImage().getOriginalFilename());
-            updatedProduct.setPrice(product.getPrice());
-            updatedProduct.setName(product.getName());
-            updatedProduct.setInStock(product.getInStock());
-            boolean result = this.productService.update(id, updatedProduct);
+            Product updatedProduct;
+            boolean result = false;
+            try {
+                updatedProduct = this.productService.getById(product.getId());
+                updatedProduct.setDescription(product.getDescription());
+                updatedProduct.setCategory(product.getCategory());
+                if (imageData.length > 0)
+                    updatedProduct.setImage(product.getImage().getOriginalFilename());
+                updatedProduct.setPrice(product.getPrice());
+                updatedProduct.setName(product.getName());
+                updatedProduct.setInStock(product.getInStock());
+                result = this.productService.update(id, updatedProduct);
+
+            } catch (GetProductException e) {
+                logger.warn(e.getMessage());
+            }
             if (result)
                 return "redirect:/admins/products/show.htm";
             return "products/update";
@@ -253,7 +265,6 @@ public class AdminController {
                        HttpSession session) {
         if (userAuthorizer.authorizeAdmin(session)) {
             if (bindingResult.hasErrors()) {
-                Map<String, Object> model = bindingResult.getModel();
                 return "products/create";
             }
             byte[] imageData = image.getBytes();
@@ -277,7 +288,11 @@ public class AdminController {
             newProduct.setName(product.getName());
             newProduct.setInStock(product.getInStock());
             newProduct.setDeleted(false);
-            this.productService.create(newProduct);
+            try {
+                this.productService.create(newProduct);
+            } catch (CreateProductException e) {
+                logger.warn(e.getMessage());
+            }
             return "redirect:/admins/products/show.htm";
         } else {
             return "redirect:/login.htm";
@@ -289,7 +304,14 @@ public class AdminController {
     @ResponseBody
     public String deleteProduct(HttpSession session, @RequestParam(required = false) Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
-            boolean result = this.productService.delete(id);
+            boolean result;
+            try {
+                result = this.productService.delete(id);
+            } catch (GetProductException e) {
+                logger.warn(e.getMessage());
+                result = false;
+            }
+
             if (result)
                 return "200";  //ok
             return "500"; //server error
@@ -325,7 +347,7 @@ public class AdminController {
     }
 
     @GetMapping("setAdminPassword.htm")
-    public String setAdminPassword(Model model, HttpSession session) {
+    public String setAdminPassword() {
         return "admin/setAdminPassword";
     }
 

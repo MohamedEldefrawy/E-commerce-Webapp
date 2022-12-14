@@ -1,17 +1,16 @@
 package service;
 
+import com.vodafone.exception.admin.GetAdminException;
 import com.vodafone.model.Admin;
 import com.vodafone.model.Role;
 import com.vodafone.model.UserStatus;
 import com.vodafone.repository.admin.AdminRepository;
 import com.vodafone.service.AdminService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -20,8 +19,8 @@ import static org.mockito.Mockito.*;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AdminServiceUnitTest {
 
-    private  AdminService adminService;
-    private  AdminRepository adminRepositoryMock;
+    private final AdminRepository adminRepositoryMock = mock(AdminRepository.class);
+    private final AdminService adminService = new AdminService(adminRepositoryMock);
 
     @BeforeEach
     public void setup() {
@@ -53,6 +52,15 @@ public class AdminServiceUnitTest {
     }
 
     @Test
+    public void getAllAdminsTest_throwsGetAdminException() {
+        //Arrange
+        when(adminRepositoryMock.getAll()).thenReturn(Optional.empty());
+        //Act
+        assertThrows(GetAdminException.class, adminService::getAll);
+    }
+
+
+    @Test
     public void getAllAdminsTest_returnAdminsById() {
         //Arrange
         List<Admin> list = new ArrayList<>();
@@ -65,7 +73,7 @@ public class AdminServiceUnitTest {
         admin.setUserStatus(UserStatus.ADMIN);
         admin.setId(2L);
         list.add(admin);
-        when(adminRepositoryMock.getAll()).thenReturn(list);
+        when(adminRepositoryMock.getAll()).thenReturn(Optional.of(list));
         //Act
         List<Admin> returnedAdminList = adminService.getAll();
         //Assert
@@ -87,7 +95,7 @@ public class AdminServiceUnitTest {
         admin.setUserStatus(UserStatus.ADMIN);
         admin.setId(2L);
         list.add(admin);
-        when(adminRepositoryMock.get(any())).thenReturn(admin);
+        when(adminRepositoryMock.getById(any(Long.class))).thenReturn(Optional.of(admin));
         //Act
         Admin returnedAdmin = adminService.get(2L);
         //Asset
@@ -109,13 +117,14 @@ public class AdminServiceUnitTest {
         admin.setUserStatus(UserStatus.ADMIN);
         admin.setId(2L);
         list.add(admin);
-        when(adminRepositoryMock.get(any())).thenReturn(null);
+        when(adminRepositoryMock.getById(any(Long.class))).thenReturn(Optional.empty());
         //Act
         Admin returnedAdmin = adminService.get(3L);
         //Asset
         assertNull(returnedAdmin);
         //verify(regionRepositoryMock, times(1)).findById(any());
     }
+
     @Test
     public void deleteAdminByIdTest_sendExistingId_returnTrue() {
         //Arrange
@@ -131,11 +140,12 @@ public class AdminServiceUnitTest {
         list.add(admin);
         when(adminRepositoryMock.delete(2L)).thenReturn(true);
         //Act
-        boolean deleted= adminService.delete(2L);
+        boolean deleted = adminService.delete(2L);
         //Asset
         assertTrue(deleted);
         //verify(regionRepositoryMock, times(1)).findById(any());
     }
+
     @Test
     public void deleteAdminByIdTest_sendNonExistingId_returnFalse() {
         //Arrange
@@ -151,11 +161,12 @@ public class AdminServiceUnitTest {
         list.add(admin);
         when(adminRepositoryMock.delete(3L)).thenReturn(false);
         //Act
-        boolean deleted= adminService.delete(3L);
+        boolean deleted = adminService.delete(3L);
         //Asset
         assertFalse(deleted);
         //verify(regionRepositoryMock, times(1)).findById(any());
     }
+
     @Test
     public void addAdmin_sendAdmin_saveToDBReturnTrue() {
         //Arrange
@@ -169,12 +180,13 @@ public class AdminServiceUnitTest {
         admin.setUserStatus(UserStatus.ADMIN);
         admin.setId(2L);
         list.add(admin);
-        when(adminRepositoryMock.create(admin)).thenReturn(true);
+        when(adminRepositoryMock.create(admin)).thenReturn(Optional.of(1L));
         //Act
-        boolean created= adminService.create(admin);
+        boolean created = adminService.create(admin);
         //Asset
         assertTrue(created);
     }
+
     @Test
     public void addAdmin_sendAdminWithDuplicateUsername_returnFalse() {
         //Arrange
@@ -188,12 +200,13 @@ public class AdminServiceUnitTest {
         admin.setUserStatus(UserStatus.ADMIN);
         admin.setId(2L);
         list.add(admin);
-        when(adminRepositoryMock.create(admin)).thenReturn(false);
+        when(adminRepositoryMock.create(admin)).thenReturn(Optional.of(1L));
         //Act
-        boolean created= adminService.create(admin);
+        boolean created = adminService.create(admin);
         //Asset
         assertFalse(created);
     }
+
     @Test
     public void updateAdmin_sendIdAndAdmin_saveToDBReturnTrue() {
         //Arrange
@@ -207,12 +220,13 @@ public class AdminServiceUnitTest {
         admin.setUserStatus(UserStatus.ADMIN);
         admin.setId(2L);
         list.add(admin);
-        when(adminRepositoryMock.update(2L,admin)).thenReturn(true);
+        when(adminRepositoryMock.update(2L, admin)).thenReturn(true);
         //Act
-        boolean updated= adminService.update(2L,admin);
+        boolean updated = adminService.update(2L, admin);
         //Asset
         assertTrue(updated);
     }
+
     @Test
     public void updateAdmin_sendNonExistentIdAndAdmin_returnFalse() {
         //Arrange
@@ -226,9 +240,9 @@ public class AdminServiceUnitTest {
         admin.setUserStatus(UserStatus.ADMIN);
         admin.setId(2L);
         list.add(admin);
-        when(adminRepositoryMock.update(3L,admin)).thenReturn(false);
+        when(adminRepositoryMock.update(3L, admin)).thenReturn(false);
         //Act
-        boolean updated= adminService.update(3L,admin);
+        boolean updated = adminService.update(3L, admin);
         //Asset
         assertFalse(updated);
     }
@@ -246,12 +260,13 @@ public class AdminServiceUnitTest {
         admin.setUserStatus(UserStatus.ADMIN);
         admin.setId(2L);
         list.add(admin);
-        when(adminRepositoryMock.updatePassword(any(Long.class),any())).thenReturn(true);
+        when(adminRepositoryMock.updatePassword(any(Long.class), any())).thenReturn(true);
         //Act
-        boolean updated= adminService.updatePassword(2L,"2938012893801");
+        boolean updated = adminService.updatePassword(2L, "2938012893801");
         //Asset
         assertTrue(updated);
     }
+
     @Test
     public void updateAdminPassword_sendNonExistentIdAndAdmin_returnFalse() {
         //Arrange
@@ -265,9 +280,9 @@ public class AdminServiceUnitTest {
         admin.setUserStatus(UserStatus.ADMIN);
         admin.setId(2L);
         list.add(admin);
-        when(adminRepositoryMock.updatePassword(any(Long.class),any())).thenReturn(false);
+        when(adminRepositoryMock.updatePassword(any(Long.class), any())).thenReturn(false);
         //Act
-        boolean updated= adminService.updatePassword(3L,"2817927839123");
+        boolean updated = adminService.updatePassword(3L, "2817927839123");
         //Asset
         assertFalse(updated);
     }
@@ -289,8 +304,9 @@ public class AdminServiceUnitTest {
         //Act
         adminService.setFirstLoginFlag(2L);
         //Assert
-        verify(adminRepositoryMock,times(1)).setFirstLoginFlag(any(Long.class));
+        verify(adminRepositoryMock, times(1)).setFirstLoginFlag(any(Long.class));
     }
+
     @Test
     public void getByEmail_sendExistingEmail_returnAdmin() {
         //Arrange
@@ -306,11 +322,12 @@ public class AdminServiceUnitTest {
         list.add(admin);
         when(adminRepositoryMock.getByEmail(any(String.class))).thenReturn(admin);
         //Act
-        Admin retrievedAdmin= adminService.getByEmail("admin@gmail.com");
+        Admin retrievedAdmin = adminService.getByEmail("admin@gmail.com");
         //Asset
         assertNotNull(retrievedAdmin);
-        verify(adminRepositoryMock,times(1)).getByEmail(any());
+        verify(adminRepositoryMock, times(1)).getByEmail(any());
     }
+
     @Test
     public void getByEmail_sendNonExistentEmail_returnNull() {
         //Arrange
@@ -326,11 +343,12 @@ public class AdminServiceUnitTest {
         list.add(admin);
         when(adminRepositoryMock.getByEmail(any(String.class))).thenReturn(null);
         //Act
-        Admin retrievedAdmin= adminService.getByEmail("admi@gmail.com");
+        Admin retrievedAdmin = adminService.getByEmail("admi@gmail.com");
         //Asset
         assertNull(retrievedAdmin);
-        verify(adminRepositoryMock,times(1)).getByEmail(any());
+        verify(adminRepositoryMock, times(1)).getByEmail(any());
     }
+
     @Test
     public void getByEmail_sendExistingUsername_returnAdmin() {
         //Arrange
@@ -346,11 +364,12 @@ public class AdminServiceUnitTest {
         list.add(admin);
         when(adminRepositoryMock.getByUsername(any(String.class))).thenReturn(admin);
         //Act
-        Admin retrievedAdmin= adminService.getByUsername("admin");
+        Admin retrievedAdmin = adminService.getByUsername("admin");
         //Asset
         assertNotNull(retrievedAdmin);
-        verify(adminRepositoryMock,times(1)).getByUsername(any());
+        verify(adminRepositoryMock, times(1)).getByUsername(any());
     }
+
     @Test
     public void getByEmail_sendNonExistentUsername_returnNull() {
         //Arrange
@@ -366,9 +385,9 @@ public class AdminServiceUnitTest {
         list.add(admin);
         when(adminRepositoryMock.getByUsername(any(String.class))).thenReturn(null);
         //Act
-        Admin retrievedAdmin= adminService.getByUsername("admi");
+        Admin retrievedAdmin = adminService.getByUsername("admi");
         //Asset
         assertNull(retrievedAdmin);
-        verify(adminRepositoryMock,times(1)).getByUsername(any());
+        verify(adminRepositoryMock, times(1)).getByUsername(any());
     }
 }

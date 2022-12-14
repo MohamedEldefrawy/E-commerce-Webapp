@@ -1,65 +1,75 @@
 package com.vodafone.service;
 
+import com.vodafone.exception.product.CreateProductException;
+import com.vodafone.exception.product.GetProductException;
 import com.vodafone.model.Product;
-import com.vodafone.repository.product.ProductRepository;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.vodafone.repository.product.IProductRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
-@NoArgsConstructor
+@AllArgsConstructor
 public class ProductService {
-    private ProductRepository productRepository;
+    private IProductRepository productRepository;
 
-    @Autowired
-    public ProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+    public boolean create(Product product) throws CreateProductException {
+
+        Optional<Long> optionalLong = this.productRepository.create(product);
+        if (optionalLong.isPresent())
+            return true;
+        throw new CreateProductException("Failed to create new product");
     }
 
-    public boolean create(Product product) {
-        return this.productRepository.create(product);
+    public boolean update(Long id, Product newProduct) throws GetProductException {
+        Optional<Product> productOptional = this.productRepository.getById(id);
+        if (productOptional.isPresent())
+            return this.productRepository.update(id, newProduct);
+        throw new GetProductException("No product found with id: " + id);
     }
 
-    public boolean update(Long id, Product newProduct) {
-        return this.productRepository.update(id, newProduct);
+    public List<Product> getAll() throws GetProductException {
+        Optional<List<Product>> optionalProducts = this.productRepository.getAll();
+        if (optionalProducts.isPresent())
+            return optionalProducts.get();
+        throw new GetProductException("No products found");
     }
 
-    public List<Product> getAll() {
-        return this.productRepository.getAll();
+    public Product getById(Long id) throws GetProductException {
+        Optional<Product> productOptional = this.productRepository.getById(id);
+        if (productOptional.isPresent())
+            return productOptional.get();
+        throw new GetProductException("No product found with id: " + id);
     }
 
-    public Product get(Long id) {
-        return this.productRepository.get(id);
+    public boolean delete(Long id) throws GetProductException {
+        Optional<Product> productOptional = this.productRepository.getById(id);
+        if (productOptional.isPresent())
+            return this.productRepository.delete(id);
+        throw new GetProductException("no product found with id: " + id);
     }
 
-    public boolean delete(Long id) {
-        return this.productRepository.delete(id);
+    public Product getByName(String name) throws GetProductException {
+        Optional<List<Product>> optionalProducts = this.productRepository.getByName(name);
+        if (optionalProducts.isPresent() && optionalProducts.get().size() > 0)
+            return optionalProducts.get().get(0);
+        throw new GetProductException("No product found with name: " + name);
     }
 
-    public Product getByName(String name) {
-        return this.productRepository.getByName(name);
+    public List<Product> getByCategory(String category) throws GetProductException {
+        Optional<List<Product>> optionalProducts = this.productRepository.getByCategory(category);
+        if (optionalProducts.isPresent())
+            return optionalProducts.get();
+        throw new GetProductException("No products found in category: " + category);
     }
 
-    public List<Product> getByCategory(String category) {
-        return this.productRepository.getByCategory(category);
-    }
-
-
-    public List<Product> getByPrice(double price) {
-        return this.productRepository.getByPrice(price);
-    }
-
-    public List<Product> getByRate(float rate) {
-        return this.productRepository.getByRate(rate);
-    }
-
-    public List<Product> getByPriceRange(double low, double high) {
-        return this.productRepository.getByPriceRange(low, high);
-    }
     public List<Product> getAvailableProducts() {
-        return this.productRepository.getAvailableProducts();
-    }
+        Optional<List<Product>> optionalProducts = this.productRepository.getAvailableProducts();
+        if (optionalProducts.isPresent() && optionalProducts.get().size() > 0)
+            return optionalProducts.get();
 
+        throw new GetProductException("No products found");
+    }
 }

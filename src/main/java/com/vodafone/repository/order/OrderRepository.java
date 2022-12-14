@@ -5,18 +5,21 @@ import com.vodafone.model.Order;
 import com.vodafone.model.OrderItem;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class OrderRepository implements IOrderRepository {
 
     private final HibernateConfig hibernateConfig;
+    private final Logger logger = LoggerFactory.getLogger(OrderRepository.class);
 
 
     public OrderRepository(HibernateConfig hibernateConfig) {
@@ -24,20 +27,20 @@ public class OrderRepository implements IOrderRepository {
     }
 
     @Override
-    public List<Order> getAll() {
+    public Optional<List<Order>> getAll() {
         List<Order> list;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             list = session.createQuery("From Order", Order.class)
                     .list();
         } catch (HibernateException e) {
             e.printStackTrace();
-            return new ArrayList<>();
+            return Optional.of(new ArrayList<>());
         }
-        return list;
+        return Optional.ofNullable(list);
     }
 
     @Override
-    public Order get(Long orderId) {
+    public Optional<Order> getById(Long orderId) {
         Order order;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
@@ -47,18 +50,19 @@ public class OrderRepository implements IOrderRepository {
             order = (Order) query.uniqueResult();
             tx.commit();
         } catch (HibernateException e) {
-            e.printStackTrace();
-            return null;
+            logger.warn(e.getMessage());
+            return Optional.empty();
         }
-        return order;
+        return Optional.ofNullable(order);
     }
 
     @Override
-    public boolean create(Order order) {
+    public Optional<Long> create(Order order) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
-            if(order.getOrderItems()!=null && order.getOrderItems().size()>0) {
-                session.persist(order);
+            Long orderId = null;
+            if (order.getOrderItems() != null && order.getOrderItems().size() > 0) {
+                orderId = (Long) session.save(order);
                 //Adds created customer to customer's arrayList
                 order.getCustomer().getOrders().add(order);
                 session.update(order.getCustomer());
@@ -68,17 +72,16 @@ public class OrderRepository implements IOrderRepository {
                 }
             }
             tx.commit();
-            return true;
+            return Optional.ofNullable(orderId);
         } catch (HibernateException e) {
-            e.printStackTrace();
-            return false;
+            logger.warn(e.getMessage());
+            return Optional.empty();
         }
-
     }
 
     @Override
     public boolean update(Long orderId, Order updatedEntity) {
-        Order order = get(orderId);
+        Order order = getById(orderId).get();
         if (order == null)
             return false;
 
