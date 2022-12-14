@@ -1,5 +1,6 @@
 package com.vodafone.controller;
 
+import com.vodafone.exception.product.GetProductException;
 import com.vodafone.model.Admin;
 import com.vodafone.model.EmailType;
 import com.vodafone.model.Product;
@@ -13,6 +14,8 @@ import com.vodafone.service.ProductService;
 import com.vodafone.service.SendEmailService;
 import com.vodafone.validators.AdminValidator;
 import com.vodafone.validators.UserAuthorizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,9 +23,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpSession;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -43,6 +44,8 @@ public class AdminController {
     private final HashService hashService;
 
     private final SendEmailService emailService;
+
+    private final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
     public AdminController(AdminService adminService, ProductService productService,
                            AdminValidator adminValidator, UserAuthorizer userAuthorizer, HashService hashService, SendEmailService emailService) {
@@ -83,7 +86,7 @@ public class AdminController {
     public String delete(HttpSession session, @RequestParam(required = false) Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
             Long sessionId = (Long) session.getAttribute("id");
-            if(id!=2 && sessionId!=id) {
+            if (id != 2 && sessionId != id) {
                 boolean deleted = adminService.delete(id);
                 if (deleted)
                     return "200"; //deleted successfully
@@ -186,7 +189,12 @@ public class AdminController {
     @GetMapping("/products/update.htm")
     public String updateProduct(HttpSession session, Model model, @RequestParam Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
-            Product selectedProduct = this.productService.get(id);
+            Product selectedProduct = null;
+            try {
+                selectedProduct = this.productService.getById(id);
+            } catch (GetProductException e) {
+                logger.warn(e.getMessage());
+            }
             model.addAttribute("product", selectedProduct);
             return "products/update";
         } else {
@@ -219,7 +227,12 @@ public class AdminController {
                 throw new RuntimeException(e);
             }
 
-            Product updatedProduct = this.productService.get(product.getId());
+            Product updatedProduct = null;
+            try {
+                updatedProduct = this.productService.getById(product.getId());
+            } catch (GetProductException e) {
+                logger.warn(e.getMessage());
+            }
             updatedProduct.setDescription(product.getDescription());
             updatedProduct.setCategory(product.getCategory());
             if (imageData.length > 0)

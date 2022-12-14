@@ -36,7 +36,7 @@ public class AdminRepository implements IAdminRepository {
     }
 
     @Override
-    public Admin getById(Long id) {
+    public Optional<Admin> getById(Long id) {
         Admin admin = null;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             admin = session.get(Admin.class, id);
@@ -44,14 +44,14 @@ public class AdminRepository implements IAdminRepository {
             e.printStackTrace();
             return null;
         }
-        return admin;
+        return Optional.ofNullable(admin);
     }
 
     @Override
     public boolean delete(Long id) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
-            Admin admin = getById(id);
+            Admin admin = getById(id).get();
             if (admin != null) {
                 session.delete(admin);
                 tx.commit();
@@ -84,7 +84,7 @@ public class AdminRepository implements IAdminRepository {
     @Override
     public boolean update(Long id, Admin updatedEntity) {
         Transaction tx;
-        Admin admin = getById(id);
+        Admin admin = getById(id).get();
         if (admin == null)
             return false;
 
@@ -103,7 +103,7 @@ public class AdminRepository implements IAdminRepository {
     }
 
     public boolean updatePassword(Long id, String newPassword) {
-        Admin admin = getById(id);
+        Admin admin = getById(id).get();
         if (admin == null)
             return false;
 

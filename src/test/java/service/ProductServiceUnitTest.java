@@ -73,8 +73,13 @@ public class ProductServiceUnitTest {
     @Test
     public void getTest_sendProductId_returnProduct() {
         Product dummyProduct = createProduct();
-        when(productRepository.getById(any(Long.class))).thenReturn(dummyProduct);
-        Product result = productService.get(dummyProduct.getId());
+        when(productRepository.getById(any(Long.class))).thenReturn(Optional.of(dummyProduct));
+        Product result = null;
+        try {
+            result = productService.getById(dummyProduct.getId());
+        } catch (GetProductException e) {
+            logger.info(e.getMessage());
+        }
         assertNotNull(result);
         assertEquals(dummyProduct.getId(), result.getId());
         assertEquals(dummyProduct.getName(), result.getName());

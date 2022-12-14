@@ -18,7 +18,7 @@ public class AdminService {
     }
 
     public Admin get(Long id) {
-        return adminRepository.getById(id);
+        return adminRepository.getById(id).get();
     }
 
     public boolean delete(Long id) {

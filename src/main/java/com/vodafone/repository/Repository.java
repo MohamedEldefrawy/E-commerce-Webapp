@@ -10,7 +10,7 @@ public interface Repository<T> {
 
     boolean delete(Long id);
 
-    T getById(Long id);
+    Optional<T> getById(Long id);
 
     Optional<List<T>> getAll();
 }

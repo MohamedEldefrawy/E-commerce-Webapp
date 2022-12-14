@@ -37,8 +37,7 @@ public class OrderItemsRepository implements IOrderItemsRepository {
     public Optional<List<OrderItem>> getAll() {
         List<OrderItem> list;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            list = session.createQuery("from OrderItem", OrderItem.class)
-                    .list();
+            list = session.createQuery("from OrderItem", OrderItem.class).list();
         } catch (HibernateException e) {
             return Optional.of(new ArrayList<>());
         }
@@ -46,7 +45,7 @@ public class OrderItemsRepository implements IOrderItemsRepository {
     }
 
     @Override
-    public OrderItem getById(Long id) {
+    public Optional<OrderItem> getById(Long id) {
         OrderItem orderItem = null;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             orderItem = session.get(OrderItem.class, id);
@@ -55,7 +54,7 @@ public class OrderItemsRepository implements IOrderItemsRepository {
             e.printStackTrace();
             return null;
         }
-        return orderItem;
+        return Optional.ofNullable(orderItem);
     }
 
     @Override
@@ -63,9 +62,7 @@ public class OrderItemsRepository implements IOrderItemsRepository {
         int modifications = 0;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
-            Query query = session.createQuery(
-                    "delete OrderItem  oi where oi.id=" + id
-            );
+            Query query = session.createQuery("delete OrderItem  oi where oi.id=" + id);
             modifications = query.executeUpdate();
             tx.commit();
         } catch (HibernateException e) {
@@ -77,9 +74,8 @@ public class OrderItemsRepository implements IOrderItemsRepository {
 
     @Override
     public boolean update(Long id, OrderItem updatedEntity) {
-        OrderItem orderItem = getById(id);
-        if (orderItem == null)
-            return false;
+        OrderItem orderItem = getById(id).get();
+        if (orderItem == null) return false;
 
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
             //doesnt update product or order

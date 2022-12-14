@@ -36,7 +36,7 @@ public class CartService {
 
 
     public Cart get(Long id) {
-        return cartRepository.getById(id);
+        return cartRepository.getById(id).get();
     }
 
 

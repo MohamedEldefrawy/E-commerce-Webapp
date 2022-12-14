@@ -122,8 +122,13 @@ public class CustomerController {
     @GetMapping("/products/{id}/details.htm")
     public String viewProductDetails(HttpSession session, Model model, @PathVariable Long id) {
         if (userAuthorizer.isActivatedCustomer(session)) {
-            Product product = this.productService.get(id);
-            model.addAttribute("product", product);
+            Product product = null;
+            try {
+                product = this.productService.getById(id);
+                model.addAttribute("product", product);
+            } catch (GetProductException e) {
+                logger.warn(e.getMessage());
+            }
             return "/customer/product/detail";
         } else {
             return "redirect:/login.htm";
@@ -182,7 +187,12 @@ public class CustomerController {
         if (userAuthorizer.isActivatedCustomer(session)) {
             Long customerId = (long) session.getAttribute("id");
             Cart customerCart = customerService.get(customerId).getCart();
-            Product product = productService.get(itemId);
+            Product product = null;
+            try {
+                product = productService.getById(itemId);
+            } catch (GetProductException e) {
+                logger.warn(e.getMessage());
+            }
 
             CartItem cartItem = new CartItem(quantity, product, customerCart);
             int newQuantity = cartService.addItem(customerCart.getId(), cartItem);

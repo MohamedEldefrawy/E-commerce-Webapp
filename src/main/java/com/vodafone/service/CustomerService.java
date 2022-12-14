@@ -46,7 +46,7 @@ public class CustomerService {
     }
 
     public Customer get(Long id) {
-        return customerRepository.getById(id);
+        return customerRepository.getById(id).get();
     }
 
     public Customer getByMail(String email) {

@@ -122,14 +122,14 @@ public class CustomerRepository implements ICustomerRepository {
     }
 
     @Override
-    public Customer getById(Long id) {
+    public Optional<Customer> getById(Long id) {
         Customer customer = null;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             customer = session.get(Customer.class, id);
         } catch (HibernateException | NoResultException hibernateException) {
             hibernateException.printStackTrace();
         }
-        return customer;
+        return Optional.ofNullable(customer);
     }
 
     @Override

@@ -53,7 +53,7 @@ public class CartRepository implements ICartRepository {
     public boolean delete(Long id) {
         try (Session session = config.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            Cart cart = getById(id);
+            Cart cart = getById(id).get();
             if (cart == null)
                 return false;
             session.delete(cart);
@@ -67,7 +67,7 @@ public class CartRepository implements ICartRepository {
     }
 
     @Override
-    public Cart getById(Long id) {
+    public Optional<Cart> getById(Long id) {
         Cart cart = null;
         try (Session session = config.getSessionFactory().openSession()) {
             cart = session.get(Cart.class, id);
@@ -76,7 +76,7 @@ public class CartRepository implements ICartRepository {
             e.printStackTrace();
             return null;
         }
-        return cart;
+        return Optional.ofNullable(cart);
     }
 
     @Override
@@ -99,7 +99,7 @@ public class CartRepository implements ICartRepository {
         try (Session session = config.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             //remove cartItem from cart arrayList
-            Cart cart = getById(cartId);
+            Cart cart = getById(cartId).get();
             cart.getItems().removeIf(item -> Objects.equals(item.getId(), itemId)); //remove desired item
             session.update(cart); //update cart
             //Remove cartItem from DB
@@ -118,7 +118,7 @@ public class CartRepository implements ICartRepository {
     public boolean clearCart(Long cartId) {
         try (Session session = config.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            Cart cart = getById(cartId);
+            Cart cart = getById(cartId).get();
             //check if it's null so we can't operate
             if (cart == null)
                 return false;
@@ -147,7 +147,7 @@ public class CartRepository implements ICartRepository {
     @Override
     public int addItem(Long cartId, CartItem item) { //0 -> not added -1 -> exception otherwise--> eadded
         try (Session session = config.getSessionFactory().openSession()) {
-            Cart cart = getById(cartId);
+            Cart cart = getById(cartId).get();
             List<CartItem> items = cart.getItems();
             //checks if item is already in cart then increments quantity
             List<CartItem> matchingProduct = items.stream()
@@ -178,14 +178,14 @@ public class CartRepository implements ICartRepository {
 
     @Override
     public List<CartItem> getCartItems(Long cartId) {
-        return getById(cartId).getItems();
+        return getById(cartId).get().getItems();
     }
 
     @Override
     public int setProductQuantity(Long cartId, Long itemId, int newQuantity) {
         try (Session session = config.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            Cart cart = getById(cartId);
+            Cart cart = getById(cartId).get();
             for (CartItem item : cart.getItems()) {
                 if (item.getId().equals(itemId))
                     item.setQuantity(newQuantity);
@@ -204,7 +204,7 @@ public class CartRepository implements ICartRepository {
     public int incrementProductQuantity(Long cartId, Long productId, int quantity) {
         try (Session session = config.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            Cart cart = getById(cartId);
+            Cart cart = getById(cartId).get();
             int newQuantity = 0;
             CartItem foundItem = null;
             for (CartItem item : cart.getItems()) {
@@ -233,7 +233,7 @@ public class CartRepository implements ICartRepository {
     public int decrementProductQuantity(Long cartId, Long productId) {
         try (Session session = config.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            Cart cart = getById(cartId);
+            Cart cart = getById(cartId).get();
             CartItem foundItem = null;
             int newQuantity = 0;
             for (CartItem item : cart.getItems()) {

@@ -27,17 +27,13 @@ public class ProductRepository implements IProductRepository {
             session.persist(entity);
             transaction.commit();
             return true;
-        } catch (HibernateException e) {
-            return false;
         }
     }
 
     @Override
     public boolean update(Long id, Product updatedEntity) {
         Transaction transaction;
-        Product selectedEntity = getById(id);
-        if (selectedEntity == null)
-            return false;
+        Product selectedEntity = getById(id).get();
 
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
@@ -50,34 +46,26 @@ public class ProductRepository implements IProductRepository {
             session.update(selectedEntity);
             transaction.commit();
             return true;
-        } catch (HibernateException e) {
-            return false;
         }
     }
 
     @Override
     public boolean delete(Long id) {
         Transaction transaction;
-        Product product = getById(id);
-        if (product == null)
-            return false;
+        Product product = getById(id).get();
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
             product.setDeleted(true);
             session.update(product);
             transaction.commit();
             return true;
-        } catch (HibernateException e) {
-            return false;
         }
     }
 
     @Override
-    public Product getById(Long id) {
+    public Optional<Product> getById(Long id) {
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
-            return session.get(Product.class, id);
-        } catch (HibernateException e) {
-            return null;
+            return Optional.ofNullable(session.get(Product.class, id));
         }
     }
 

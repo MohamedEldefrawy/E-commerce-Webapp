@@ -16,7 +16,7 @@ public class OrderService{
         return orderRepository.getAll().get();
     }
     public Order get(Long orderId){
-        return orderRepository.getById(orderId);
+        return orderRepository.getById(orderId).get();
     }
     public boolean create(Order order){
         return orderRepository.create(order);

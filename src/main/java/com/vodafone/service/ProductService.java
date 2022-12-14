@@ -29,8 +29,11 @@ public class ProductService {
         throw new GetProductException("No products found");
     }
 
-    public Product get(Long id) {
-        return this.productRepository.getById(id);
+    public Product getById(Long id) throws GetProductException {
+        Optional<Product> productOptional = this.productRepository.getById(id);
+        if (productOptional.isPresent())
+            return productOptional.get();
+        throw new GetProductException("No product found with id: " + id);
     }
 
     public boolean delete(Long id) {
