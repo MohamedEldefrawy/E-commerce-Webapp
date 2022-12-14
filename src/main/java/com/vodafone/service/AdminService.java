@@ -1,20 +1,26 @@
 package com.vodafone.service;
 
+import com.vodafone.exception.admin.GetAdminException;
 import com.vodafone.model.Admin;
 import com.vodafone.repository.admin.AdminRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 public class AdminService {
 
-    private AdminRepository adminRepository;
+    private final AdminRepository adminRepository;
 
-    public List<Admin> getAll() {
-        return adminRepository.getAll().get();
+    public List<Admin> getAll() throws GetAdminException {
+        Optional<List<Admin>> optionalAdmins = adminRepository.getAll();
+        if (optionalAdmins.isPresent())
+            return optionalAdmins.get();
+        else
+            throw new GetAdminException("No admins found");
     }
 
     public Admin get(Long id) {

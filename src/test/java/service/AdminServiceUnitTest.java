@@ -1,5 +1,6 @@
 package service;
 
+import com.vodafone.exception.admin.GetAdminException;
 import com.vodafone.model.Admin;
 import com.vodafone.model.Role;
 import com.vodafone.model.UserStatus;
@@ -42,6 +43,15 @@ public class AdminServiceUnitTest {
         assertEquals(1, returnedAdminList.size());
         //verify(adminRepositoryMock, times(1)).getAll();
     }
+
+    @Test
+    public void getAllAdminsTest_throwsGetAdminException() {
+        //Arrange
+        when(adminRepositoryMock.getAll()).thenReturn(Optional.empty());
+        //Act
+        assertThrows(GetAdminException.class, adminService::getAll);
+    }
+
 
     @Test
     public void getAllAdminsTest_returnAdminsById() {
@@ -100,7 +110,7 @@ public class AdminServiceUnitTest {
         admin.setUserStatus(UserStatus.ADMIN);
         admin.setId(2L);
         list.add(admin);
-        when(adminRepositoryMock.getById(any(Long.class))).thenReturn(null);
+        when(adminRepositoryMock.getById(any(Long.class))).thenReturn(Optional.empty());
         //Act
         Admin returnedAdmin = adminService.get(3L);
         //Asset

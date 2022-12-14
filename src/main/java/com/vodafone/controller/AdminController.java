@@ -1,5 +1,6 @@
 package com.vodafone.controller;
 
+import com.vodafone.exception.admin.GetAdminException;
 import com.vodafone.exception.product.CreateProductException;
 import com.vodafone.exception.product.GetProductException;
 import com.vodafone.model.Admin;
@@ -30,6 +31,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -62,8 +64,13 @@ public class AdminController {
 
     @GetMapping("/admins.htm")
     public String getAll(HttpSession session, Model model) {
+        List<Admin> adminList = new ArrayList<>();
         if (userAuthorizer.authorizeAdmin(session)) {
-            List<Admin> adminList = this.adminService.getAll();
+            try {
+                adminList.addAll(this.adminService.getAll());
+            } catch (GetAdminException e) {
+                logger.warn(e.getMessage());
+            }
             model.addAttribute("admins", adminList);
             return "admin/viewAllAdmins";
         } else {
