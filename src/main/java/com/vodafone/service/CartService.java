@@ -122,7 +122,7 @@ public class CartService {
         return cartRepository.clearCart(cartId);
     }
 
-    public boolean addItem(Long cartId, CartItem item) {
+    public int addItem(Long cartId, CartItem item) {
 //        if (cartId == null)
 //            throw new NullPointerException("Null cart id is provided");
         if (cartId == null)
