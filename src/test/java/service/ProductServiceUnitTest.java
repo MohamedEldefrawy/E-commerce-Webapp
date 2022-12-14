@@ -59,8 +59,13 @@ public class ProductServiceUnitTest {
     @Test
     public void getAllTest_sendNothing_returnListOfProducts() {
         List<Product> dummyProducts = createProducts();
-        when(productRepository.getAll()).thenReturn(dummyProducts);
-        List<Product> result = productService.getAll();
+        when(productRepository.getAll()).thenReturn(Optional.of(dummyProducts));
+        List<Product> result = null;
+        try {
+            result = productService.getAll();
+        } catch (GetProductException e) {
+            logger.info(e.getMessage());
+        }
         assertNotNull(result);
         assertEquals(2, dummyProducts.size());
     }

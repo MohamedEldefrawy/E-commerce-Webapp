@@ -1,6 +1,7 @@
 package com.vodafone.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface Repository<T> {
     boolean create(T entity);
@@ -11,5 +12,5 @@ public interface Repository<T> {
 
     T getById(Long id);
 
-    List<T> getAll();
+    Optional<List<T>> getAll();
 }

@@ -5,13 +5,13 @@ import com.vodafone.model.Order;
 import com.vodafone.model.OrderItem;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class OrderRepository implements IOrderRepository {
@@ -24,16 +24,16 @@ public class OrderRepository implements IOrderRepository {
     }
 
     @Override
-    public List<Order> getAll() {
+    public Optional<List<Order>> getAll() {
         List<Order> list;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             list = session.createQuery("From Order", Order.class)
                     .list();
         } catch (HibernateException e) {
             e.printStackTrace();
-            return new ArrayList<>();
+            return Optional.of(new ArrayList<>());
         }
-        return list;
+        return Optional.ofNullable(list);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class OrderRepository implements IOrderRepository {
     public boolean create(Order order) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
-            if(order.getOrderItems()!=null && order.getOrderItems().size()>0) {
+            if (order.getOrderItems() != null && order.getOrderItems().size() > 0) {
                 session.persist(order);
                 //Adds created customer to customer's arrayList
                 order.getCustomer().getOrders().add(order);

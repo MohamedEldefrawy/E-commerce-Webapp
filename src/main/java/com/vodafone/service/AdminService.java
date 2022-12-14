@@ -14,7 +14,7 @@ public class AdminService {
     private AdminRepository adminRepository;
 
     public List<Admin> getAll() {
-        return adminRepository.getAll();
+        return adminRepository.getAll().get();
     }
 
     public Admin get(Long id) {

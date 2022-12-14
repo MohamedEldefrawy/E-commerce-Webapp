@@ -22,8 +22,11 @@ public class ProductService {
         return this.productRepository.update(id, newProduct);
     }
 
-    public List<Product> getAll() {
-        return this.productRepository.getAll();
+    public List<Product> getAll() throws GetProductException {
+        Optional<List<Product>> optionalProducts = this.productRepository.getAll();
+        if (optionalProducts.isPresent())
+            return optionalProducts.get();
+        throw new GetProductException("No products found");
     }
 
     public Product get(Long id) {

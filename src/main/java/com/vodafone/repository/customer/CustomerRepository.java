@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.NoResultException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class CustomerRepository implements ICustomerRepository {
@@ -166,12 +167,12 @@ public class CustomerRepository implements ICustomerRepository {
     }
 
     @Override
-    public List<Customer> getAll() {
+    public Optional<List<Customer>> getAll() {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            return session.createQuery("From Customer", Customer.class).list();
+            return Optional.ofNullable(session.createQuery("From Customer", Customer.class).list());
         } catch (HibernateException hibernateException) {
             hibernateException.printStackTrace();
-            return new ArrayList<Customer>();
+            return Optional.of(new ArrayList<>());
         }
     }
 

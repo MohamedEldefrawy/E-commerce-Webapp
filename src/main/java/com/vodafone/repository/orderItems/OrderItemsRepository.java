@@ -9,8 +9,9 @@ import org.hibernate.query.Query;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-public class OrderItemsRepository implements IOrderItemsRepository{
+public class OrderItemsRepository implements IOrderItemsRepository {
 
     private final HibernateConfig hibernateConfig;
 
@@ -25,8 +26,7 @@ public class OrderItemsRepository implements IOrderItemsRepository{
             session.persist(orderItem);
             tx.commit();
             return true;
-        }
-        catch (HibernateException e) {
+        } catch (HibernateException e) {
             e.printStackTrace();
             return false;
         }
@@ -34,27 +34,24 @@ public class OrderItemsRepository implements IOrderItemsRepository{
 
 
     @Override
-    public List<OrderItem> getAll() {
+    public Optional<List<OrderItem>> getAll() {
         List<OrderItem> list;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             list = session.createQuery("from OrderItem", OrderItem.class)
                     .list();
+        } catch (HibernateException e) {
+            return Optional.of(new ArrayList<>());
         }
-        catch (HibernateException e){
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
-        return list;
+        return Optional.ofNullable(list);
     }
 
     @Override
     public OrderItem getById(Long id) {
         OrderItem orderItem = null;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            orderItem = session.get(OrderItem.class,id);
+            orderItem = session.get(OrderItem.class, id);
             session.close();
-        }
-        catch (HibernateException e){
+        } catch (HibernateException e) {
             e.printStackTrace();
             return null;
         }
@@ -67,12 +64,11 @@ public class OrderItemsRepository implements IOrderItemsRepository{
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
             Query query = session.createQuery(
-                    "delete orderItems oi where oi.id=" + id
+                    "delete OrderItem  oi where oi.id=" + id
             );
             modifications = query.executeUpdate();
             tx.commit();
-        }
-        catch (HibernateException e){
+        } catch (HibernateException e) {
             e.printStackTrace();
             return false;
         }
@@ -87,7 +83,7 @@ public class OrderItemsRepository implements IOrderItemsRepository{
 
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
             //doesnt update product or order
-            Transaction tx  = session.beginTransaction();
+            Transaction tx = session.beginTransaction();
             orderItem.setQuantity(updatedEntity.getQuantity());
             session.persist(orderItem);
             tx.commit();

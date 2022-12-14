@@ -82,11 +82,9 @@ public class ProductRepository implements IProductRepository {
     }
 
     @Override
-    public List<Product> getAll() {
+    public Optional<List<Product>> getAll() {
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
-            return session.createQuery("from Product ", Product.class).list();
-        } catch (HibernateException e) {
-            return new ArrayList<>();
+            return Optional.ofNullable(session.createQuery("from Product ", Product.class).list());
         }
     }
 

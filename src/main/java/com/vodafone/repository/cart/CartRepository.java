@@ -9,7 +9,9 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
@@ -78,7 +80,7 @@ public class CartRepository implements ICartRepository {
     }
 
     @Override
-    public List<Cart> getAll() {
+    public Optional<List<Cart>> getAll() {
         List<Cart> carts = null;
         try (Session session = config.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
@@ -87,9 +89,9 @@ public class CartRepository implements ICartRepository {
             session.close();
         } catch (HibernateException e) {
             e.printStackTrace();
-            return carts;
+            return Optional.ofNullable(carts);
         }
-        return carts;
+        return Optional.ofNullable(carts);
     }
 
     @Override
@@ -154,7 +156,7 @@ public class CartRepository implements ICartRepository {
             //if product alreadi in cart then add to quantity
             if (!matchingProduct.isEmpty()) {
                 int newQuantity = incrementProductQuantity(cartId, item.getProduct().getId(), item.getQuantity());
-                return  newQuantity;
+                return newQuantity;
             } else {
                 if (item.getProduct().getInStock() >= item.getQuantity()) {
                     Transaction transaction = session.beginTransaction();

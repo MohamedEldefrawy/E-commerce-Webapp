@@ -41,7 +41,7 @@ public class CartService {
 
 
     public List<Cart> getAll() {
-        return cartRepository.getAll();
+        return cartRepository.getAll().get();
     }
 
 

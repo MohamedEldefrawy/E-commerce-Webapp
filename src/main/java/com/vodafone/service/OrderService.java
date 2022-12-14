@@ -13,7 +13,7 @@ public class OrderService{
     private OrderRepository orderRepository;
 
     public List<Order> getAll(){
-        return orderRepository.getAll();
+        return orderRepository.getAll().get();
     }
     public Order get(Long orderId){
         return orderRepository.getById(orderId);
