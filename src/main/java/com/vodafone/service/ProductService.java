@@ -1,11 +1,13 @@
 package com.vodafone.service;
 
+import com.vodafone.exception.product.GetProductException;
 import com.vodafone.model.Product;
 import com.vodafone.repository.product.IProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -32,9 +34,15 @@ public class ProductService {
         return this.productRepository.delete(id);
     }
 
-    public Product getByName(String name) {
-        return this.productRepository.getByName(name);
+    public Product getByName(String name) throws GetProductException {
+        Optional<List<Product>> optionalProducts = this.productRepository.getByName(name);
+        if (optionalProducts.isPresent() && optionalProducts.get().size() > 0)
+            return optionalProducts.get().get(0);
+        else
+            throw new GetProductException("No product found with name: " + name);
+
     }
+
 
     public List<Product> getByCategory(String category) {
         return this.productRepository.getByCategory(category);

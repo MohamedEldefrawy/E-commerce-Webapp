@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ProductRepository implements IProductRepository {
@@ -90,15 +91,10 @@ public class ProductRepository implements IProductRepository {
     }
 
     @Override
-    public Product getByName(String name) {
+    public Optional<List<Product>> getByName(String name) {
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
             List<Product> products = session.createQuery("FROM  Product p where p.name like :name and p.isDeleted=false", Product.class).setParameter("name", "%" + name + "%").list();
-            if (products.size() > 0)
-                return products.get(0);
-            else
-                return null;
-        } catch (HibernateException e) {
-            return null;
+            return Optional.ofNullable(products);
         }
     }
 
@@ -106,36 +102,6 @@ public class ProductRepository implements IProductRepository {
     public List<Product> getByCategory(String category) {
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
             return session.createQuery("from Product p where p.category like :p and p.isDeleted=false", Product.class).setParameter("p", "%" + category + "%").list();
-        } catch (HibernateException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
-    }
-
-    @Override
-    public List<Product> getByPrice(double price) {
-        try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
-            return session.createQuery("from Product p where p.price = :p and p.isDeleted=false", Product.class).setParameter("p", price).list();
-        } catch (HibernateException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
-    }
-
-    @Override
-    public List<Product> getByPriceRange(double low, double high) {
-        try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
-            return session.createQuery("from Product p where p.price in(:l,:h) and p.isDeleted=false", Product.class).setParameter("l", low).setParameter("h", high).list();
-        } catch (HibernateException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
-    }
-
-    @Override
-    public List<Product> getByRate(float rate) {
-        try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
-            return session.createQuery("from Product p where p.rate= :r and p.isDeleted= false", Product.class).setParameter("r", rate).list();
         } catch (HibernateException e) {
             e.printStackTrace();
             return new ArrayList<>();

@@ -1,18 +1,19 @@
 package com.vodafone.controller;
 
+import com.vodafone.exception.product.GetProductException;
 import com.vodafone.model.*;
-import com.vodafone.model.dto.CreateUser;
 import com.vodafone.model.dto.ResetPasswordDTO;
 import com.vodafone.service.*;
-import com.vodafone.validators.UserAuthorizer;
 import com.vodafone.validators.CustomerValidator;
+import com.vodafone.validators.UserAuthorizer;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -36,6 +37,8 @@ public class CustomerController {
     private CustomerValidator customerValidator;
     private HashService hashService;
 
+    private final Logger logger = LoggerFactory.getLogger(CustomerController.class);
+
 
     // Home
     @GetMapping("home.htm")
@@ -58,9 +61,13 @@ public class CustomerController {
                          @RequestParam(required = false) String name) {
         if (userAuthorizer.isActivatedCustomer(session)) {
             List<Product> products = new ArrayList<>(this.productService.getByCategory(category));
-            Product selectedProduct = this.productService.getByName(name);
-            if (selectedProduct != null)
+            Product selectedProduct;
+            try {
+                selectedProduct = this.productService.getByName(name);
                 products.add(selectedProduct);
+            } catch (GetProductException e) {
+                logger.warn(e.getMessage());
+            }
             model.addAttribute("products", products);
             return "/customer/shared/home";
         } else {
@@ -93,7 +100,7 @@ public class CustomerController {
                 return "registration";
             }
             System.out.println(user);
-            if (customerService.resetPassword(session.getAttribute("email").toString(), hashService.encryptPassword(user.getPassword(),session.getAttribute("email").toString() )))
+            if (customerService.resetPassword(session.getAttribute("email").toString(), hashService.encryptPassword(user.getPassword(), session.getAttribute("email").toString())))
                 return "redirect:/login.htm";
             return "resetPassword";
         } else {
@@ -171,7 +178,7 @@ public class CustomerController {
             int newQuantity = cartService.addItem(customerCart.getId(), cartItem);
             if (newQuantity == 0)
                 return "409";  //conflict
-            if(newQuantity==-1)
+            if (newQuantity == -1)
                 return "500";
             return "200";
         } else {
@@ -270,8 +277,8 @@ public class CustomerController {
 
 
     @PostMapping("verify.htm")
-    public String verifyCustomer(@Valid @NotNull @NotBlank @RequestParam("verificationCode") String verificationCode,  HttpSession session , Model model) {
-       if(userAuthorizer.customerExists(session)) {
+    public String verifyCustomer(@Valid @NotNull @NotBlank @RequestParam("verificationCode") String verificationCode, HttpSession session, Model model) {
+        if (userAuthorizer.customerExists(session)) {
             Customer selectedCustomer = customerService.getByMail((String) session.getAttribute("email"));
             if (selectedCustomer == null) {
                 return "registration";
@@ -304,7 +311,7 @@ public class CustomerController {
             int newQuantity = cartService.incrementProductQuantity(cartId, productId, 1);
             if (newQuantity == 0)
                 return "409";  //conflict
-            if(newQuantity==-1)
+            if (newQuantity == -1)
                 return "500";
             return "200";
         } else {

@@ -1,5 +1,6 @@
 package service;
 
+import com.vodafone.exception.product.GetProductException;
 import com.vodafone.model.Product;
 import com.vodafone.repository.product.IProductRepository;
 import com.vodafone.repository.product.ProductRepository;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -72,12 +74,17 @@ public class ProductServiceUnitTest {
 
     @Test
     public void getTest_sendProductName_returnProduct() {
-        Product dummyProduct = createProduct();
-        when(productRepository.getByName(any(String.class))).thenReturn(dummyProduct);
-        Product result = productService.getByName(dummyProduct.getName());
+        List<Product> dummyProducts = Arrays.asList(createProduct());
+        when(productRepository.getByName(any(String.class))).thenReturn(Optional.of(dummyProducts));
+        Product result = null;
+        try {
+            result = productService.getByName(dummyProducts.get(0).getName());
+        } catch (GetProductException e) {
+            e.printStackTrace();
+        }
         assertNotNull(result);
-        assertEquals(dummyProduct.getId(), result.getId());
-        assertEquals(dummyProduct.getName(), result.getName());
+        assertEquals(dummyProducts.get(0).getId(), result.getId());
+        assertEquals(dummyProducts.get(0).getName(), result.getName());
     }
 
     @Test

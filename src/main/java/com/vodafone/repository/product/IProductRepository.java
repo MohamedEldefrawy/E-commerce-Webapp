@@ -4,17 +4,12 @@ import com.vodafone.model.Product;
 import com.vodafone.repository.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IProductRepository extends Repository<Product> {
-    Product getByName(String name);
+    Optional<List<Product>> getByName(String name);
 
     List<Product> getByCategory(String category);
-
-    List<Product> getByPrice(double price);
-
-    List<Product> getByPriceRange(double low, double high);
-
-    List<Product> getByRate(float rate);
 
     List<Product> getAvailableProducts();
 }
