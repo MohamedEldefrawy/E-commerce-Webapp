@@ -4,10 +4,8 @@ import com.vodafone.model.Admin;
 import com.vodafone.repository.Repository;
 
 
-import java.util.List;
-
-
-public interface IAdminRepository extends Repository<Admin> {
+public interface IAdminRepository extends Repository<Long, Admin> {
     void setFirstLoginFlag(Long id);
+
     Admin getByEmail(String email);
 }

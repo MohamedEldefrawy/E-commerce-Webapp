@@ -5,56 +5,56 @@ import com.vodafone.model.Admin;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.query.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.NoResultException;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 
 @Repository
 public class AdminRepository implements IAdminRepository {
 
     private final HibernateConfig hibernateConfig;
+    private final Logger logger = LoggerFactory.getLogger(AdminRepository.class);
 
     public AdminRepository(HibernateConfig hibernateConfig) {
         this.hibernateConfig = hibernateConfig;
     }
 
     @Override
-    public List<Admin> getAll() {
+    public Optional<List<Admin>> getAll() {
         List<Admin> list;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             list = session.createQuery("from Admin", Admin.class)
                     .list();
         } catch (HibernateException e) {
             e.printStackTrace();
-            return new ArrayList<>();
+            return Optional.of(new ArrayList<>());
         }
-        return list;
+        return Optional.ofNullable(list);
     }
 
     @Override
-    public Admin get(Long id) {
-        Admin admin = null;
+    public Optional<Admin> getById(Long id) {
+        Admin admin;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             admin = session.get(Admin.class, id);
         } catch (HibernateException e) {
-            e.printStackTrace();
-            return null;
+            logger.warn(e.getMessage());
+            return Optional.empty();
         }
-        return admin;
+        return Optional.ofNullable(admin);
     }
 
     @Override
     public boolean delete(Long id) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
-            Admin admin = get(id);
+            Admin admin = getById(id).get();
             if (admin != null) {
                 session.delete(admin);
                 tx.commit();
@@ -68,44 +68,45 @@ public class AdminRepository implements IAdminRepository {
     }
 
     @Override
-    public boolean create(Admin admin) {
+    public Optional<Long> create(Admin admin) {
         if (admin.getPassword() == null)
             admin.setPassword(getAlphaNumericString(8));
-        if(getByUsername(admin.getUserName())==null && getByEmail(admin.getEmail())==null) {
+        if (getByUsername(admin.getUserName()) == null && getByEmail(admin.getEmail()) == null) {
             try (Session session = hibernateConfig.getSessionFactory().openSession()) {
                 Transaction tx = session.beginTransaction();
-                session.persist(admin);
+                Long id = (Long) session.save(admin);
                 tx.commit();
-                return true;
+                return Optional.ofNullable(id);
             } catch (HibernateException e) {
-                e.printStackTrace();
-                return false;
+                logger.warn(e.getMessage());
+                return Optional.empty();
             }
-        }else return false;
+        } else return Optional.empty();
     }
 
     @Override
     public boolean update(Long id, Admin updatedEntity) {
-            Transaction tx;
-            Admin admin = get(id);
-            if (admin == null)
-                return false;
+        Transaction tx;
+        Admin admin = getById(id).get();
+        if (admin == null)
+            return false;
 
-            try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
-                //doesnt update password or role
-                tx = session.beginTransaction();
-                admin.setEmail(updatedEntity.getEmail());
-                admin.setUserName(updatedEntity.getUserName());
-                session.update(admin);
-                tx.commit();
-                return true;
-            } catch (HibernateException e) {
-                e.printStackTrace();
-                return false;
-            }
+        try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
+            //doesnt update password or role
+            tx = session.beginTransaction();
+            admin.setEmail(updatedEntity.getEmail());
+            admin.setUserName(updatedEntity.getUserName());
+            session.update(admin);
+            tx.commit();
+            return true;
+        } catch (HibernateException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
-    public boolean updatePassword(Long id, String newPassword){
-        Admin admin = get(id);
+
+    public boolean updatePassword(Long id, String newPassword) {
+        Admin admin = getById(id).get();
         if (admin == null)
             return false;
 
@@ -123,10 +124,7 @@ public class AdminRepository implements IAdminRepository {
     }
 
     private String getAlphaNumericString(int n) {
-        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                + "0123456789"
-                + "abcdefghijklmnopqrstuvxyz"
-                + "_&%";
+        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvxyz_&%";
 
         StringBuilder sb = new StringBuilder(n);
 
@@ -153,14 +151,13 @@ public class AdminRepository implements IAdminRepository {
             e.printStackTrace();
         }
     }
+
     public Admin getByUsername(String username) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             try {
-                Admin admin = session.createQuery("SELECT a from Admin a where a.userName=: username", Admin.class)
+                return session.createQuery("SELECT a from Admin a where a.userName=: username", Admin.class)
                         .setParameter("username", username).getSingleResult();
-                return admin;
-            }
-            catch (NoResultException e){
+            } catch (NoResultException e) {
                 return null;
             }
         } catch (HibernateException hibernateException) {
@@ -168,14 +165,13 @@ public class AdminRepository implements IAdminRepository {
             return null;
         }
     }
+
     public Admin getByEmail(String email) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             try {
-                Admin admin = session.createQuery("SELECT a from Admin a where a.email=: email", Admin.class)
+                return session.createQuery("SELECT a from Admin a where a.email=: email", Admin.class)
                         .setParameter("email", email).getSingleResult();
-                return admin;
-            }
-            catch (NoResultException e){
+            } catch (NoResultException e) {
                 return null;
             }
         } catch (HibernateException hibernateException) {

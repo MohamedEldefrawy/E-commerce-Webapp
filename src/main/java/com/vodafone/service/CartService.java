@@ -24,7 +24,7 @@ public class CartService {
     public boolean create(Cart entity) {
         if (entity == null)
             throw new NullCartException("Null cart provided");
-        return cartRepository.create(entity);
+        return cartRepository.create(entity).isPresent();
     }
 
 
@@ -50,12 +50,12 @@ public class CartService {
     public Cart get(Long id) {
         if (id == null)
             throw new NullIdException("Null cart id is provided");
-        return cartRepository.get(id);
+        return cartRepository.getById(id).get();
     }
 
 
     public List<Cart> getAll() {
-        return cartRepository.getAll();
+        return cartRepository.getAll().get();
     }
 
 

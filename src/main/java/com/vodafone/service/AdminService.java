@@ -14,11 +14,11 @@ public class AdminService {
     private AdminRepository adminRepository;
 
     public List<Admin> getAll() {
-        return adminRepository.getAll();
+        return adminRepository.getAll().get();
     }
 
     public Admin get(Long id) {
-        return adminRepository.get(id);
+        return adminRepository.getById(id).get();
     }
 
     public boolean delete(Long id) {
@@ -26,7 +26,7 @@ public class AdminService {
     }
 
     public boolean create(Admin admin) {
-        return adminRepository.create(admin);
+        return adminRepository.create(admin).isPresent();
     }
 
     public boolean update(Long id, Admin admin) {
