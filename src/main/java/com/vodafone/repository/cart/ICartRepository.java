@@ -12,7 +12,7 @@ public interface ICartRepository extends Repository<Cart> {
 
     boolean clearCart(Long cartId);
 
-    boolean addItem(Long cartId, CartItem item);
+    int addItem(Long cartId, CartItem item);
 
     List<CartItem> getCartItems(Long cartId);
 

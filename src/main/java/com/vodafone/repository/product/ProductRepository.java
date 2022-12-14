@@ -62,7 +62,8 @@ public class ProductRepository implements IProductRepository {
             return false;
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            session.delete(product);
+            product.setDeleted(true);
+            session.update(product);
             transaction.commit();
             return true;
         } catch (HibernateException e) {
@@ -91,7 +92,7 @@ public class ProductRepository implements IProductRepository {
     @Override
     public Product getByName(String name) {
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
-            List<Product> products = session.createQuery("FROM  Product p where p.name like :name", Product.class).setParameter("name", "%" + name + "%").list();
+            List<Product> products = session.createQuery("FROM  Product p where p.name like :name and p.isDeleted=false", Product.class).setParameter("name", "%" + name + "%").list();
             if (products.size() > 0)
                 return products.get(0);
             else
@@ -104,7 +105,7 @@ public class ProductRepository implements IProductRepository {
     @Override
     public List<Product> getByCategory(String category) {
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
-            return session.createQuery("from Product p where p.category like :p", Product.class).setParameter("p", "%" + category + "%").list();
+            return session.createQuery("from Product p where p.category like :p and p.isDeleted=false", Product.class).setParameter("p", "%" + category + "%").list();
         } catch (HibernateException e) {
             e.printStackTrace();
             return new ArrayList<>();
@@ -114,7 +115,7 @@ public class ProductRepository implements IProductRepository {
     @Override
     public List<Product> getByPrice(double price) {
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
-            return session.createQuery("from Product p where p.price = :p", Product.class).setParameter("p", price).list();
+            return session.createQuery("from Product p where p.price = :p and p.isDeleted=false", Product.class).setParameter("p", price).list();
         } catch (HibernateException e) {
             e.printStackTrace();
             return new ArrayList<>();
@@ -124,7 +125,7 @@ public class ProductRepository implements IProductRepository {
     @Override
     public List<Product> getByPriceRange(double low, double high) {
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
-            return session.createQuery("from Product p where p.price in(:l,:h)", Product.class).setParameter("l", low).setParameter("h", high).list();
+            return session.createQuery("from Product p where p.price in(:l,:h) and p.isDeleted=false", Product.class).setParameter("l", low).setParameter("h", high).list();
         } catch (HibernateException e) {
             e.printStackTrace();
             return new ArrayList<>();
@@ -134,7 +135,17 @@ public class ProductRepository implements IProductRepository {
     @Override
     public List<Product> getByRate(float rate) {
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
-            return session.createQuery("from Product p where p.rate= :r", Product.class).setParameter("r", rate).list();
+            return session.createQuery("from Product p where p.rate= :r and p.isDeleted= false", Product.class).setParameter("r", rate).list();
+        } catch (HibernateException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<Product> getAvailableProducts() {
+        try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
+            return session.createQuery("from Product p where p.isDeleted = :p", Product.class).setParameter("p", false).list();
         } catch (HibernateException e) {
             e.printStackTrace();
             return new ArrayList<>();

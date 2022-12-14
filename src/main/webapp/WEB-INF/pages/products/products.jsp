@@ -60,13 +60,18 @@
                         'Accept': '*/*'
                     }
                 }).then(response => response.json()).then(data => {
-                    if (data) {
+                    console.log(data)
+                    if (data.toString() === "200") {
                         alert("Item has been deleted successfully");
                         row.remove();
-                    } else
+                    }
+                    else if(data.toString() === "500")
                         window.location.href = "../../error.htm"
+                    else{
+                        window.location.href = "../../login.htm"
+                    }
                 }).catch((reason) => {
-                    window.location.href = "../../login.htm"
+                    alert(reason)
                 })
             }
         }
