@@ -15,11 +15,18 @@ public class ProductService {
     private IProductRepository productRepository;
 
     public boolean create(Product product) {
-        return this.productRepository.create(product);
+
+        Optional<Long> optionalLong = this.productRepository.create(product);
+        if (optionalLong.isPresent())
+            return true;
+        return false;
     }
 
-    public boolean update(Long id, Product newProduct) {
-        return this.productRepository.update(id, newProduct);
+    public boolean update(Long id, Product newProduct) throws GetProductException {
+        Optional<Product> productOptional = this.productRepository.getById(id);
+        if (productOptional.isPresent())
+            return this.productRepository.update(id, newProduct);
+        throw new GetProductException("No product found with id: " + id);
     }
 
     public List<Product> getAll() throws GetProductException {
@@ -36,8 +43,11 @@ public class ProductService {
         throw new GetProductException("No product found with id: " + id);
     }
 
-    public boolean delete(Long id) {
-        return this.productRepository.delete(id);
+    public boolean delete(Long id) throws GetProductException {
+        Optional<Product> productOptional = this.productRepository.getById(id);
+        if (productOptional.isPresent())
+            return this.productRepository.delete(id);
+        throw new GetProductException("no product found with id: " + id);
     }
 
     public Product getByName(String name) throws GetProductException {
@@ -46,7 +56,6 @@ public class ProductService {
             return optionalProducts.get().get(0);
         throw new GetProductException("No product found with name: " + name);
     }
-
 
     public List<Product> getByCategory(String category) throws GetProductException {
         Optional<List<Product>> optionalProducts = this.productRepository.getByCategory(category);

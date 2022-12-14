@@ -3,14 +3,14 @@ package com.vodafone.repository;
 import java.util.List;
 import java.util.Optional;
 
-public interface Repository<T> {
-    boolean create(T entity);
+public interface Repository<TId, TEntity> {
+    Optional<TId> create(TEntity entity);
 
-    boolean update(Long id, T updatedEntity);
+    boolean update(TId id, TEntity updatedEntity);
 
-    boolean delete(Long id);
+    boolean delete(TId id);
 
-    Optional<T> getById(Long id);
+    Optional<TEntity> getById(TId id);
 
-    Optional<List<T>> getAll();
+    Optional<List<TEntity>> getAll();
 }

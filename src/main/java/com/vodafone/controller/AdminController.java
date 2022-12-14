@@ -31,6 +31,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/admins")
@@ -55,18 +56,6 @@ public class AdminController {
         this.userAuthorizer = userAuthorizer;
         this.hashService = hashService;
         this.emailService = emailService;
-        //todo: save super admin config in config file as a bean
-        //create super admin
-      /*  Admin admin = new Admin();
-        admin.setEmail("t.m.n.t.ecommerce@gmail.com");
-        admin.setRole(Role.Admin);
-        admin.setUserName("TMNT Admin");
-        admin.setPassword(hashService.encryptPassword("12345678", admin.getEmail()));
-        System.out.println(admin.getPassword());
-        admin.setFirstLogin(false);
-        this.adminService.create(admin);
-
-       */
     }
 
 
@@ -86,7 +75,7 @@ public class AdminController {
     public String delete(HttpSession session, @RequestParam(required = false) Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
             Long sessionId = (Long) session.getAttribute("id");
-            if (id != 2 && sessionId != id) {
+            if (id != 2 && !Objects.equals(sessionId, id)) {
                 boolean deleted = adminService.delete(id);
                 if (deleted)
                     return "200"; //deleted successfully
@@ -224,23 +213,25 @@ public class AdminController {
                     fileOutputStream.close();
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                logger.warn(e.getMessage());
             }
 
-            Product updatedProduct = null;
+            Product updatedProduct;
+            boolean result = false;
             try {
                 updatedProduct = this.productService.getById(product.getId());
+                updatedProduct.setDescription(product.getDescription());
+                updatedProduct.setCategory(product.getCategory());
+                if (imageData.length > 0)
+                    updatedProduct.setImage(product.getImage().getOriginalFilename());
+                updatedProduct.setPrice(product.getPrice());
+                updatedProduct.setName(product.getName());
+                updatedProduct.setInStock(product.getInStock());
+                result = this.productService.update(id, updatedProduct);
+
             } catch (GetProductException e) {
                 logger.warn(e.getMessage());
             }
-            updatedProduct.setDescription(product.getDescription());
-            updatedProduct.setCategory(product.getCategory());
-            if (imageData.length > 0)
-                updatedProduct.setImage(product.getImage().getOriginalFilename());
-            updatedProduct.setPrice(product.getPrice());
-            updatedProduct.setName(product.getName());
-            updatedProduct.setInStock(product.getInStock());
-            boolean result = this.productService.update(id, updatedProduct);
             if (result)
                 return "redirect:/admins/products/show.htm";
             return "products/update";
@@ -266,7 +257,6 @@ public class AdminController {
                        HttpSession session) {
         if (userAuthorizer.authorizeAdmin(session)) {
             if (bindingResult.hasErrors()) {
-                Map<String, Object> model = bindingResult.getModel();
                 return "products/create";
             }
             byte[] imageData = image.getBytes();
@@ -302,7 +292,14 @@ public class AdminController {
     @ResponseBody
     public String deleteProduct(HttpSession session, @RequestParam(required = false) Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
-            boolean result = this.productService.delete(id);
+            boolean result;
+            try {
+                result = this.productService.delete(id);
+            } catch (GetProductException e) {
+                logger.warn(e.getMessage());
+                result = false;
+            }
+
             if (result)
                 return "200";  //ok
             return "500"; //server error
@@ -338,7 +335,7 @@ public class AdminController {
     }
 
     @GetMapping("setAdminPassword.htm")
-    public String setAdminPassword(Model model, HttpSession session) {
+    public String setAdminPassword() {
         return "admin/setAdminPassword";
     }
 

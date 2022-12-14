@@ -77,6 +77,7 @@ public class CustomerController {
                 selectedProduct = this.productService.getByName(name);
                 products.add(selectedProduct);
             } catch (GetProductException e) {
+                logger.info(e.getMessage());
             }
             model.addAttribute("products", products);
             return "/customer/shared/home";
@@ -122,12 +123,13 @@ public class CustomerController {
     @GetMapping("/products/{id}/details.htm")
     public String viewProductDetails(HttpSession session, Model model, @PathVariable Long id) {
         if (userAuthorizer.isActivatedCustomer(session)) {
-            Product product = null;
+            Product product;
             try {
                 product = this.productService.getById(id);
                 model.addAttribute("product", product);
             } catch (GetProductException e) {
                 logger.warn(e.getMessage());
+                // return custom 404 error page
             }
             return "/customer/product/detail";
         } else {

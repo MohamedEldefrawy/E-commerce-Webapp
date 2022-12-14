@@ -20,13 +20,13 @@ public class ProductRepository implements IProductRepository {
     }
 
     @Override
-    public boolean create(Product entity) {
+    public Optional<Long> create(Product entity) {
         Transaction transaction;
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            session.persist(entity);
+            Long id = (Long) session.save(entity);
             transaction.commit();
-            return true;
+            return Optional.ofNullable(id);
         }
     }
 
