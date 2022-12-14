@@ -6,30 +6,31 @@ import com.vodafone.repository.admin.AdminRepository;
 import com.vodafone.service.AdminService;
 import com.vodafone.model.Admin;
 
-import org.junit.Before;
-import org.junit.Test;
+
+import com.vodafone.service.ProductService;
+import org.junit.jupiter.api.*;
 import org.mockito.*;
+import util.TestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AdminServiceUnitTest {
 
-    private AdminService adminService;
-    private AdminRepository adminRepositoryMock;
+    private  AdminService adminService;
+    private  AdminRepository adminRepositoryMock;
 
-    public AdminServiceUnitTest() {
+    @BeforeEach
+    public void setup() {
         adminRepositoryMock = Mockito.mock(AdminRepository.class);
         adminService = new AdminService(adminRepositoryMock);
-    }
-    @Before
-    public void init() {
-        MockitoAnnotations.openMocks(this);
+        //TestUtils.injectObjects(adminService, "adminRepository", adminRepositoryMock);
     }
 
     @Test
@@ -51,7 +52,7 @@ public class AdminServiceUnitTest {
         //Assert
         assertNotNull(returnedAdminList);
         assertEquals(1, returnedAdminList.size());
-        //verify(adminRepositoryMock, times(1)).getAll();
+        verify(adminRepositoryMock, times(1)).getAll();
     }
 
     @Test
