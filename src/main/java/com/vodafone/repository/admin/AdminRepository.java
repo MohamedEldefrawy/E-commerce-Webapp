@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.NoResultException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,15 +26,11 @@ public class AdminRepository implements IAdminRepository {
 
     @Override
     public Optional<List<Admin>> getAll() {
-        List<Admin> list;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            list = session.createQuery("from Admin", Admin.class)
+            List<Admin> list = session.createQuery("from Admin", Admin.class)
                     .list();
-        } catch (HibernateException e) {
-            e.printStackTrace();
-            return Optional.of(new ArrayList<>());
+            return Optional.ofNullable(list);
         }
-        return Optional.ofNullable(list);
     }
 
     @Override
