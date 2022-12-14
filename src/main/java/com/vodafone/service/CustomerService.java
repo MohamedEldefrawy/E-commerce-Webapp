@@ -61,7 +61,7 @@ public class CustomerService {
     public boolean updateStatusActivated(String email) {
         if (email == null)
             throw new NullPointerException("Null email is provided");
-        if (getByMail(email) == null) {
+        if (customerRepository.getByMail(email) == null) {
             throw new NullCustomerException("Customer not found with email provided");
         }
         return customerRepository.updateStatusActivated(email);
@@ -103,7 +103,7 @@ public class CustomerService {
             throw new NullPointerException("Null Email is provided");
         if (password == null)
             throw new NullPointerException("Null Password is provided");
-        if (getByMail(email) == null) {
+        if (customerRepository.getByMail(email) == null) {
             throw new NullCustomerException("Customer not found with provided email");
         }
         return customerRepository.resetPassword(email, password);
