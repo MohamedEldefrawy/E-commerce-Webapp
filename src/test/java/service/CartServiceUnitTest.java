@@ -77,7 +77,7 @@ public class CartServiceUnitTest {
         assertTrue(isCartUpdated);
     }
 
-    @Test(expected = NullCartIdException.class)
+    @Test(expected = NullIdException.class)
     public void updateCart_nullCartId_expectException() {
         //Arrange
         Customer customer = new Customer();
@@ -85,7 +85,7 @@ public class CartServiceUnitTest {
         customer.setEmail("mohammedre4a@gmail.com");
         ArrayList<CartItem> items = new ArrayList<>();
         Cart cart = new Cart(customer, items);
-        when(cartRepositoryMock.update(null, cart)).thenThrow(new NullCartIdException("Null cart id is provided"));
+        when(cartRepositoryMock.update(null, cart)).thenThrow(new NullIdException("Null cart id is provided"));
         //Act
         cartService.update(null, cart);
     }
@@ -108,10 +108,10 @@ public class CartServiceUnitTest {
         assertTrue(isCartDeleted);
     }
 
-    @Test(expected = NullCartIdException.class)
+    @Test(expected = NullIdException.class)
     public void deleteCart_notExistingIdCart_expectException() {
         //Arrange
-        when(cartRepositoryMock.delete(null)).thenThrow(new NullCartIdException("Null cart id is provided"));
+        when(cartRepositoryMock.delete(null)).thenThrow(new NullIdException("Null cart id is provided"));
         //Act
         cartService.delete(null);
     }
@@ -131,10 +131,10 @@ public class CartServiceUnitTest {
         assertNotNull(cartEntity);
     }
 
-    @Test(expected = NullCartIdException.class)
+    @Test(expected = NullIdException.class)
     public void getCart_notExistingIdCart_expectNull() {
         //Arrange
-        when(cartRepositoryMock.get(null)).thenThrow(new NullCartIdException("Null cart id is provided"));
+        when(cartRepositoryMock.get(null)).thenThrow(new NullIdException("Null cart id is provided"));
         //Act
         Cart cartEntity = cartService.get(null);
         //Assert
@@ -171,18 +171,18 @@ public class CartServiceUnitTest {
         assertTrue(isItemDeleted);
     }
 
-    @Test(expected = NullCartIdException.class)
+    @Test(expected = NullIdException.class)
     public void removeItem_nullCart_expectException() {
         //Arrange
-        when(cartRepositoryMock.removeItem(null, 1L)).thenThrow(new NullCartIdException("Null cart id is provided"));
+        when(cartRepositoryMock.removeItem(null, 1L)).thenThrow(new NullIdException("Null cart id is provided"));
         //Act
         cartService.removeItem(null, 1L);
     }
 
-    @Test(expected = NullCartItemIdException.class)
+    @Test(expected = NullIdException.class)
     public void removeItem_nullItem_expectException() {
         //Arrange
-        when(cartRepositoryMock.removeItem(1L, null)).thenThrow(new NullCartItemIdException("Null cart item id is provided"));
+        when(cartRepositoryMock.removeItem(1L, null)).thenThrow(new NullIdException("Null cart item id is provided"));
         //Act
         cartService.removeItem(1L, null);
     }
@@ -197,10 +197,10 @@ public class CartServiceUnitTest {
         assertTrue(isCartCleared);
     }
 
-    @Test(expected = NullCartIdException.class)
+    @Test(expected = NullIdException.class)
     public void clearCart_nullCartId_expectException() {
         //Arrange
-        when(cartRepositoryMock.clearCart(1042L)).thenThrow(new NullCartIdException("Null cart id is provided"));
+        when(cartRepositoryMock.clearCart(1042L)).thenThrow(new NullIdException("Null cart id is provided"));
         //Act
         cartService.clearCart(1042L);
     }
@@ -224,10 +224,10 @@ public class CartServiceUnitTest {
         cartService.addItem(1L, null);
     }
 
-    @Test(expected = NullCartIdException.class)
+    @Test(expected = NullIdException.class)
     public void addItem_nullCartAndNonNullCartItem_expectException() {
         //Arrange
-        when(cartRepositoryMock.addItem(null, new CartItem())).thenThrow(new NullCartIdException("Null cart id is provided"));
+        when(cartRepositoryMock.addItem(null, new CartItem())).thenThrow(new NullIdException("Null cart id is provided"));
         //Act
         cartService.addItem(null, new CartItem());
     }
@@ -242,18 +242,18 @@ public class CartServiceUnitTest {
         assertEquals(30, quantity);
     }
 
-    @Test(expected = NullCartIdException.class)
+    @Test(expected = NullIdException.class)
     public void setProductQuantity_nullCartAndNonNullCartItemAndPositiveQuantity_expectException() {
         //Arrange
-        when(cartRepositoryMock.setProductQuantity(null, 1L, 30)).thenThrow(new NullCartIdException("Null cart id is provided"));
+        when(cartRepositoryMock.setProductQuantity(null, 1L, 30)).thenThrow(new NullIdException("Null cart id is provided"));
         //Act
         cartService.setProductQuantity(null, 1L, 30);
     }
 
-    @Test(expected = NullCartItemIdException.class)
+    @Test(expected = NullIdException.class)
     public void setProductQuantity_nonNullCartAndNullCartItemAndPositiveQuantity_expectException() throws NegativeQuantityException {
         //Arrange
-        when(cartRepositoryMock.setProductQuantity(1L, null, 30)).thenThrow(new NullCartItemIdException("Null cart item id is provided"));
+        when(cartRepositoryMock.setProductQuantity(1L, null, 30)).thenThrow(new NullIdException("Null cart item id is provided"));
         //Act
         cartService.setProductQuantity(1L, null, 30);
     }
