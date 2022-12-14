@@ -35,7 +35,7 @@ public class ProductRepository implements IProductRepository {
     @Override
     public boolean update(Long id, Product updatedEntity) {
         Transaction transaction;
-        Product selectedEntity = get(id);
+        Product selectedEntity = getById(id);
         if (selectedEntity == null)
             return false;
 
@@ -58,7 +58,7 @@ public class ProductRepository implements IProductRepository {
     @Override
     public boolean delete(Long id) {
         Transaction transaction;
-        Product product = get(id);
+        Product product = getById(id);
         if (product == null)
             return false;
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
@@ -73,7 +73,7 @@ public class ProductRepository implements IProductRepository {
     }
 
     @Override
-    public Product get(Long id) {
+    public Product getById(Long id) {
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
             return session.get(Product.class, id);
         } catch (HibernateException e) {
@@ -93,18 +93,14 @@ public class ProductRepository implements IProductRepository {
     @Override
     public Optional<List<Product>> getByName(String name) {
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
-            List<Product> products = session.createQuery("FROM  Product p where p.name like :name and p.isDeleted=false", Product.class).setParameter("name", "%" + name + "%").list();
-            return Optional.ofNullable(products);
+            return Optional.ofNullable(session.createQuery("FROM  Product p where p.name like :name and p.isDeleted=false", Product.class).setParameter("name", "%" + name + "%").list());
         }
     }
 
     @Override
-    public List<Product> getByCategory(String category) {
+    public Optional<List<Product>> getByCategory(String category) {
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
-            return session.createQuery("from Product p where p.category like :p and p.isDeleted=false", Product.class).setParameter("p", "%" + category + "%").list();
-        } catch (HibernateException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
+            return Optional.ofNullable(session.createQuery("from Product p where p.category like :p and p.isDeleted=false", Product.class).setParameter("p", "%" + category + "%").list());
         }
     }
 

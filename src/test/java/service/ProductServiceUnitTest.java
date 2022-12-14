@@ -6,6 +6,8 @@ import com.vodafone.repository.product.IProductRepository;
 import com.vodafone.repository.product.ProductRepository;
 import com.vodafone.service.ProductService;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,6 +21,7 @@ import static org.mockito.Mockito.when;
 public class ProductServiceUnitTest {
     private final IProductRepository productRepository = mock(ProductRepository.class);
     private final ProductService productService = new ProductService(productRepository);
+    private final Logger logger = LoggerFactory.getLogger(ProductServiceUnitTest.class);
 
 
     @Test
@@ -65,7 +68,7 @@ public class ProductServiceUnitTest {
     @Test
     public void getTest_sendProductId_returnProduct() {
         Product dummyProduct = createProduct();
-        when(productRepository.get(any(Long.class))).thenReturn(dummyProduct);
+        when(productRepository.getById(any(Long.class))).thenReturn(dummyProduct);
         Product result = productService.get(dummyProduct.getId());
         assertNotNull(result);
         assertEquals(dummyProduct.getId(), result.getId());
@@ -80,7 +83,7 @@ public class ProductServiceUnitTest {
         try {
             result = productService.getByName(dummyProducts.get(0).getName());
         } catch (GetProductException e) {
-            e.printStackTrace();
+            logger.info(e.getMessage());
         }
         assertNotNull(result);
         assertEquals(dummyProducts.get(0).getId(), result.getId());
@@ -90,8 +93,13 @@ public class ProductServiceUnitTest {
     @Test
     public void getTest_sendProductCategory_returnProduct() {
         List<Product> dummyProducts = createProducts();
-        when(productRepository.getByCategory(any(String.class))).thenReturn(dummyProducts);
-        List<Product> result = productService.getByCategory(dummyProducts.get(0).getCategory());
+        when(productRepository.getByCategory(any(String.class))).thenReturn(Optional.of(dummyProducts));
+        List<Product> result = null;
+        try {
+            result = productService.getByCategory(dummyProducts.get(0).getCategory());
+        } catch (GetProductException e) {
+            logger.info(e.getMessage());
+        }
         assertNotNull(result);
         assertEquals(dummyProducts.size(), result.size());
     }

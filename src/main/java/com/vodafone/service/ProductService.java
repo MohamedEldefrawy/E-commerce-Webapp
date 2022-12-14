@@ -27,7 +27,7 @@ public class ProductService {
     }
 
     public Product get(Long id) {
-        return this.productRepository.get(id);
+        return this.productRepository.getById(id);
     }
 
     public boolean delete(Long id) {
@@ -38,14 +38,15 @@ public class ProductService {
         Optional<List<Product>> optionalProducts = this.productRepository.getByName(name);
         if (optionalProducts.isPresent() && optionalProducts.get().size() > 0)
             return optionalProducts.get().get(0);
-        else
-            throw new GetProductException("No product found with name: " + name);
-
+        throw new GetProductException("No product found with name: " + name);
     }
 
 
-    public List<Product> getByCategory(String category) {
-        return this.productRepository.getByCategory(category);
+    public List<Product> getByCategory(String category) throws GetProductException {
+        Optional<List<Product>> optionalProducts = this.productRepository.getByCategory(category);
+        if (optionalProducts.isPresent())
+            return optionalProducts.get();
+        throw new GetProductException("No products found in category: " + category);
     }
 
     public List<Product> getAvailableProducts() {

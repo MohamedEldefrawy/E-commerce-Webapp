@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface IProductRepository extends Repository<Product> {
     Optional<List<Product>> getByName(String name);
 
-    List<Product> getByCategory(String category);
+    Optional<List<Product>> getByCategory(String category);
 
     List<Product> getAvailableProducts();
 }
