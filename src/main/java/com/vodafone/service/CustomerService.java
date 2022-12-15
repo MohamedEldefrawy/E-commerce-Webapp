@@ -9,6 +9,7 @@ import com.vodafone.repository.customer.ICustomerRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CustomerService {
@@ -19,15 +20,6 @@ public class CustomerService {
     public CustomerService(ICustomerRepository customerRepository, HashService hashService) {
         this.customerRepository = customerRepository;
         this.hashService = hashService;
-        /*Customer customer = new Customer();
-        customer.setEmail("mi@gmail.com");
-        customer.setUserName("mi");
-        customer.setRole(Role.Customer);
-        customer.setPassword(hashService.encryptPassword("12345678", customer.getEmail()));
-        customer.setUserStatus(UserStatus.ACTIVATED);
-        customerRepository.create(customer);
-
-         */
     }
 
     public boolean isCustomerAttributesValid(Customer customer) {
@@ -59,10 +51,11 @@ public class CustomerService {
     public boolean updateStatusActivated(String email) {
         if (email == null)
             throw new NullPointerException("Null email is provided");
-        if (customerRepository.getByMail(email) == null) {
+        Optional<Customer> customer = customerRepository.getByMail(email);
+        if (!customer.isPresent()) {
             throw new NullCustomerException("Customer not found with email provided");
         }
-        return customerRepository.updateStatusActivated(email);
+        return customerRepository.updateStatusActivated(customer.get());
     }
 
     public boolean delete(Long id) {
@@ -77,23 +70,35 @@ public class CustomerService {
     public Customer getById(Long id) {
         if (id == null)
             throw new NullIdException("Null customer id is provided");
-        return customerRepository.getById(id).get();
+        Optional<Customer> customer = customerRepository.getById(id);
+        if (!customer.isPresent())
+            throw new NullCustomerException("Customer not found with provided id");
+        return customer.get();
     }
 
     public Customer getByMail(String email) {
         if (email == null)
             throw new NullPointerException("Null Email is provided");
-        return customerRepository.getByMail(email);
+        Optional<Customer> customer = customerRepository.getByMail(email);
+        if (!customer.isPresent())
+            throw new NullCustomerException("No customer found");
+        return customer.get();
     }
 
     public Customer getByUserName(String username) {
         if (username == null)
             throw new NullPointerException("Null Username is provided");
-        return customerRepository.getByUserName(username);
+        Optional<Customer> customer = customerRepository.getByUserName(username);
+        if (!customer.isPresent())
+            throw new NullCustomerException("No customer found");
+        return customer.get();
     }
 
     public List<Customer> getAll() {
-        return customerRepository.getAll().get();
+        Optional<List<Customer>> customer = customerRepository.getAll();
+        if (!customer.isPresent())
+            throw new NullCustomerException("Customer not found with provided id");
+        return customer.get();
     }
 
     public boolean resetPassword(String email, String password) {
@@ -101,19 +106,21 @@ public class CustomerService {
             throw new NullPointerException("Null Email is provided");
         if (password == null)
             throw new NullPointerException("Null Password is provided");
-        if (customerRepository.getByMail(email) == null) {
+        Optional<Customer> customer = customerRepository.getByMail(email);
+        if (!customer.isPresent()) {
             throw new NullCustomerException("Customer not found with provided email");
         }
-        return customerRepository.resetPassword(email, password);
+        return customerRepository.resetPassword(customer.get(), password);
     }
 
     public boolean expireOtp(String userName) {
         if (userName == null)
             throw new NullPointerException("Null Username is provided");
-        if (getByUserName(userName) == null) {
+        Optional<Customer> customer = customerRepository.getByUserName(userName);
+        if (!customer.isPresent()) {
             throw new NullCustomerException("Customer not found with provided username");
         }
-        return this.customerRepository.expireOtp(userName);
+        return this.customerRepository.expireOtp(customer.get());
     }
 
 }
