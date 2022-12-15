@@ -40,29 +40,29 @@ public class AdminValidator implements Validator {
             return;
         }
         if (admin.getId() <= 0) {
-            if (adminService.getByEmail(admin.getEmail()) != null ||
+            if (adminService.getAdminByEmail(admin.getEmail()) != null ||
                     customerService.getByMail(admin.getEmail()) != null) {
                 errors.rejectValue("email", "duplicated", new Object[]{"'email'"},
                         "This Email Already Exists");
             }
-            if (adminService.getByUsername(admin.getUserName()) != null ||
+            if (adminService.getAdminByUsername(admin.getUserName()) != null ||
                     customerService.getByUserName(admin.getUserName()) != null) {
                 errors.rejectValue("userName", "duplicated", new Object[]{"'userName'"},
                         "This Username Already Exists");
             }
         } else {
-            Admin toBeUpdated = adminService.get(Long.valueOf(admin.getId()));
+            Admin toBeUpdated = adminService.getAdminById(Long.valueOf(admin.getId()));
             //check that email field was updated
             if (!toBeUpdated.getEmail().equals(admin.getEmail())) {
                 //check updated email is not duplicated
-                if (adminService.getByEmail(admin.getEmail()) != null ||
+                if (adminService.getAdminByEmail(admin.getEmail()) != null ||
                         customerService.getByMail(admin.getEmail()) != null) {
                     errors.rejectValue("email", "duplicated", new Object[]{"'email'"},
                             "This Email Already Exists");
                 }
             }
             if (!toBeUpdated.getUserName().equals(admin.getUserName())) {
-                if (adminService.getByUsername(admin.getUserName()) != null ||
+                if (adminService.getAdminByUsername(admin.getUserName()) != null ||
                         customerService.getByUserName(admin.getUserName()) != null) {
                     errors.rejectValue("userName", "duplicated", new Object[]{"'userName'"},
                             "This Username Already Exists");

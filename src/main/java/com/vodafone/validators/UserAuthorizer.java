@@ -21,7 +21,7 @@ public class UserAuthorizer {
             return false;
         }
         Long id = (long) session.getAttribute("id");
-        Admin admin = adminService.get(id);
+        Admin admin = adminService.getAdminById(id);
         return admin!=null;
     }
     public boolean customerExists(HttpSession session){
