@@ -51,7 +51,7 @@ public class CustomerService {
             throw new NullIdException("Null customer id is provided");
         if (updatedCustomer == null)
             throw new NullCustomerException("Null updated customer entity is provided");
-        if (get(id) == null)
+        if (getById(id) == null)
             throw new NullCustomerException("Customer not found with provided id");
         return customerRepository.update(id, updatedCustomer);
     }
@@ -68,13 +68,13 @@ public class CustomerService {
     public boolean delete(Long id) {
         if (id == null)
             throw new NullIdException("Null customer id is provided");
-        if (get(id) == null) {
+        if (getById(id) == null) {
             throw new NullCustomerException("Customer not found with id provided");
         }
         return customerRepository.delete(id);
     }
 
-    public Customer get(Long id) {
+    public Customer getById(Long id) {
         if (id == null)
             throw new NullIdException("Null customer id is provided");
         return customerRepository.getById(id).get();
