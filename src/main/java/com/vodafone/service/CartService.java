@@ -77,9 +77,6 @@ public class CartService {
         Optional<Cart> cart = cartRepository.getById(cartId);
         if (!cart.isPresent())
             throw new HibernateException("No cart exists with this id");
-        long matches = getCartItems(cartId).stream().filter(item -> item.getId().equals(itemId)).count();
-        if (matches == 0)
-            throw new NullCartItemException("No item exists with this id");
         return cartRepository.removeItem(cart.get(), itemId);
     }
 
