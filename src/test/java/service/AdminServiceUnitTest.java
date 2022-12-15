@@ -1,32 +1,40 @@
 package service;
 
+import com.vodafone.exception.admin.CreateAdminException;
 import com.vodafone.exception.admin.GetAdminException;
 import com.vodafone.model.Admin;
 import com.vodafone.model.Role;
 import com.vodafone.model.UserStatus;
 import com.vodafone.repository.admin.AdminRepository;
 import com.vodafone.service.AdminService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AdminServiceUnitTest {
 
-    private final AdminRepository adminRepositoryMock = mock(AdminRepository.class);
-    private final AdminService adminService = new AdminService(adminRepositoryMock);
+    private  AdminRepository adminRepositoryMock = mock(AdminRepository.class);
+    private  AdminService adminService = new AdminService(adminRepositoryMock);
+    private List<Admin> adminList;
+    private Admin admin;
 
-
-    @Test
-    public void getAllAdminsTest_returnAllSavedAdmins() {
-        //Arrange
-        List<Admin> list = new ArrayList<>();
-        Admin admin = new Admin();
+    @BeforeEach
+    public void setup() {
+        adminRepositoryMock = mock(AdminRepository.class); //create mock repo
+        adminService = new AdminService(adminRepositoryMock); //create admin service
+        adminList = new ArrayList<>(); //initialize empty admins array
+        admin = new Admin(); //create new admin
         admin.setUserName("admin");
         admin.setEmail("admin@gmail.com");
         admin.setPassword("12345678");
@@ -34,14 +42,19 @@ public class AdminServiceUnitTest {
         admin.setRole(Role.Admin);
         admin.setUserStatus(UserStatus.ADMIN);
         admin.setId(2L);
-        list.add(admin);
-        when(adminRepositoryMock.getAll()).thenReturn(Optional.of(list));
+        adminList.add(admin);//insert admin into array
+    }
+
+    @Test
+    public void getAllAdminsTest_returnAllSavedAdmins() {
+        //Arrange
+        when(adminRepositoryMock.getAll()).thenReturn(Optional.of(adminList));
         //Act
         List<Admin> returnedAdminList = adminService.getAll();
         //Assert
         assertNotNull(returnedAdminList);
         assertEquals(1, returnedAdminList.size());
-        //verify(adminRepositoryMock, times(1)).getAll();
+        verify(adminRepositoryMock, times(1)).getAll();
     }
 
     @Test
@@ -53,334 +66,192 @@ public class AdminServiceUnitTest {
     }
 
 
-    @Test
+    /*@Test
     public void getAllAdminsTest_returnAdminsById() {
         //Arrange
-        List<Admin> list = new ArrayList<>();
-        Admin admin = new Admin();
-        admin.setUserName("admin");
-        admin.setEmail("admin@gmail.com");
-        admin.setPassword("12345678");
-        admin.setFirstLogin(false);
-        admin.setRole(Role.Admin);
-        admin.setUserStatus(UserStatus.ADMIN);
-        admin.setId(2L);
-        list.add(admin);
-        when(adminRepositoryMock.getAll()).thenReturn(Optional.of(list));
+        when(adminRepositoryMock.getAll()).thenReturn(Optional.of(adminList));
         //Act
         List<Admin> returnedAdminList = adminService.getAll();
         //Assert
         assertNotNull(returnedAdminList);
         assertEquals(1, returnedAdminList.size());
-        //verify(adminRepositoryMock, times(1)).getAll();
-    }
+        verify(adminRepositoryMock, times(1)).getAll();
+    }*/
 
     @Test
     public void getAdminByIdTest_sendId_returnSavedAdmin() {
         //Arrange
-        List<Admin> list = new ArrayList<>();
-        Admin admin = new Admin();
-        admin.setUserName("admin");
-        admin.setEmail("admin@gmail.com");
-        admin.setPassword("12345678");
-        admin.setFirstLogin(false);
-        admin.setRole(Role.Admin);
-        admin.setUserStatus(UserStatus.ADMIN);
-        admin.setId(2L);
-        list.add(admin);
         when(adminRepositoryMock.getById(any(Long.class))).thenReturn(Optional.of(admin));
         //Act
-        Admin returnedAdmin = adminService.get(2L);
+        Admin returnedAdmin = adminService.getAdminById(2L);
         //Asset
         assertNotNull(returnedAdmin);
         assertEquals("admin", returnedAdmin.getUserName());
-        //verify(regionRepositoryMock, times(1)).findById(any());
+        verify(adminRepositoryMock, times(1)).getById(any());
     }
 
     @Test
-    public void getAdminByIdTest_sendId_returnNull() {
+    public void getAdminByIdTest_sendNonExistentId_ThrowException() {
         //Arrange
-        List<Admin> list = new ArrayList<>();
-        Admin admin = new Admin();
-        admin.setUserName("admin");
-        admin.setEmail("admin@gmail.com");
-        admin.setPassword("12345678");
-        admin.setFirstLogin(false);
-        admin.setRole(Role.Admin);
-        admin.setUserStatus(UserStatus.ADMIN);
-        admin.setId(2L);
-        list.add(admin);
         when(adminRepositoryMock.getById(any(Long.class))).thenReturn(Optional.empty());
-        //Act
-        Admin returnedAdmin = adminService.get(3L);
-        //Asset
-        assertNull(returnedAdmin);
-        //verify(regionRepositoryMock, times(1)).findById(any());
+        //Act & Assert
+        assertThrows(GetAdminException.class, ()->adminService.getAdminById(3L));
+        verify(adminRepositoryMock, times(1)).getById(any());
     }
 
     @Test
     public void deleteAdminByIdTest_sendExistingId_returnTrue() {
         //Arrange
-        List<Admin> list = new ArrayList<>();
-        Admin admin = new Admin();
-        admin.setUserName("admin");
-        admin.setEmail("admin@gmail.com");
-        admin.setPassword("12345678");
-        admin.setFirstLogin(false);
-        admin.setRole(Role.Admin);
-        admin.setUserStatus(UserStatus.ADMIN);
-        admin.setId(2L);
-        list.add(admin);
-        when(adminRepositoryMock.delete(2L)).thenReturn(true);
+        when(adminRepositoryMock.getById(any())).thenReturn(Optional.of(admin));
+        when(adminRepositoryMock.delete(any())).thenReturn(true);
         //Act
-        boolean deleted = adminService.delete(2L);
+        boolean deleted = adminService.deleteAdmin(2L);
         //Asset
         assertTrue(deleted);
-        //verify(regionRepositoryMock, times(1)).findById(any());
+        verify(adminRepositoryMock, times(1)).getById(any());
+        verify(adminRepositoryMock, times(1)).delete(any());
     }
 
     @Test
     public void deleteAdminByIdTest_sendNonExistingId_returnFalse() {
         //Arrange
-        List<Admin> list = new ArrayList<>();
-        Admin admin = new Admin();
-        admin.setUserName("admin");
-        admin.setEmail("admin@gmail.com");
-        admin.setPassword("12345678");
-        admin.setFirstLogin(false);
-        admin.setRole(Role.Admin);
-        admin.setUserStatus(UserStatus.ADMIN);
-        admin.setId(2L);
-        list.add(admin);
-        when(adminRepositoryMock.delete(3L)).thenReturn(false);
-        //Act
-        boolean deleted = adminService.delete(3L);
-        //Asset
-        assertFalse(deleted);
-        //verify(regionRepositoryMock, times(1)).findById(any());
+        when(adminRepositoryMock.getById(any())).thenReturn(Optional.empty());
+        //Act & Assert
+        assertThrows(GetAdminException.class, ()->adminService.deleteAdmin(3L));
+        verify(adminRepositoryMock, times(1)).getById(any());
     }
 
     @Test
     public void addAdmin_sendAdmin_saveToDBReturnTrue() {
         //Arrange
-        List<Admin> list = new ArrayList<>();
-        Admin admin = new Admin();
-        admin.setUserName("admin");
-        admin.setEmail("admin@gmail.com");
-        admin.setPassword("12345678");
-        admin.setFirstLogin(false);
-        admin.setRole(Role.Admin);
-        admin.setUserStatus(UserStatus.ADMIN);
-        admin.setId(2L);
-        list.add(admin);
         when(adminRepositoryMock.create(admin)).thenReturn(Optional.of(1L));
         //Act
-        boolean created = adminService.create(admin);
+        boolean created = adminService.createAdmin(admin);
         //Asset
         assertTrue(created);
+        verify(adminRepositoryMock,times(1)).create(any());
     }
 
     @Test
-    public void addAdmin_sendAdminWithDuplicateUsername_returnFalse() {
+    public void addAdmin_sendAdminWithDuplicateUsername_throwException() {
         //Arrange
-        List<Admin> list = new ArrayList<>();
-        Admin admin = new Admin();
-        admin.setUserName("admin");
-        admin.setEmail("admin@gmail.com");
-        admin.setPassword("12345678");
-        admin.setFirstLogin(false);
-        admin.setRole(Role.Admin);
-        admin.setUserStatus(UserStatus.ADMIN);
-        admin.setId(2L);
-        list.add(admin);
-        when(adminRepositoryMock.create(admin)).thenReturn(Optional.of(1L));
-        //Act
-        boolean created = adminService.create(admin);
-        //Asset
-        assertFalse(created);
+        when(adminRepositoryMock.create(admin)).thenThrow(CreateAdminException.class);
+        //Act & Assert
+        assertThrows(CreateAdminException.class, ()->adminService.createAdmin(admin));
+        verify(adminRepositoryMock, times(1)).create(any());
+    }
+
+    @Test
+    public void addAdmin_sendAdminGetEmpty_throwException() {
+        //Arrange
+        when(adminRepositoryMock.create(admin)).thenReturn(Optional.empty());
+        //Act & Assert
+        assertThrows(CreateAdminException.class, ()->adminService.createAdmin(admin));
+        verify(adminRepositoryMock, times(1)).create(any());
     }
 
     @Test
     public void updateAdmin_sendIdAndAdmin_saveToDBReturnTrue() {
         //Arrange
-        List<Admin> list = new ArrayList<>();
-        Admin admin = new Admin();
-        admin.setUserName("admin");
-        admin.setEmail("admin@gmail.com");
-        admin.setPassword("12345678");
-        admin.setFirstLogin(false);
-        admin.setRole(Role.Admin);
-        admin.setUserStatus(UserStatus.ADMIN);
-        admin.setId(2L);
-        list.add(admin);
+        when(adminRepositoryMock.getById(any())).thenReturn(Optional.of(admin));
         when(adminRepositoryMock.update(2L, admin)).thenReturn(true);
         //Act
-        boolean updated = adminService.update(2L, admin);
+        boolean updated = adminService.updateAdmin(2L, admin);
         //Asset
         assertTrue(updated);
+        verify(adminRepositoryMock, times(1)).getById(any());
+        verify(adminRepositoryMock, times(1)).update(any(),any());
     }
 
     @Test
-    public void updateAdmin_sendNonExistentIdAndAdmin_returnFalse() {
+    public void updateAdmin_sendNonExistentIdAndAdmin_throwException() {
         //Arrange
-        List<Admin> list = new ArrayList<>();
-        Admin admin = new Admin();
-        admin.setUserName("admin");
-        admin.setEmail("admin@gmail.com");
-        admin.setPassword("12345678");
-        admin.setFirstLogin(false);
-        admin.setRole(Role.Admin);
-        admin.setUserStatus(UserStatus.ADMIN);
-        admin.setId(2L);
-        list.add(admin);
-        when(adminRepositoryMock.update(3L, admin)).thenReturn(false);
-        //Act
-        boolean updated = adminService.update(3L, admin);
-        //Asset
-        assertFalse(updated);
+        when(adminRepositoryMock.getById(3L)).thenReturn(Optional.empty());
+        //Act & Assert
+        assertThrows(GetAdminException.class, ()->adminService.updateAdmin(3L,admin));
+        verify(adminRepositoryMock, times(1)).getById(any());
     }
 
     @Test
     public void updateAdminPassword_sendIdAndAdmin_saveToDBReturnTrue() {
         //Arrange
-        List<Admin> list = new ArrayList<>();
-        Admin admin = new Admin();
-        admin.setUserName("admin");
-        admin.setEmail("admin@gmail.com");
-        admin.setPassword("12345678");
-        admin.setFirstLogin(false);
-        admin.setRole(Role.Admin);
-        admin.setUserStatus(UserStatus.ADMIN);
-        admin.setId(2L);
-        list.add(admin);
+        when(adminRepositoryMock.getById(any())).thenReturn(Optional.of(admin));
         when(adminRepositoryMock.updatePassword(any(Long.class), any())).thenReturn(true);
         //Act
         boolean updated = adminService.updatePassword(2L, "2938012893801");
         //Asset
         assertTrue(updated);
+        verify(adminRepositoryMock, times(1)).getById(any());
+        verify(adminRepositoryMock, times(1)).updatePassword(any(),any());
     }
 
     @Test
-    public void updateAdminPassword_sendNonExistentIdAndAdmin_returnFalse() {
+    public void updateAdminPassword_sendNonExistentIdAndAdmin_throwException() {
         //Arrange
-        List<Admin> list = new ArrayList<>();
-        Admin admin = new Admin();
-        admin.setUserName("admin");
-        admin.setEmail("admin@gmail.com");
-        admin.setPassword("12345678");
-        admin.setFirstLogin(false);
-        admin.setRole(Role.Admin);
-        admin.setUserStatus(UserStatus.ADMIN);
-        admin.setId(2L);
-        list.add(admin);
-        when(adminRepositoryMock.updatePassword(any(Long.class), any())).thenReturn(false);
-        //Act
-        boolean updated = adminService.updatePassword(3L, "2817927839123");
-        //Asset
-        assertFalse(updated);
+        when(adminRepositoryMock.getById(any())).thenReturn(Optional.empty());
+        //Act & Assert
+        assertThrows(GetAdminException.class, ()->adminService.updatePassword(3L,"2817927839123"));
+        verify(adminRepositoryMock, times(1)).getById(any());
     }
 
     @Test
-    public void setFirstLogin_sendExistingId_returnVoid() {
+    public void setFirstLogin_sendExistingId_returnTrue() {
         //Arrange
-        List<Admin> list = new ArrayList<>();
-        Admin admin = new Admin();
-        admin.setUserName("admin");
-        admin.setEmail("admin@gmail.com");
-        admin.setPassword("12345678");
-        admin.setFirstLogin(false);
-        admin.setRole(Role.Admin);
-        admin.setUserStatus(UserStatus.ADMIN);
-        admin.setId(2L);
-        list.add(admin);
-        doNothing().when(adminRepositoryMock).setFirstLoginFlag(any(Long.class));
+        when(adminRepositoryMock.getById(any())).thenReturn(Optional.of(admin));
+        when(adminRepositoryMock.setFirstLoginFlag(any())).thenReturn(true);
         //Act
-        adminService.setFirstLoginFlag(2L);
+        boolean updated = adminService.setFirstLoginFlag(2L);
         //Assert
+        assertTrue(updated);
+        verify(adminRepositoryMock, times(1)).getById(any());
         verify(adminRepositoryMock, times(1)).setFirstLoginFlag(any(Long.class));
+    }
+    @Test
+    public void setFirstLogin_sendNonExistentId_throwException() {
+        //Arrange
+        when(adminRepositoryMock.getById(any())).thenReturn(Optional.empty());
+        //Act & Assert
+        assertThrows(GetAdminException.class, ()->adminService.setFirstLoginFlag(3L));
+        verify(adminRepositoryMock, times(1)).getById(any(Long.class));
     }
 
     @Test
     public void getByEmail_sendExistingEmail_returnAdmin() {
         //Arrange
-        List<Admin> list = new ArrayList<>();
-        Admin admin = new Admin();
-        admin.setUserName("admin");
-        admin.setEmail("admin@gmail.com");
-        admin.setPassword("12345678");
-        admin.setFirstLogin(false);
-        admin.setRole(Role.Admin);
-        admin.setUserStatus(UserStatus.ADMIN);
-        admin.setId(2L);
-        list.add(admin);
-        when(adminRepositoryMock.getByEmail(any(String.class))).thenReturn(admin);
+        when(adminRepositoryMock.getByEmail(any(String.class))).thenReturn(Optional.of(admin));
         //Act
-        Admin retrievedAdmin = adminService.getByEmail("admin@gmail.com");
+        Admin retrievedAdmin = adminService.getAdminByEmail("admin@gmail.com");
         //Asset
         assertNotNull(retrievedAdmin);
         verify(adminRepositoryMock, times(1)).getByEmail(any());
     }
 
     @Test
-    public void getByEmail_sendNonExistentEmail_returnNull() {
+    public void getByEmail_sendNonExistentEmail_throwException() {
         //Arrange
-        List<Admin> list = new ArrayList<>();
-        Admin admin = new Admin();
-        admin.setUserName("admin");
-        admin.setEmail("admin@gmail.com");
-        admin.setPassword("12345678");
-        admin.setFirstLogin(false);
-        admin.setRole(Role.Admin);
-        admin.setUserStatus(UserStatus.ADMIN);
-        admin.setId(2L);
-        list.add(admin);
-        when(adminRepositoryMock.getByEmail(any(String.class))).thenReturn(null);
-        //Act
-        Admin retrievedAdmin = adminService.getByEmail("admi@gmail.com");
-        //Asset
-        assertNull(retrievedAdmin);
+        when(adminRepositoryMock.getByEmail(any(String.class))).thenReturn(Optional.empty());
+        //Act & Assert
+        assertThrows(GetAdminException.class, ()->adminService.getAdminByEmail("admi@gmail.com"));
         verify(adminRepositoryMock, times(1)).getByEmail(any());
     }
 
     @Test
-    public void getByEmail_sendExistingUsername_returnAdmin() {
+    public void getByUsername_sendExistingUsername_returnAdmin() {
         //Arrange
-        List<Admin> list = new ArrayList<>();
-        Admin admin = new Admin();
-        admin.setUserName("admin");
-        admin.setEmail("admin@gmail.com");
-        admin.setPassword("12345678");
-        admin.setFirstLogin(false);
-        admin.setRole(Role.Admin);
-        admin.setUserStatus(UserStatus.ADMIN);
-        admin.setId(2L);
-        list.add(admin);
-        when(adminRepositoryMock.getByUsername(any(String.class))).thenReturn(admin);
+        when(adminRepositoryMock.getByUsername(any(String.class))).thenReturn(Optional.of(admin));
         //Act
-        Admin retrievedAdmin = adminService.getByUsername("admin");
-        //Asset
+        Admin retrievedAdmin = adminService.getAdminByUsername("admin");
+        //Assert
         assertNotNull(retrievedAdmin);
         verify(adminRepositoryMock, times(1)).getByUsername(any());
     }
 
     @Test
-    public void getByEmail_sendNonExistentUsername_returnNull() {
+    public void getByUsername_sendNonExistentUsername_throwException() {
         //Arrange
-        List<Admin> list = new ArrayList<>();
-        Admin admin = new Admin();
-        admin.setUserName("admin");
-        admin.setEmail("admin@gmail.com");
-        admin.setPassword("12345678");
-        admin.setFirstLogin(false);
-        admin.setRole(Role.Admin);
-        admin.setUserStatus(UserStatus.ADMIN);
-        admin.setId(2L);
-        list.add(admin);
-        when(adminRepositoryMock.getByUsername(any(String.class))).thenReturn(null);
-        //Act
-        Admin retrievedAdmin = adminService.getByUsername("admi");
-        //Asset
-        assertNull(retrievedAdmin);
+        when(adminRepositoryMock.getByUsername(any(String.class))).thenReturn(Optional.empty());
+        //Act & Assert
+        assertThrows(GetAdminException.class, ()->adminService.getAdminByUsername("admi"));
         verify(adminRepositoryMock, times(1)).getByUsername(any());
     }
 }

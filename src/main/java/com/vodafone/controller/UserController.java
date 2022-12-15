@@ -60,7 +60,7 @@ public class UserController {
         session.setAttribute("email", login.getEmail());
         session.setAttribute("id", user.getId());
         if (user.getUserStatus() == UserStatus.ADMIN) { //Admin-only logic
-            Admin admin = adminService.get(user.getId());
+            Admin admin = adminService.getAdminById(user.getId());
             if (admin.isFirstLogin()) {
                 adminService.setFirstLoginFlag(admin.getId()); //set flag to false
                 return "redirect:/admins/setAdminPassword.htm";
