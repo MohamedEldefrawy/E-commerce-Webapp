@@ -16,6 +16,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -42,7 +43,7 @@ public class CartService {
 
     public boolean delete(Long id) {
         if (get(id) == null)
-          throw new NullPointerException("No cart exists with this id");
+            throw new NullPointerException("No cart exists with this id");
         if (id == null)
             throw new NullIdException("Null cart id is provided");
         return cartRepository.delete(id);
@@ -135,7 +136,10 @@ public class CartService {
     public List<CartItem> getCartItems(Long cartId) {
         if (cartId == null)
             throw new NullIdException("Null cart id is provided");
-        return cartRepository.getCartItems(cartId);
+        Optional<Cart> cart = cartRepository.getById(cartId);
+        if (!cart.isPresent())
+            throw new NullCartException("Cart not found with provided id");
+        return cart.get().getItems();
     }
 
     public int setProductQuantity(Long cartId, Long itemId, int newQuantity) {

@@ -8,17 +8,15 @@ import com.vodafone.repository.Repository;
 import java.util.List;
 
 public interface ICartRepository extends Repository<Long,Cart> {
-    boolean removeItem(Long cartId, Long itemId);
+    boolean removeItem(Cart cart, Long itemId);
 
-    boolean clearCart(Long cartId);
+    boolean clearCart(Cart cart);
 
-    int addItem(Long cartId, CartItem item);
+    int addItem(Cart cart, CartItem item);
 
-    List<CartItem> getCartItems(Long cartId);
+    int setProductQuantity(Cart cart, Long itemId, int newQuantity);
 
-    int setProductQuantity(Long cartId, Long itemId, int newQuantity);
+    int incrementProductQuantity(Cart cart, Long productId,int quantity);
 
-    int incrementProductQuantity(Long cartId, Long productId,int quantity);
-
-    int decrementProductQuantity(Long cartId, Long productId);
+    int decrementProductQuantity(Cart cart, Long productId);
 }
