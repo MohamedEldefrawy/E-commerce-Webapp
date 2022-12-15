@@ -123,8 +123,6 @@ public class CartService {
     }
 
     public int addItem(Long cartId, CartItem item) {
-//        if (cartId == null)
-//            throw new NullPointerException("Null cart id is provided");
         if (cartId == null)
             throw new NullIdException("Null cart id is provided");
         if (item == null)
