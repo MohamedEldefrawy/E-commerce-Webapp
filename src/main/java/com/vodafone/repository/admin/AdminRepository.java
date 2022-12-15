@@ -1,6 +1,7 @@
 package com.vodafone.repository.admin;
 
 import com.vodafone.config.HibernateConfig;
+import com.vodafone.exception.admin.CreateAdminException;
 import com.vodafone.model.Admin;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -76,7 +77,7 @@ public class AdminRepository implements IAdminRepository {
                 logger.warn(e.getMessage());
                 return Optional.empty();
             }
-        } else return Optional.empty();
+        } else throw new CreateAdminException("Username or email already exists");
     }
 
     @Override
@@ -134,45 +135,52 @@ public class AdminRepository implements IAdminRepository {
     }
 
     @Override
-    public void setFirstLoginFlag(Long id) {
+    public boolean setFirstLoginFlag(Long id) {
+        Admin admin = getById(id).get();
+        if (admin == null)
+            return false;
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
-            //doesnt update password or role
             Transaction tx = session.beginTransaction();
-            Admin admin = session.get(Admin.class, id);
             admin.setFirstLogin(false);
             session.update(admin);
             tx.commit();
+            return true;
         } catch (HibernateException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
-    public Admin getByUsername(String username) {
+    public Optional<Admin> getByUsername(String username) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             try {
-                return session.createQuery("SELECT a from Admin a where a.userName=: username", Admin.class)
+                Admin admin =  session.createQuery("SELECT a from Admin a where a.userName=: username", Admin.class)
                         .setParameter("username", username).getSingleResult();
+                return Optional.ofNullable(admin);
             } catch (NoResultException e) {
-                return null;
+                return Optional.empty();
             }
-        } catch (HibernateException hibernateException) {
-            hibernateException.printStackTrace();
-            return null;
         }
+        /*catch (HibernateException hibernateException) {
+            hibernateException.printStackTrace();
+            return Optional.empty();
+        }*/
     }
 
-    public Admin getByEmail(String email) {
+    public Optional<Admin> getByEmail(String email) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             try {
-                return session.createQuery("SELECT a from Admin a where a.email=: email", Admin.class)
+                Admin admin= session.createQuery("SELECT a from Admin a where a.email=: email", Admin.class)
                         .setParameter("email", email).getSingleResult();
+                return Optional.of(admin);
             } catch (NoResultException e) {
-                return null;
+                return Optional.empty();
             }
-        } catch (HibernateException hibernateException) {
+        }
+        /*catch (HibernateException hibernateException) {
             hibernateException.printStackTrace();
             return null;
-        }
+        }*/
     }
 }
 
