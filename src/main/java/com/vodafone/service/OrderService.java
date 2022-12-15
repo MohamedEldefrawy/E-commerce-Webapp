@@ -45,6 +45,10 @@ public class OrderService{
             throw new NullIdException("Null order id is provided");
         return orderRepository.delete(orderId);
     }
-    public List<Order> getByCustomerId(Long customerId) { return orderRepository.getByCustomerId(customerId); }
+    public List<Order> getByCustomerId(Long customerId) {
+        if (customerId == null )
+            throw new NullIdException("Null Customer id is provided");
+        return orderRepository.getByCustomerId(customerId);
+    }
 
 }
