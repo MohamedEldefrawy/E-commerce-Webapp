@@ -1,18 +1,19 @@
 package com.vodafone.controller;
 
+import com.vodafone.exception.product.GetProductException;
 import com.vodafone.model.*;
-import com.vodafone.model.dto.CreateUser;
 import com.vodafone.model.dto.ResetPasswordDTO;
 import com.vodafone.service.*;
-import com.vodafone.validators.UserAuthorizer;
 import com.vodafone.validators.CustomerValidator;
+import com.vodafone.validators.UserAuthorizer;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -36,16 +37,22 @@ public class CustomerController {
     private CustomerValidator customerValidator;
     private HashService hashService;
 
+    private final Logger logger = LoggerFactory.getLogger(CustomerController.class);
+
 
     // Home
     @GetMapping("home.htm")
     public String home(HttpSession session, Model model, @RequestParam(required = false) String category) {
         if (userAuthorizer.isActivatedCustomer(session)) {
-            List<Product> products;
-            if (category != null)
-                products = this.productService.getByCategory(category);
-            else
-                products = this.productService.getAvailableProducts();
+            List<Product> products = new ArrayList<>();
+            if (category != null) {
+                try {
+                    products.addAll(this.productService.getByCategory(category));
+                } catch (GetProductException e) {
+                    logger.warn(e.getMessage());
+                }
+            } else
+                products.addAll(this.productService.getAvailableProducts());
             model.addAttribute("products", products);
             return "/customer/shared/home";
         } else {
@@ -57,10 +64,21 @@ public class CustomerController {
     public String search(HttpSession session, Model model, @RequestParam(required = false) String category,
                          @RequestParam(required = false) String name) {
         if (userAuthorizer.isActivatedCustomer(session)) {
-            List<Product> products = new ArrayList<>(this.productService.getByCategory(category));
-            Product selectedProduct = this.productService.getByName(name);
-            if (selectedProduct != null)
+            List<Product> products = new ArrayList<>();
+            Product selectedProduct;
+
+            try {
+                products.addAll(this.productService.getByCategory(category));
+            } catch (GetProductException e) {
+                logger.warn(e.getMessage());
+            }
+
+            try {
+                selectedProduct = this.productService.getByName(name);
                 products.add(selectedProduct);
+            } catch (GetProductException e) {
+                logger.info(e.getMessage());
+            }
             model.addAttribute("products", products);
             return "/customer/shared/home";
         } else {
@@ -93,7 +111,7 @@ public class CustomerController {
                 return "registration";
             }
             System.out.println(user);
-            if (customerService.resetPassword(session.getAttribute("email").toString(), hashService.encryptPassword(user.getPassword(),session.getAttribute("email").toString() )))
+            if (customerService.resetPassword(session.getAttribute("email").toString(), hashService.encryptPassword(user.getPassword(), session.getAttribute("email").toString())))
                 return "redirect:/login.htm";
             return "resetPassword";
         } else {
@@ -105,8 +123,14 @@ public class CustomerController {
     @GetMapping("/products/{id}/details.htm")
     public String viewProductDetails(HttpSession session, Model model, @PathVariable Long id) {
         if (userAuthorizer.isActivatedCustomer(session)) {
-            Product product = this.productService.get(id);
-            model.addAttribute("product", product);
+            Product product;
+            try {
+                product = this.productService.getById(id);
+                model.addAttribute("product", product);
+            } catch (GetProductException e) {
+                logger.warn(e.getMessage());
+                // return custom 404 error page
+            }
             return "/customer/product/detail";
         } else {
             return "redirect:/login.htm";
@@ -165,13 +189,18 @@ public class CustomerController {
         if (userAuthorizer.isActivatedCustomer(session)) {
             Long customerId = (long) session.getAttribute("id");
             Cart customerCart = customerService.get(customerId).getCart();
-            Product product = productService.get(itemId);
+            Product product = null;
+            try {
+                product = productService.getById(itemId);
+            } catch (GetProductException e) {
+                logger.warn(e.getMessage());
+            }
 
             CartItem cartItem = new CartItem(quantity, product, customerCart);
             int newQuantity = cartService.addItem(customerCart.getId(), cartItem);
             if (newQuantity == 0)
                 return "409";  //conflict
-            if(newQuantity==-1)
+            if (newQuantity == -1)
                 return "500";
             return "200";
         } else {
@@ -270,8 +299,8 @@ public class CustomerController {
 
 
     @PostMapping("verify.htm")
-    public String verifyCustomer(@Valid @NotNull @NotBlank @RequestParam("verificationCode") String verificationCode,  HttpSession session , Model model) {
-       if(userAuthorizer.customerExists(session)) {
+    public String verifyCustomer(@Valid @NotNull @NotBlank @RequestParam("verificationCode") String verificationCode, HttpSession session, Model model) {
+        if (userAuthorizer.customerExists(session)) {
             Customer selectedCustomer = customerService.getByMail((String) session.getAttribute("email"));
             if (selectedCustomer == null) {
                 return "registration";
@@ -304,7 +333,7 @@ public class CustomerController {
             int newQuantity = cartService.incrementProductQuantity(cartId, productId, 1);
             if (newQuantity == 0)
                 return "409";  //conflict
-            if(newQuantity==-1)
+            if (newQuantity == -1)
                 return "500";
             return "200";
         } else {

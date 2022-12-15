@@ -31,5 +31,7 @@ An e-commerce web application including Admin panel for controlling the system, 
 * [Adminlte](https://adminlte.io/)
 * [bootstrap](https://blog.getbootstrap.com/)
 * [fontawesome](https://fontawesome.com/)
+* [Junit](https://junit.org/junit5/)
+* [Mockito](https://site.mockito.org/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>

@@ -13,13 +13,13 @@ public class OrderService{
     private OrderRepository orderRepository;
 
     public List<Order> getAll(){
-        return orderRepository.getAll();
+        return orderRepository.getAll().get();
     }
     public Order get(Long orderId){
-        return orderRepository.get(orderId);
+        return orderRepository.getById(orderId).get();
     }
     public boolean create(Order order){
-        return orderRepository.create(order);
+        return orderRepository.create(order).isPresent();
     }
     public boolean update(Long orderId,Order order){
         return orderRepository.update(orderId,order);

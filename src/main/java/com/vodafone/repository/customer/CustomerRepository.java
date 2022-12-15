@@ -8,37 +8,43 @@ import com.vodafone.model.UserStatus;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.NoResultException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class CustomerRepository implements ICustomerRepository {
 
     private final HibernateConfig hibernateConfig;
+    private final Logger logger = LoggerFactory.getLogger(CustomerRepository.class);
 
     public CustomerRepository(HibernateConfig hibernateConfig) {
         this.hibernateConfig = hibernateConfig;
     }
 
     @Override
-    public boolean create(Customer customer) {
+    public Optional<Long> create(Customer customer) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             //set customer's default status before verification
             customer.setCart(new Cart(customer, new ArrayList<>()));
-            session.persist(customer.getCart());
+
+            session.save(customer.getCart());
+
             customer.setUserStatus(UserStatus.DEACTIVATED);
             customer.setRole(Role.Customer);
 
-            session.persist(customer);
+            Long customerId = (Long) session.save(customer);
             transaction.commit();
-            return true;
+            return Optional.ofNullable(customerId);
         } catch (HibernateException hibernateException) {
-            hibernateException.printStackTrace();
-            return false;
+            logger.warn(hibernateException.getMessage());
+            return Optional.empty();
         }
     }
 
@@ -105,14 +111,14 @@ public class CustomerRepository implements ICustomerRepository {
     }
 
     @Override
-    public Customer get(Long id) {
+    public Optional<Customer> getById(Long id) {
         Customer customer = null;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             customer = session.get(Customer.class, id);
         } catch (HibernateException | NoResultException hibernateException) {
             hibernateException.printStackTrace();
         }
-        return customer;
+        return Optional.ofNullable(customer);
     }
 
     @Override
@@ -150,12 +156,12 @@ public class CustomerRepository implements ICustomerRepository {
     }
 
     @Override
-    public List<Customer> getAll() {
+    public Optional<List<Customer>> getAll() {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            return session.createQuery("From Customer", Customer.class).list();
+            return Optional.ofNullable(session.createQuery("From Customer", Customer.class).list());
         } catch (HibernateException hibernateException) {
             hibernateException.printStackTrace();
-            return new ArrayList<Customer>();
+            return Optional.of(new ArrayList<>());
         }
     }
 

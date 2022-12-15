@@ -4,8 +4,6 @@ import com.vodafone.exception.IncompleteUserAttributesException;
 import com.vodafone.exception.NullCustomerException;
 import com.vodafone.exception.NullIdException;
 import com.vodafone.model.Customer;
-import com.vodafone.model.Role;
-import com.vodafone.model.UserStatus;
 import com.vodafone.repository.customer.CustomerRepository;
 import com.vodafone.repository.customer.ICustomerRepository;
 import org.springframework.stereotype.Service;
@@ -45,7 +43,7 @@ public class CustomerService {
             throw new IncompleteUserAttributesException("Customer Data is not completed, nulls exist");
         String originalPassword = customer.getPassword();
         customer.setPassword(hashService.encryptPassword(originalPassword, customer.getEmail()));
-        return customerRepository.create(customer);
+        return customerRepository.create(customer).isPresent();
     }
 
     public boolean update(Long id, Customer updatedCustomer) {
@@ -79,7 +77,7 @@ public class CustomerService {
     public Customer get(Long id) {
         if (id == null)
             throw new NullIdException("Null customer id is provided");
-        return customerRepository.get(id);
+        return customerRepository.getById(id).get();
     }
 
     public Customer getByMail(String email) {
@@ -95,7 +93,7 @@ public class CustomerService {
     }
 
     public List<Customer> getAll() {
-        return customerRepository.getAll();
+        return customerRepository.getAll().get();
     }
 
     public boolean resetPassword(String email, String password) {
