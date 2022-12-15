@@ -45,7 +45,7 @@ public class LoginValidator implements Validator {
                     "Incorrect password");
             if (!(userService.getUserByEmail(user.getEmail()) instanceof Admin)) {
                 //handle suspend logic for customer
-                Customer customer = customerService.get(user.getId());
+                Customer customer = customerService.getById(user.getId());
                 if (customer.getLoginAttempts() > 1) {//decrement attempts
                     customer.setLoginAttempts(customer.getLoginAttempts() - 1);
                     customerService.update(customer.getId(), customer);
