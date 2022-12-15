@@ -2,9 +2,11 @@ package controller;
 
 import cn.org.rapid_framework.web.session.wrapper.HttpSessionWrapper;
 import com.vodafone.controller.AdminController;
+import com.vodafone.exception.product.CreateProductException;
 import com.vodafone.exception.product.GetProductException;
 import com.vodafone.model.Product;
 import com.vodafone.model.dto.CreateProduct;
+import com.vodafone.model.dto.UpdateProductDto;
 import com.vodafone.service.AdminService;
 import com.vodafone.service.HashService;
 import com.vodafone.service.ProductService;
@@ -23,8 +25,6 @@ import javax.servlet.http.HttpSession;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -90,6 +90,7 @@ class AdminProductControllerUnitTest {
         assertEquals(AdminViews.LOGIN_REDIRECT, viewName);
     }
 
+
     @Test
     void updateProductTest_sendHttpSessionAndModelAndProductId_ReturnUpdateProductString() {
         Product dummyProduct = createProduct();
@@ -126,13 +127,148 @@ class AdminProductControllerUnitTest {
     }
 
     @Test
-    void submitTest_sendUpdateProductDtoAndBindingResultAndHttpSessionAndId_returnAdminShowProductsRedirectString() {
+    void submitUpdateTest_sendCreateProductDtoAndBindingResultAndHttpSessionAndId_returnAdminShowProductsRedirectString() {
+        UpdateProductDto updateProductDto = new UpdateProductDto();
+        updateProductDto.setCategory("Cat");
+        updateProductDto.setName("Test");
+        updateProductDto.setPrice(200D);
+        updateProductDto.setInStock(10);
+        updateProductDto.setId(1L);
+
+
+        when(userAuthorizer.authorizeAdmin(any(HttpSession.class))).thenReturn(true);
+        when(bindingResult.hasErrors()).thenReturn(false);
+        when(productService.getById(any(Long.class))).thenReturn(createProduct());
+        when(productService.update(any(Long.class), any(Product.class))).thenReturn(true);
+        when(httpSession.getServletContext()).thenReturn(null);
+
+        try {
+            doNothing().when(fileOutputStream).write(new byte[0]);
+        } catch (IOException e) {
+            logger.warn(e.getMessage());
+        }
+        HttpSession httpSession = new HttpSessionWrapper(null);
+        String result = adminController.submitUpdate(updateProductDto, bindingResult, httpSession, 1L);
+        assertNotNull(result);
+        assertEquals(AdminViews.ADMIN_SHOW_PRODUCT_REDIRECT, result);
+    }
+
+    @Test
+    void submitUpdateTest_sendCreateProductDtoAndBindingResultAndHttpSessionAndId_returnAdminUpdateProductsString() {
+        UpdateProductDto updateProductDto = new UpdateProductDto();
+        updateProductDto.setCategory("Cat");
+        updateProductDto.setName("Test");
+        updateProductDto.setPrice(200D);
+        updateProductDto.setInStock(10);
+        updateProductDto.setId(1L);
+
+
+        when(userAuthorizer.authorizeAdmin(any(HttpSession.class))).thenReturn(true);
+        when(bindingResult.hasErrors()).thenReturn(false);
+        when(productService.getById(any(Long.class))).thenReturn(createProduct());
+        when(productService.update(any(Long.class), any(Product.class))).thenReturn(false);
+        when(httpSession.getServletContext()).thenReturn(null);
+
+        try {
+            doNothing().when(fileOutputStream).write(new byte[0]);
+        } catch (IOException e) {
+            logger.warn(e.getMessage());
+        }
+        HttpSession httpSession = new HttpSessionWrapper(null);
+        String result = adminController.submitUpdate(updateProductDto, bindingResult, httpSession, 1L);
+        assertNotNull(result);
+        assertEquals(AdminViews.ADMIN_UPDATE_PRODUCT, result);
+    }
+
+    @Test
+    void submitUpdateTest_sendCreateProductDtoAndBindingResultAndHttpSessionAndId_ErrorBindingResult_returnAdminUpdateProductsString() {
+        UpdateProductDto updateProductDto = new UpdateProductDto();
+        updateProductDto.setCategory("Cat");
+        updateProductDto.setName("Test");
+        updateProductDto.setPrice(200D);
+        updateProductDto.setInStock(10);
+        updateProductDto.setId(1L);
+
+
+        when(userAuthorizer.authorizeAdmin(any(HttpSession.class))).thenReturn(true);
+        when(bindingResult.hasErrors()).thenReturn(true);
+
+        HttpSession httpSession = new HttpSessionWrapper(null);
+        String result = adminController.submitUpdate(updateProductDto, bindingResult, httpSession, 1L);
+        assertNotNull(result);
+        assertEquals(AdminViews.ADMIN_UPDATE_PRODUCT, result);
+    }
+
+    @Test
+    void submitUpdateTest_sendCreateProductDtoAndBindingResultAndHttpSessionAndId_ThrowsGetProductException_returnAdminUpdateProductsString() {
+        UpdateProductDto updateProductDto = new UpdateProductDto();
+        updateProductDto.setCategory("Cat");
+        updateProductDto.setName("Test");
+        updateProductDto.setPrice(200D);
+        updateProductDto.setInStock(10);
+        updateProductDto.setId(1L);
+
+
+        when(userAuthorizer.authorizeAdmin(any(HttpSession.class))).thenReturn(true);
+        when(bindingResult.hasErrors()).thenReturn(false);
+        when(productService.getById(any(Long.class))).thenThrow(new GetProductException("No Product found"));
+        when(productService.update(any(Long.class), any(Product.class))).thenReturn(false);
+        when(httpSession.getServletContext()).thenReturn(null);
+
+        HttpSession httpSession = new HttpSessionWrapper(null);
+        String result = adminController.submitUpdate(updateProductDto, bindingResult, httpSession, 1L);
+        assertNotNull(result);
+        assertEquals(AdminViews.ADMIN_UPDATE_PRODUCT, result);
+    }
+
+    @Test
+    void submitUpdateTest_sendCreateProductDtoAndBindingResultAndHttpSessionAndId_falseUserAuthorizer_returnAdminUpdateProductsString() {
+        UpdateProductDto updateProductDto = new UpdateProductDto();
+        updateProductDto.setCategory("Cat");
+        updateProductDto.setName("Test");
+        updateProductDto.setPrice(200D);
+        updateProductDto.setInStock(10);
+        updateProductDto.setId(1L);
+
+        when(userAuthorizer.authorizeAdmin(any(HttpSession.class))).thenReturn(false);
+
+        HttpSession httpSession = new HttpSessionWrapper(null);
+        String result = adminController.submitUpdate(updateProductDto, bindingResult, httpSession, 1L);
+        assertNotNull(result);
+        assertEquals(AdminViews.LOGIN_REDIRECT, result);
+    }
+
+
+    @Test
+    void createProductTest_sendHttpSessionAndModel_ReturnRedirectLoginString() {
+        when(userAuthorizer.authorizeAdmin(any(HttpSession.class))).thenReturn(false);
+        Model model = new ConcurrentModel();
+        HttpSession httpSession = new HttpSessionWrapper(null);
+        String viewName = adminController.createProduct(httpSession, model);
+        assertNotNull(viewName);
+        assertEquals(AdminViews.LOGIN_REDIRECT, viewName);
+    }
+
+
+    @Test
+    void createProductTest_sendHttpSessionAndModel_ReturnCreateProductString() {
+        when(userAuthorizer.authorizeAdmin(any(HttpSession.class))).thenReturn(true);
+        Model model = new ConcurrentModel();
+        HttpSession httpSession = new HttpSessionWrapper(null);
+        String viewName = adminController.createProduct(httpSession, model);
+        assertNotNull(viewName);
+        assertEquals(AdminViews.ADMIN_CREATE_PRODUCT, viewName);
+    }
+
+
+    @Test
+    void submitCreateTest_sendProductAndBindingResultAndHttpSessionAndId_returnAdminShowProductsRedirectString() {
         Product dummyProduct = createProduct();
         when(userAuthorizer.authorizeAdmin(any(HttpSession.class))).thenReturn(true);
         when(bindingResult.hasErrors()).thenReturn(false);
-        when(productService.getById(any(Long.class))).thenReturn(dummyProduct);
-        when(productService.update(dummyProduct.getId(), dummyProduct)).thenReturn(true);
+        when(productService.create(dummyProduct)).thenReturn(true);
         when(httpSession.getServletContext()).thenReturn(null);
+
         try {
             doNothing().when(fileOutputStream).write(new byte[100]);
         } catch (IOException e) {
@@ -141,11 +277,53 @@ class AdminProductControllerUnitTest {
         }
         HttpSession httpSession = new HttpSessionWrapper(null);
         CreateProduct createProduct = new CreateProduct();
-        String result = adminController.save(createProduct, bindingResult, null, httpSession);
+        String result = adminController.submitCreate(createProduct, bindingResult, null, httpSession);
         assertNotNull(result);
         assertEquals(AdminViews.ADMIN_SHOW_PRODUCT_REDIRECT, result);
-
     }
+
+    @Test
+    void submitCreateTest_sendProductAndBindingResultAndHttpSessionAndId_returnAdminCreateProductsString() {
+        when(userAuthorizer.authorizeAdmin(any(HttpSession.class))).thenReturn(true);
+        when(bindingResult.hasErrors()).thenReturn(true);
+
+        HttpSession httpSession = new HttpSessionWrapper(null);
+        CreateProduct createProduct = new CreateProduct();
+        String result = adminController.submitCreate(createProduct, bindingResult, null, httpSession);
+
+        assertNotNull(result);
+        assertEquals(AdminViews.ADMIN_CREATE_PRODUCT, result);
+    }
+
+    @Test
+    void submitCreateTest_sendProductAndBindingResultAndHttpSessionAndId_ThrowsCreateProductException_returnAdminCreateProductsString() {
+        when(userAuthorizer.authorizeAdmin(any(HttpSession.class))).thenReturn(true);
+        when(bindingResult.hasErrors()).thenReturn(false);
+        when(productService.create(any(Product.class))).thenThrow(new CreateProductException("Couldn't create product"));
+        when(httpSession.getServletContext()).thenReturn(null);
+
+        try {
+            doNothing().when(fileOutputStream).write(new byte[0]);
+        } catch (IOException e) {
+            logger.warn(e.getMessage());
+            throw new RuntimeException(e);
+        }
+        HttpSession httpSession = new HttpSessionWrapper(null);
+        CreateProduct createProduct = new CreateProduct();
+        String result = adminController.submitCreate(createProduct, bindingResult, null, httpSession);
+        assertNotNull(result);
+        assertEquals(AdminViews.ADMIN_CREATE_PRODUCT, result);
+    }
+
+    @Test
+    void submitCreateTest_sendProductAndBindingResultAndHttpSessionAndId_ThrowsCreateProductException_returnAdminLoginRedirectString() {
+        when(userAuthorizer.authorizeAdmin(any(HttpSession.class))).thenReturn(false);
+        CreateProduct createProduct = new CreateProduct();
+        String result = adminController.submitCreate(createProduct, bindingResult, null, httpSession);
+        assertNotNull(result);
+        assertEquals(AdminViews.LOGIN_REDIRECT, result);
+    }
+
 
     private Product createProduct() {
         Product product = new Product();
@@ -158,29 +336,6 @@ class AdminProductControllerUnitTest {
         product.setImage("myImage.png");
         product.setCategory("Cats");
         return product;
-    }
-
-    private List<Product> createProducts() {
-        Product product1 = new Product();
-        product1.setId(2L);
-        product1.setName("dummyProduct");
-        product1.setPrice(200);
-        product1.setDescription("dummy product description");
-        product1.setRate(3f);
-        product1.setInStock(200);
-        product1.setImage("myImage.png");
-        product1.setCategory("Cats");
-
-        Product product2 = new Product();
-        product2.setId(3L);
-        product2.setName("dummyProduct2");
-        product2.setPrice(200);
-        product2.setDescription("dummy product description2");
-        product2.setRate(3f);
-        product2.setInStock(200);
-        product2.setImage("myImage2.png");
-        product2.setCategory("Cats");
-        return Arrays.asList(product1, product2);
     }
 
 }

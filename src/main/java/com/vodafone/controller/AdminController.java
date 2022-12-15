@@ -52,6 +52,7 @@ public class AdminController {
     private final SendEmailService emailService;
 
     private final Logger logger = LoggerFactory.getLogger(AdminController.class);
+    private static final String PRODUCT_ATTRIBUTE = "product";
 
     @GetMapping("/admins.htm")
     public String getAll(HttpSession session, Model model) {
@@ -95,7 +96,7 @@ public class AdminController {
             model.addAttribute("admin", createAdmin);
             return "admin/updateAdmin";
         } else {
-            return "redirect:/login.htm";
+            return AdminViews.LOGIN_REDIRECT;
         }
     }
 
@@ -105,7 +106,7 @@ public class AdminController {
             model.addAttribute("admin", new CreateAdmin());
             return "admin/createAdmin";
         } else {
-            return "redirect:/login.htm";
+            return AdminViews.LOGIN_REDIRECT;
         }
     }
 
@@ -144,7 +145,7 @@ public class AdminController {
                 return "admin/createAdmin";
             }
         } else {
-            return "redirect:/login.htm";
+            return AdminViews.LOGIN_REDIRECT;
         }
     }
 
@@ -173,16 +174,16 @@ public class AdminController {
     @GetMapping("/products/update.htm")
     public String updateProduct(HttpSession session, Model model, @RequestParam Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
-            Product selectedProduct = null;
+            Product selectedProduct;
             try {
                 selectedProduct = this.productService.getById(id);
             } catch (GetProductException e) {
                 logger.warn(e.getMessage());
                 // todo return custom 404 page
-                model.addAttribute("product", new Product());
+                model.addAttribute(PRODUCT_ATTRIBUTE, new Product());
                 return AdminViews.ADMIN_UPDATE_PRODUCT;
             }
-            model.addAttribute("product", selectedProduct);
+            model.addAttribute(PRODUCT_ATTRIBUTE, selectedProduct);
             return AdminViews.ADMIN_UPDATE_PRODUCT;
         } else {
             return AdminViews.LOGIN_REDIRECT;
@@ -191,23 +192,27 @@ public class AdminController {
 
 
     @PostMapping("/products/update.htm")
-    public String submit(@Valid @ModelAttribute("product") UpdateProductDto product,
-                         BindingResult bindingResult,
-                         HttpSession session,
-                         @RequestParam Long id) {
+    public String submitUpdate(@Valid @ModelAttribute("product") UpdateProductDto product,
+                               BindingResult bindingResult,
+                               HttpSession session,
+                               @RequestParam Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
 
             if (bindingResult.hasErrors()) {
                 return AdminViews.ADMIN_UPDATE_PRODUCT;
             }
-            byte[] imageData = product.getImage().getBytes();
-            String path = session.getServletContext().getRealPath("/") + "resources/static/images/" + product.getImage().getOriginalFilename();
+
+            byte[] imageData = new byte[0];
+            String path = "";
+            if (product.getImage() != null) {
+                imageData = product.getImage().getBytes();
+                path = session.getServletContext().getRealPath("/") + "resources/static/images/" + product.getImage().getOriginalFilename();
+            }
             try (FileOutputStream fileOutputStream = new FileOutputStream(path)) {
                 if (imageData.length > 0) {
                     fileOutputStream.write(imageData);
                 }
             } catch (IOException e) {
-                // todo redirect to 500 custom page
                 logger.warn(e.getMessage());
             }
 
@@ -215,20 +220,19 @@ public class AdminController {
             boolean result;
             try {
                 updatedProduct = this.productService.getById(product.getId());
-                updatedProduct.setDescription(product.getDescription());
-                updatedProduct.setCategory(product.getCategory());
-                if (imageData.length > 0)
-                    updatedProduct.setImage(product.getImage().getOriginalFilename());
-                updatedProduct.setPrice(product.getPrice());
-                updatedProduct.setName(product.getName());
-                updatedProduct.setInStock(product.getInStock());
-                result = this.productService.update(id, updatedProduct);
-
             } catch (GetProductException e) {
                 // todo redirect to 404 custom page error
                 logger.warn(e.getMessage());
                 return AdminViews.ADMIN_UPDATE_PRODUCT;
             }
+            updatedProduct.setDescription(product.getDescription());
+            updatedProduct.setCategory(product.getCategory());
+            if (imageData.length > 0)
+                updatedProduct.setImage(product.getImage().getOriginalFilename());
+            updatedProduct.setPrice(product.getPrice());
+            updatedProduct.setName(product.getName());
+            updatedProduct.setInStock(product.getInStock());
+            result = this.productService.update(id, updatedProduct);
             if (result)
                 return AdminViews.ADMIN_SHOW_PRODUCT_REDIRECT;
             return AdminViews.ADMIN_UPDATE_PRODUCT;
@@ -240,21 +244,21 @@ public class AdminController {
     @GetMapping("/products/create.htm")
     public String createProduct(HttpSession session, Model model) {
         if (userAuthorizer.authorizeAdmin(session)) {
-            model.addAttribute("product", new CreateProduct());
-            return "products/create";
+            model.addAttribute(PRODUCT_ATTRIBUTE, new CreateProduct());
+            return AdminViews.ADMIN_CREATE_PRODUCT;
         } else {
-            return "redirect:/login.htm";
+            return AdminViews.LOGIN_REDIRECT;
         }
     }
 
     @PostMapping("/products/create.htm")
-    public String save(@Valid @ModelAttribute("product") CreateProduct product,
-                       BindingResult bindingResult,
-                       @RequestParam("image") CommonsMultipartFile image,
-                       HttpSession session) {
+    public String submitCreate(@Valid @ModelAttribute("product") CreateProduct product,
+                               BindingResult bindingResult,
+                               @RequestParam("image") CommonsMultipartFile image,
+                               HttpSession session) {
         if (userAuthorizer.authorizeAdmin(session)) {
             if (bindingResult.hasErrors()) {
-                return "products/create";
+                return AdminViews.ADMIN_CREATE_PRODUCT;
             }
             byte[] imageData = new byte[0];
             String path = "";
@@ -262,14 +266,12 @@ public class AdminController {
                 imageData = image.getBytes();
                 path = session.getServletContext().getRealPath("/") + "resources/static/images/" + image.getOriginalFilename();
             }
-            try {
+            try (FileOutputStream fileOutputStream = new FileOutputStream(path)) {
                 if (imageData.length > 0) {
-                    FileOutputStream fileOutputStream = new FileOutputStream(path);
                     fileOutputStream.write(imageData);
-                    fileOutputStream.close();
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                logger.warn(e.getMessage());
             }
 
 
@@ -286,10 +288,11 @@ public class AdminController {
                 this.productService.create(newProduct);
             } catch (CreateProductException e) {
                 logger.warn(e.getMessage());
+                return AdminViews.ADMIN_CREATE_PRODUCT;
             }
-            return "redirect:/admins/products/show.htm";
+            return AdminViews.ADMIN_SHOW_PRODUCT_REDIRECT;
         } else {
-            return "redirect:/login.htm";
+            return AdminViews.LOGIN_REDIRECT;
         }
     }
 
