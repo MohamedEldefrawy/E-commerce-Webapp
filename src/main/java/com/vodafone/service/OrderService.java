@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 @AllArgsConstructor
@@ -40,6 +40,8 @@ public class OrderService{
         return orderRepository.update(orderId,order);
     }
     public boolean delete(Long orderId){
+        if (orderId == null )
+            throw new NullIdException("Null order id is provided");
         return orderRepository.delete(orderId);
     }
     public List<Order> getByCustomerId(Long customerId) { return orderRepository.getByCustomerId(customerId); }
