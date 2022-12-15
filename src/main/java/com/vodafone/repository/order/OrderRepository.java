@@ -44,10 +44,10 @@ public class OrderRepository implements IOrderRepository {
         Order order;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
-            Query query = session.createQuery(
+            Query<Order> query = session.createQuery(
                     "From Order o where o.id=" + orderId
             );
-            order = (Order) query.uniqueResult();
+            order =  query.uniqueResult();
             tx.commit();
         } catch (HibernateException e) {
             logger.warn(e.getMessage());
@@ -60,19 +60,16 @@ public class OrderRepository implements IOrderRepository {
     public Optional<Long> create(Order order) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
-            Long orderId = null;
-            if (order.getOrderItems() != null && order.getOrderItems().size() > 0) {
-                orderId = (Long) session.save(order);
-                //Adds created customer to customer's arrayList
-                order.getCustomer().getOrders().add(order);
-                session.update(order.getCustomer());
-                //updates the quantity of stock in order item
-                for (OrderItem o : order.getOrderItems()) {
-                    session.update(o.getProduct());
-                }
+            Long orderId = (Long) session.save(order);
+            //Adds created customer to customer's arrayList
+            order.getCustomer().getOrders().add(order);
+            session.update(order.getCustomer());
+            //updates the quantity of stock in order item
+            for (OrderItem o : order.getOrderItems()) {
+                session.update(o.getProduct());
             }
             tx.commit();
-            return Optional.ofNullable(orderId);
+            return Optional.of(orderId);
         } catch (HibernateException e) {
             logger.warn(e.getMessage());
             return Optional.empty();
@@ -82,9 +79,6 @@ public class OrderRepository implements IOrderRepository {
     @Override
     public boolean update(Long orderId, Order updatedEntity) {
         Order order = getById(orderId).get();
-        if (order == null)
-            return false;
-
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
             //doesnt update order items set
             Transaction tx = session.beginTransaction();
