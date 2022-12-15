@@ -3,8 +3,6 @@ package com.vodafone.repository.cart;
 import com.vodafone.config.HibernateConfig;
 import com.vodafone.model.Cart;
 import com.vodafone.model.CartItem;
-import com.vodafone.model.Order;
-import com.vodafone.model.OrderItem;
 import lombok.AllArgsConstructor;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -32,7 +30,6 @@ public class CartRepository implements ICartRepository {
             Transaction transaction = session.beginTransaction();
             id = (Long) session.save(entity);
             transaction.commit();
-            session.close();
         } catch (HibernateException e) {
             logger.warn(e.getMessage());
             return Optional.empty();
@@ -47,7 +44,6 @@ public class CartRepository implements ICartRepository {
             updatedEntity.setId(id);
             session.update(updatedEntity);
             transaction.commit();
-            session.close();
         } catch (HibernateException e) {
             e.printStackTrace();
             return false;
@@ -59,12 +55,12 @@ public class CartRepository implements ICartRepository {
     public boolean delete(Long id) {
         try (Session session = config.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            Cart cart = getById(id).get();
-            if (cart == null)
+            Optional<Cart> cart = getById(id);
+            if (!cart.isPresent())
                 return false;
-            session.delete(cart);
+            session.delete(cart.get());
             transaction.commit();
-            session.close();
+
         } catch (HibernateException e) {
             e.printStackTrace();
             return false;
@@ -77,42 +73,38 @@ public class CartRepository implements ICartRepository {
         Cart cart = null;
         try (Session session = config.getSessionFactory().openSession()) {
             cart = session.get(Cart.class, id);
-            session.close();
         } catch (HibernateException e) {
             e.printStackTrace();
-            return null;
+            return Optional.empty();
         }
         return Optional.ofNullable(cart);
     }
 
     @Override
     public Optional<List<Cart>> getAll() {
-        List<Cart> carts = null;
+        List<Cart> carts;
         try (Session session = config.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             carts = session.createQuery("SELECT DISTINCT cart From Cart cart", Cart.class).getResultList();
             transaction.commit();
-            session.close();
         } catch (HibernateException e) {
             e.printStackTrace();
-            return Optional.ofNullable(carts);
+            return Optional.empty();
         }
         return Optional.ofNullable(carts);
     }
 
     @Override
-    public boolean removeItem(Long cartId, Long itemId) {
+    public boolean removeItem(Cart cart, Long itemId) {
         try (Session session = config.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             //remove cartItem from cart arrayList
-            Cart cart = getById(cartId).get();
             cart.getItems().removeIf(item -> Objects.equals(item.getId(), itemId)); //remove desired item
             session.update(cart); //update cart
             //Remove cartItem from DB
             CartItem cartItem = session.get(CartItem.class, itemId);
             session.delete(cartItem);
             transaction.commit();
-            session.close();
         } catch (HibernateException e) {
             e.printStackTrace();
             return false;
@@ -121,20 +113,15 @@ public class CartRepository implements ICartRepository {
     }
 
     @Override
-    public boolean clearCart(Long cartId) {
+    public boolean clearCart(Cart cart) {
         try (Session session = config.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            Cart cart = getById(cartId).get();
-            //check if it's null so we can't operate
-            if (cart == null)
-                return false;
             //delete all cart items from database
-            cart.getItems().stream().forEach(i -> session.delete(i));
+            cart.getItems().forEach(session::delete);
             //delete cart object
             cart.getItems().clear();
             session.update(cart);
             transaction.commit();
-            session.close();
         } catch (HibernateException e) {
             e.printStackTrace();
             return false;
@@ -144,16 +131,15 @@ public class CartRepository implements ICartRepository {
 
     /***
      *
-     * @param cartId
-     * @param item
+     * @param cart Cart object to add item to it
+     * @param item CartItem to be added to cart
      * @return the quantity of item added
      * returns 0 in case nit available in stock (0 quantity added)
      * returns -1 in case of exception
      */
     @Override
-    public int addItem(Long cartId, CartItem item) { //0 -> not added -1 -> exception otherwise--> eadded
+    public int addItem(Cart cart, CartItem item) { //0 -> not added -1 -> exception otherwise--> added
         try (Session session = config.getSessionFactory().openSession()) {
-            Cart cart = getById(cartId).get();
             List<CartItem> items = cart.getItems();
             //checks if item is already in cart then increments quantity
             List<CartItem> matchingProduct = items.stream()
@@ -161,7 +147,7 @@ public class CartRepository implements ICartRepository {
                     .collect(Collectors.toList());
             //if product already in cart then add to quantity
             if (!matchingProduct.isEmpty()) {
-                return incrementProductQuantity(cartId, item.getProduct().getId(), item.getQuantity());
+                return incrementProductQuantity(cart, item.getProduct().getId(), item.getQuantity());
             } else {
                 if (item.getProduct().getInStock() >= item.getQuantity()) {
                     Transaction transaction = session.beginTransaction();
@@ -169,7 +155,7 @@ public class CartRepository implements ICartRepository {
                     items.add(item); //add item to cart list
                     session.update(cart); //update cart
                     transaction.commit();
-                    session.close();
+
                 } else {
                     return 0;
                 }
@@ -182,22 +168,15 @@ public class CartRepository implements ICartRepository {
     }
 
     @Override
-    public List<CartItem> getCartItems(Long cartId) {
-        return getById(cartId).get().getItems();
-    }
-
-    @Override
-    public int setProductQuantity(Long cartId, Long itemId, int newQuantity) {
+    public int setProductQuantity(Cart cart, Long itemId, int newQuantity) {
         try (Session session = config.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            Cart cart = getById(cartId).get();
             for (CartItem item : cart.getItems()) {
                 if (item.getId().equals(itemId))
                     item.setQuantity(newQuantity);
             }
             session.update(cart); //update cart
             transaction.commit();
-            session.close();
             return newQuantity;
         } catch (HibernateException e) {
             e.printStackTrace();
@@ -206,10 +185,9 @@ public class CartRepository implements ICartRepository {
     }
 
     @Override
-    public int incrementProductQuantity(Long cartId, Long productId, int quantity) {
+    public int incrementProductQuantity(Cart cart, Long productId, int quantity) {
         try (Session session = config.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            Cart cart = getById(cartId).get();
             int newQuantity = 0;
             CartItem foundItem = null;
             for (CartItem item : cart.getItems()) {
@@ -226,7 +204,6 @@ public class CartRepository implements ICartRepository {
             session.update(cart); //update cart
             session.update(foundItem); //updates CartItem
             transaction.commit();
-            session.close();
             return newQuantity;
         } catch (HibernateException e) {
             e.printStackTrace();
@@ -235,12 +212,14 @@ public class CartRepository implements ICartRepository {
     }
 
     @Override
-    public int decrementProductQuantity(Long cartId, Long productId) {
+    public int decrementProductQuantity(Cart cart, Long productId) {
         try (Session session = config.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            Cart cart = getById(cartId).get();
             CartItem foundItem = null;
             int newQuantity = 0;
+//            cart.getItems().stream().filter(item -> item.getId().equals(productId)).forEach(item -> {
+//                item.setQuantity(item.getQuantity() - 1);
+//            });
             for (CartItem item : cart.getItems()) {
                 if (item.getProduct().getId().equals(productId)) {
                     newQuantity = item.getQuantity() - 1;
@@ -252,7 +231,6 @@ public class CartRepository implements ICartRepository {
             session.update(cart); //update cart
             session.update(foundItem); //updates cartItem
             transaction.commit();
-            session.close();
             return newQuantity;
         } catch (HibernateException e) {
             e.printStackTrace();

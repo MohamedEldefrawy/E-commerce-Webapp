@@ -10,6 +10,7 @@ import com.vodafone.model.Order;
 import com.vodafone.model.OrderItem;
 import com.vodafone.repository.cart.ICartRepository;
 import lombok.AllArgsConstructor;
+import org.hibernate.HibernateException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -53,26 +54,33 @@ public class CartService {
     public Cart get(Long id) {
         if (id == null)
             throw new NullIdException("Null cart id is provided");
-        return cartRepository.getById(id).get();
+        Optional<Cart> cart = cartRepository.getById(id);
+        if (!cart.isPresent())
+            throw new HibernateException("Cart not found with provided id");
+        return cart.get();
     }
 
 
     public List<Cart> getAll() {
-        return cartRepository.getAll().get();
+        Optional<List<Cart>> carts = cartRepository.getAll();
+        if (!carts.isPresent())
+            throw new HibernateException("Error occurred when trying to fetch cart list");
+        return carts.get();
     }
 
 
     public boolean removeItem(Long cartId, Long itemId) {
-//        if (get(cartId) == null)
-//            throw new NullPointerException("No cart exists with this id");
         if (cartId == null)
             throw new NullIdException("Null cart id is provided");
         if (itemId == null)
             throw new NullIdException("Null item id is provided");
-//        long matches = get(cartId).getItems().stream().filter(item -> item.getId().equals(itemId)).count();
-//        if (matches == 0)
-//            throw new NulLCartItemException("No item exists with this id");
-        return cartRepository.removeItem(cartId, itemId);
+        Optional<Cart> cart = cartRepository.getById(cartId);
+        if (!cart.isPresent())
+            throw new HibernateException("No cart exists with this id");
+        long matches = getCartItems(cartId).stream().filter(item -> item.getId().equals(itemId)).count();
+        if (matches == 0)
+            throw new NullCartItemException("No item exists with this id");
+        return cartRepository.removeItem(cart.get(), itemId);
     }
 
 
@@ -118,11 +126,13 @@ public class CartService {
     }
 
     public boolean clearCart(Long cartId) {
-//        if (get(cartId) == null)
-//            throw new NullPointerException("Null cart id is provided");
-        if (cartId == null)
+        if (cartId == null) {
             throw new NullIdException("Null cart id is provided");
-        return cartRepository.clearCart(cartId);
+        }
+        Optional<Cart> cart = cartRepository.getById(cartId);
+        if (!cart.isPresent())
+            throw new NullPointerException("Cart not found with provided id");
+        return cartRepository.clearCart(cart.get());
     }
 
     public int addItem(Long cartId, CartItem item) {
@@ -130,7 +140,10 @@ public class CartService {
             throw new NullIdException("Null cart id is provided");
         if (item == null)
             throw new NullCartItemException("Null cart item is provided");
-        return cartRepository.addItem(cartId, item);
+        Optional<Cart> cart = cartRepository.getById(cartId);
+        if (!cart.isPresent())
+            throw new NullCartException("Cart not found with provided id");
+        return cartRepository.addItem(cart.get(), item);
     }
 
     public List<CartItem> getCartItems(Long cartId) {
@@ -149,7 +162,10 @@ public class CartService {
             throw new NullIdException("Null cart item is provided");
         if (newQuantity < 0)
             throw new NegativeQuantityException("Negative quantity provided");
-        return cartRepository.setProductQuantity(cartId, itemId, newQuantity);
+        Optional<Cart> cart = cartRepository.getById(cartId);
+        if (!cart.isPresent())
+            throw new NullCartException("Cart not found with provided id");
+        return cartRepository.setProductQuantity(cart.get(), itemId, newQuantity);
     }
 
     public int incrementProductQuantity(Long cartId, Long itemId, int quantity) {
@@ -157,7 +173,10 @@ public class CartService {
             throw new NullIdException("Null cart id is provided");
         if (itemId == null)
             throw new NullIdException("Null cart item is provided");
-        return cartRepository.incrementProductQuantity(cartId, itemId, quantity);
+        Optional<Cart> cart = cartRepository.getById(cartId);
+        if (!cart.isPresent())
+            throw new NullCartException("Cart not found with provided id");
+        return cartRepository.incrementProductQuantity(cart.get(), itemId, quantity);
     }
 
     public int decrementProductQuantity(Long cartId, Long itemId) {
@@ -165,6 +184,9 @@ public class CartService {
             throw new NullIdException("Null cart id is provided");
         if (itemId == null)
             throw new NullIdException("Null cart item is provided");
-        return cartRepository.decrementProductQuantity(cartId, itemId);
+        Optional<Cart> cart = cartRepository.getById(cartId);
+        if (!cart.isPresent())
+            throw new NullCartException("Cart not found with provided id");
+        return cartRepository.decrementProductQuantity(cart.get(), itemId);
     }
 }
