@@ -19,7 +19,8 @@ public class OrderService{
         return orderRepository.getAll().get();
     }
     public Order get(Long orderId){
-
+        if (orderId == null || !orderRepository.getById(orderId).isPresent() )
+            throw new NullIdException("Null order id is provided");
         return orderRepository.getById(orderId).get();
     }
     public boolean create(Order order){
