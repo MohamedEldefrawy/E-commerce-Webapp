@@ -7,7 +7,7 @@ import com.vodafone.repository.Repository;
 
 import java.util.List;
 
-public interface ICartRepository extends Repository<Long,Cart> {
+public interface ICartRepository extends Repository<Long, Cart> {
     boolean removeItem(Cart cart, Long itemId);
 
     boolean clearCart(Cart cart);
@@ -16,7 +16,7 @@ public interface ICartRepository extends Repository<Long,Cart> {
 
     int setProductQuantity(Cart cart, Long itemId, int newQuantity);
 
-    int incrementProductQuantity(Cart cart, Long productId,int quantity);
+    int incrementProductQuantity(Cart cart, Long productId, int quantity);
 
-    int decrementProductQuantity(Cart cart, Long productId);
+    int decrementProductQuantity(Cart cart, Long productId, int quantity);
 }

@@ -212,7 +212,7 @@ public class CartRepository implements ICartRepository {
     }
 
     @Override
-    public int decrementProductQuantity(Cart cart, Long productId) {
+    public int decrementProductQuantity(Cart cart, Long productId, int quantity) {
         try (Session session = config.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             CartItem foundItem = null;
@@ -222,7 +222,7 @@ public class CartRepository implements ICartRepository {
 //            });
             for (CartItem item : cart.getItems()) {
                 if (item.getProduct().getId().equals(productId)) {
-                    newQuantity = item.getQuantity() - 1;
+                    newQuantity = item.getQuantity() - quantity;
                     if (newQuantity >= 0) //to prevent negative quantities
                         item.setQuantity(newQuantity);
                     foundItem = item;

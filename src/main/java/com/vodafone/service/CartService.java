@@ -83,20 +83,27 @@ public class CartService {
 
 
     public Order submitFinalOrder(Long cartId) {
+        if(cartId == null)
+            throw new NullIdException("Null cart id is provided");
         Order order = showFinalOrder(cartId); //calculate total and transform CartItem to OrderItem
-        clearCart(cartId); //submit and clear the cart
+        Optional<Cart> cart = cartRepository.getById(cartId);
+        if(!cart.isPresent())
+            throw new HibernateException("Cart not found with provided id");
+        cartRepository.clearCart(cart.get()); //submit and clear the cart
         return order;
     }
 
     public Order showFinalOrder(Long cartId) {
         Set<OrderItem> orderItems = new HashSet<>();
-        Cart cart = get(cartId);
+        Optional<Cart> cart = cartRepository.getById(cartId);
+        if(!cart.isPresent())
+            throw new HibernateException("Cart not found with provided id");
         Order order = new Order();
-        order.setCustomer(cart.getCustomer());
+        order.setCustomer(cart.get().getCustomer());
         order.setDate(Date.valueOf(LocalDate.now()));
         //iterate over each cart item to transform it to order item.
         float total = 0f;
-        for (CartItem cartItem : cart.getItems()) {
+        for (CartItem cartItem : getCartItems(cart.get().getId())) {
             if (cartItem.getQuantity() > 0) {
                 OrderItem orderItem = new OrderItem();
                 orderItem.setOrder(order);
@@ -177,7 +184,7 @@ public class CartService {
         return cartRepository.incrementProductQuantity(cart.get(), itemId, quantity);
     }
 
-    public int decrementProductQuantity(Long cartId, Long itemId) {
+    public int decrementProductQuantity(Long cartId, Long itemId,int quantity) {
         if (cartId == null)
             throw new NullIdException("Null cart id is provided");
         if (itemId == null)
@@ -185,6 +192,6 @@ public class CartService {
         Optional<Cart> cart = cartRepository.getById(cartId);
         if (!cart.isPresent())
             throw new HibernateException("Cart not found with provided id");
-        return cartRepository.decrementProductQuantity(cart.get(), itemId);
+        return cartRepository.decrementProductQuantity(cart.get(), itemId,quantity);
     }
 }
