@@ -69,7 +69,7 @@ public class UserController {
             }
         } else if (user.getUserStatus() == UserStatus.ACTIVATED) { //valid credentials customer
             //reset attempts
-            Customer customer = customerService.get(user.getId());
+            Customer customer = customerService.getById(user.getId());
             customer.setLoginAttempts(3);
             customerService.update(customer.getId(), customer);
             return "redirect:/customer/home.htm";

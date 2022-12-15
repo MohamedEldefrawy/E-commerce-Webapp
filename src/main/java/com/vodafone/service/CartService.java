@@ -29,7 +29,6 @@ public class CartService {
 
 
     public boolean update(Long id, Cart updatedEntity) {
-//        if (updatedEntity == null || get(id) == null)
         if (id == null)
             throw new NullIdException("Null cart id is provided");
         if (updatedEntity == null)
@@ -39,8 +38,8 @@ public class CartService {
 
 
     public boolean delete(Long id) {
-//        if (get(id) == null)
-//          throw new NullPointerException("No cart exists with this id");
+        if (get(id) == null)
+          throw new NullPointerException("No cart exists with this id");
         if (id == null)
             throw new NullIdException("Null cart id is provided");
         return cartRepository.delete(id);
@@ -123,8 +122,6 @@ public class CartService {
     }
 
     public int addItem(Long cartId, CartItem item) {
-//        if (cartId == null)
-//            throw new NullPointerException("Null cart id is provided");
         if (cartId == null)
             throw new NullIdException("Null cart id is provided");
         if (item == null)
