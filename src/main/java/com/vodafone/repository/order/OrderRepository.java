@@ -69,7 +69,7 @@ public class OrderRepository implements IOrderRepository {
                 session.update(o.getProduct());
             }
             tx.commit();
-            return Optional.ofNullable(orderId);
+            return Optional.of(orderId);
         } catch (HibernateException e) {
             logger.warn(e.getMessage());
             return Optional.empty();
