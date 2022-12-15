@@ -60,16 +60,13 @@ public class OrderRepository implements IOrderRepository {
     public Optional<Long> create(Order order) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
-            Long orderId = null;
-            if (order.getOrderItems() != null && order.getOrderItems().size() > 0) {
-                orderId = (Long) session.save(order);
-                //Adds created customer to customer's arrayList
-                order.getCustomer().getOrders().add(order);
-                session.update(order.getCustomer());
-                //updates the quantity of stock in order item
-                for (OrderItem o : order.getOrderItems()) {
-                    session.update(o.getProduct());
-                }
+            Long orderId = (Long) session.save(order);
+            //Adds created customer to customer's arrayList
+            order.getCustomer().getOrders().add(order);
+            session.update(order.getCustomer());
+            //updates the quantity of stock in order item
+            for (OrderItem o : order.getOrderItems()) {
+                session.update(o.getProduct());
             }
             tx.commit();
             return Optional.ofNullable(orderId);
