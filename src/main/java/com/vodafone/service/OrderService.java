@@ -1,5 +1,6 @@
 package com.vodafone.service;
 
+import com.vodafone.exception.NullOrderException;
 import com.vodafone.model.Order;
 import com.vodafone.repository.order.OrderRepository;
 import lombok.AllArgsConstructor;
@@ -19,7 +20,10 @@ public class OrderService{
         return orderRepository.getById(orderId).get();
     }
     public boolean create(Order order){
-        if (order.getOrderItems() != null && order.getOrderItems().size() > 0){
+        if(order ==null){
+            throw new NullOrderException("Null Order Provided");
+        }
+        else if (order.getOrderItems() != null && order.getOrderItems().size() > 0){
             return orderRepository.create(order).isPresent();
         }else {
             return false;
