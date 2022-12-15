@@ -268,4 +268,80 @@ class OrderServiceTest {
         assertEquals(orderService.getAll(),orderList);
     }
 
+    @Test
+    void getCustomerById_nullId_expectException(){
+        ///Arrange
+        List<Order> orderList = new ArrayList<>();
+
+        Customer customer = new Customer();
+        customer.setUserName("Neimat");
+        customer.setEmail("neimat.soliman.ismail@gmail.com");
+
+        OrderItem orderItem = new OrderItem();
+        orderItem.setProduct(new Product());
+        orderItem.setQuantity(6);
+
+        Set<OrderItem> orderItems = new HashSet<>();
+        orderItems.add(orderItem);
+
+        Order order =new Order();
+        order.setCustomer(customer);
+        order.setOrderItems(orderItems);
+        orderList.add(order);
+        //Act
+        when(orderRepositoryMock.getByCustomerId(null)).thenThrow(new NullIdException("Null customer id is provided"));
+        //Assert
+        assertThrows(NullIdException.class,()->orderService.getByCustomerId(null));
+
+    }
+    @Test
+    void getCustomerById_wrongId_returnEmptyList(){
+        ///Arrange
+        List<Order> orderList = new ArrayList<>();
+
+        Customer customer = new Customer();
+        customer.setUserName("Neimat");
+        customer.setEmail("neimat.soliman.ismail@gmail.com");
+
+        OrderItem orderItem = new OrderItem();
+        orderItem.setProduct(new Product());
+        orderItem.setQuantity(6);
+
+        Set<OrderItem> orderItems = new HashSet<>();
+        orderItems.add(orderItem);
+
+        Order order =new Order();
+        order.setCustomer(customer);
+        order.setOrderItems(orderItems);
+        orderList.add(order);
+        //Act
+        when(orderRepositoryMock.getByCustomerId(1L)).thenReturn(orderList);
+        //Assert
+        assertEquals(orderService.getByCustomerId(2L),new ArrayList<>());
+    }
+    @Test
+    void getCustomerById_rightId_returnTrue(){
+        ///Arrange
+        List<Order> orderList = new ArrayList<>();
+
+        Customer customer = new Customer();
+        customer.setUserName("Neimat");
+        customer.setEmail("neimat.soliman.ismail@gmail.com");
+
+        OrderItem orderItem = new OrderItem();
+        orderItem.setProduct(new Product());
+        orderItem.setQuantity(6);
+
+        Set<OrderItem> orderItems = new HashSet<>();
+        orderItems.add(orderItem);
+
+        Order order =new Order();
+        order.setCustomer(customer);
+        order.setOrderItems(orderItems);
+        orderList.add(order);        //Act
+        when(orderRepositoryMock.getByCustomerId(1L)).thenReturn(orderList);
+        //Assert
+        assertEquals(orderService.getByCustomerId(1L),orderList);
+    }
+
 }
