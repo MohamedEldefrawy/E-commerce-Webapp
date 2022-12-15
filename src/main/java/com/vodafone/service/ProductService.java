@@ -53,7 +53,7 @@ public class ProductService {
 
     public Product getByName(String name) throws GetProductException {
         Optional<List<Product>> optionalProducts = this.productRepository.getByName(name);
-        if (optionalProducts.isPresent() && optionalProducts.get().size() > 0)
+        if (optionalProducts.isPresent() && !optionalProducts.get().isEmpty())
             return optionalProducts.get().get(0);
         throw new GetProductException("No product found with name: " + name);
     }
@@ -67,7 +67,7 @@ public class ProductService {
 
     public List<Product> getAvailableProducts() {
         Optional<List<Product>> optionalProducts = this.productRepository.getAvailableProducts();
-        if (optionalProducts.isPresent() && optionalProducts.get().size() > 0)
+        if (optionalProducts.isPresent() && !optionalProducts.get().isEmpty())
             return optionalProducts.get();
 
         throw new GetProductException("No products found");
