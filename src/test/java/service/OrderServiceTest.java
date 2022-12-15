@@ -191,5 +191,59 @@ class OrderServiceTest {
         assertTrue(orderService.delete(1L));
     }
 
+    @Test
+    void get_nullId_expectException(){
+        //Act
+        when(orderRepositoryMock.getById(null)).thenThrow(new NullIdException("Null order id is provided"));
+        //Assert
+        assertThrows(NullIdException.class,()->orderService.get(null));
+
+    }
+    @Test
+    void get_wrongId_returnFalse(){
+        ///Arrange
+        Customer customer = new Customer();
+        customer.setUserName("Neimat");
+        customer.setEmail("neimat.soliman.ismail@gmail.com");
+
+        OrderItem orderItem = new OrderItem();
+        orderItem.setProduct(new Product());
+        orderItem.setQuantity(6);
+
+        Set<OrderItem> orderItems = new HashSet<>();
+        orderItems.add(orderItem);
+
+        Order order =new Order();
+        order.setCustomer(customer);
+        order.setOrderItems(orderItems);
+        //Act
+        when(orderRepositoryMock.getById(1L)).thenReturn(Optional.of(order));
+        //Assert
+        assertThrows(NullIdException.class,()-> orderService.get(2L));
+    }
+    @Test
+    void get_rightId_returnTrue(){
+        ///Arrange
+        Customer customer = new Customer();
+        customer.setUserName("Neimat");
+        customer.setEmail("neimat.soliman.ismail@gmail.com");
+
+        OrderItem orderItem = new OrderItem();
+        orderItem.setProduct(new Product());
+        orderItem.setQuantity(6);
+
+        Set<OrderItem> orderItems = new HashSet<>();
+        orderItems.add(orderItem);
+
+        Order order =new Order();
+        order.setCustomer(customer);
+        order.setOrderItems(orderItems);
+        //Act
+        when(orderRepositoryMock.getById(1L)).thenReturn(Optional.of(order));
+        //Assert
+        assertEquals(orderService.get(1L),order);
+    }
+
+
 
 }
