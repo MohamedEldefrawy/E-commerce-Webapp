@@ -1,5 +1,6 @@
 package com.vodafone.service;
 
+import com.vodafone.exception.admin.CreateAdminException;
 import com.vodafone.exception.admin.GetAdminException;
 import com.vodafone.model.Admin;
 import com.vodafone.repository.admin.AdminRepository;
@@ -23,35 +24,59 @@ public class AdminService {
             throw new GetAdminException("No admins found");
     }
 
-    public Admin get(Long id) {
-        return adminRepository.getById(id).get();
+    public Admin getAdminById(Long id) {
+        Optional<Admin> admin = adminRepository.getById(id);
+        if (admin.isPresent())
+            return admin.get();
+        throw new GetAdminException("No admin found with id: " + id);
     }
 
-    public boolean delete(Long id) {
-        return adminRepository.delete(id);
+    public boolean deleteAdmin(Long id) {
+        Optional<Admin> admin = adminRepository.getById(id);
+        if (admin.isPresent())
+            return adminRepository.delete(id);
+        throw new GetAdminException("No admin found with id: " + id);
     }
 
-    public boolean create(Admin admin) {
-        return adminRepository.create(admin).isPresent();
+    public boolean createAdmin(Admin admin) {
+        Optional<Long> optionalLong = adminRepository.create(admin);
+        if (optionalLong.isPresent())
+            return true;
+        throw new CreateAdminException("Failed to create new admin");
     }
 
-    public boolean update(Long id, Admin admin) {
-        return adminRepository.update(id, admin);
+    public boolean updateAdmin(Long id, Admin admin) {
+        Optional<Admin> foundAdmin = adminRepository.getById(id);
+        if (foundAdmin.isPresent())
+            return adminRepository.update(id, admin);
+        throw new GetAdminException("No admin found with id: " + id);
     }
 
     public boolean updatePassword(Long id, String newPassword) {
-        return adminRepository.updatePassword(id, newPassword);
+        Optional<Admin> admin = adminRepository.getById(id);
+        if (admin.isPresent())
+            return adminRepository.updatePassword(id, newPassword);
+        throw new GetAdminException("No admin found with id: " + id);
     }
 
-    public void setFirstLoginFlag(Long id) {
-        adminRepository.setFirstLoginFlag(id);
+    public boolean setFirstLoginFlag(Long id) {
+        Optional<Admin> admin = adminRepository.getById(id);
+        if (admin.isPresent())
+            return adminRepository.setFirstLoginFlag(id);
+        throw new GetAdminException("No admin found with id: " + id);
     }
 
-    public Admin getByEmail(String email) {
-        return adminRepository.getByEmail(email);
+    public Admin getAdminByEmail(String email) {
+        Optional<Admin> admin = adminRepository.getByEmail(email);
+        if (admin.isPresent())
+            return admin.get();
+        throw new GetAdminException("No admin found with email: " + email);
     }
 
-    public Admin getByUsername(String username) {
-        return adminRepository.getByUsername(username);
+    public Admin getAdminByUsername(String username) {
+        Optional<Admin> admin = adminRepository.getByUsername(username);
+        if (admin.isPresent())
+            return admin.get();
+        throw new GetAdminException("No admin found with email: " + username);
     }
 }
