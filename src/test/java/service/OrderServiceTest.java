@@ -144,7 +144,7 @@ class OrderServiceTest {
     }
 
     @Test
-    void update_rightOrder_wrongId_returnTrue(){
+    void update_rightOrder_wrongId_returnFalse(){
         ///Arrange
         Customer customer = new Customer();
         customer.setUserName("Neimat");
@@ -166,6 +166,29 @@ class OrderServiceTest {
         //Assert
         assertFalse(orderService.update(2L,order));
 
+    }
+
+    @Test
+    void delete_nullId_expectException(){
+        //Act
+        when(orderRepositoryMock.delete(null)).thenThrow(new NullIdException("Null order id is provided"));
+        //Assert
+        assertThrows(NullIdException.class,()->orderService.delete(null));
+
+    }
+    @Test
+    void delete_wrongId_returnFalse(){
+        //Act
+        when(orderRepositoryMock.delete(1L)).thenReturn(true);
+        //Assert
+        assertFalse(orderService.delete(2L));
+    }
+    @Test
+    void delete_rightId_returnTrue(){
+        //Act
+        when(orderRepositoryMock.delete(1L)).thenReturn(true);
+        //Assert
+        assertTrue(orderService.delete(1L));
     }
 
 
