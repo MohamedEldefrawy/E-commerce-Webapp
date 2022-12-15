@@ -1,4 +1,4 @@
-package com.vodafone.exception;
+package com.vodafone.exception.cart;
 
 public class NullCartException extends RuntimeException {
     public NullCartException(String message) {

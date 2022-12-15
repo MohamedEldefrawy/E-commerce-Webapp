@@ -1,7 +1,7 @@
 package service;
 
-import com.vodafone.exception.IncompleteUserAttributesException;
-import com.vodafone.exception.NullCustomerException;
+import com.vodafone.exception.customer.IncompleteUserAttributesException;
+import com.vodafone.exception.customer.NullCustomerException;
 import com.vodafone.exception.NullIdException;
 import com.vodafone.model.Customer;
 import com.vodafone.model.Role;

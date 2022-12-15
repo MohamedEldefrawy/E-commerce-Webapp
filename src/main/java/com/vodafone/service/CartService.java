@@ -1,6 +1,9 @@
 package com.vodafone.service;
 
 import com.vodafone.exception.*;
+import com.vodafone.exception.cart.NegativeQuantityException;
+import com.vodafone.exception.cart.NullCartException;
+import com.vodafone.exception.cart.NullCartItemException;
 import com.vodafone.model.Cart;
 import com.vodafone.model.CartItem;
 import com.vodafone.model.Order;
