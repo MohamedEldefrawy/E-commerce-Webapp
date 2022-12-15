@@ -347,7 +347,7 @@ public class CustomerController {
         if (userAuthorizer.isActivatedCustomer(session)) {
             Long customerId = (long) session.getAttribute("id");
             Long cartId = customerService.getById(customerId).getCart().getId();
-            int newQuantity = cartService.decrementProductQuantity(cartId, productId);
+            int newQuantity = cartService.decrementProductQuantity(cartId, productId,1);
             if (newQuantity == -1)
                 return "500";
             return "200";
