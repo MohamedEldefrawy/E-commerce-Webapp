@@ -44,10 +44,10 @@ public class OrderRepository implements IOrderRepository {
         Order order;
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
-            Query query = session.createQuery(
+            Query<Order> query = session.createQuery(
                     "From Order o where o.id=" + orderId
             );
-            order = (Order) query.uniqueResult();
+            order =  query.uniqueResult();
             tx.commit();
         } catch (HibernateException e) {
             logger.warn(e.getMessage());
@@ -79,9 +79,6 @@ public class OrderRepository implements IOrderRepository {
     @Override
     public boolean update(Long orderId, Order updatedEntity) {
         Order order = getById(orderId).get();
-        if (order == null)
-            return false;
-
         try (Session session = this.hibernateConfig.getSessionFactory().openSession()) {
             //doesnt update order items set
             Transaction tx = session.beginTransaction();
