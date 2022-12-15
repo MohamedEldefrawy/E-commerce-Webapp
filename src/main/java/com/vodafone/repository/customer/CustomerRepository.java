@@ -69,7 +69,7 @@ public class CustomerRepository implements ICustomerRepository {
     public boolean updateStatusActivated(String email) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            Customer customer = getByMail(email);
+            Customer customer = getByMail(email).get();
             customer.setUserStatus(UserStatus.ACTIVATED);
             session.update(customer);
             transaction.commit();
@@ -85,7 +85,7 @@ public class CustomerRepository implements ICustomerRepository {
     public boolean expireOtp(String userName) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            Customer customer = getByUserName(userName);
+            Customer customer = getByUserName(userName).get();
             customer.setCode(null);
             session.update(customer);
             transaction.commit();
@@ -122,12 +122,11 @@ public class CustomerRepository implements ICustomerRepository {
     }
 
     @Override
-    public Customer getByMail(String email) {
+    public Optional<Customer> getByMail(String email) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             try {
                 List<Customer> customers = session.createQuery("SELECT customer from Customer customer where customer.email=: email", Customer.class).setParameter("email", email).list();
-                if (customers.isEmpty()) throw new NoResultException("No customer found");
-                return customers.get(0);
+                return Optional.of(customers.get(0));
             } catch (NoResultException e) {
                 System.out.println(e.getMessage());
                 return null;
@@ -139,12 +138,11 @@ public class CustomerRepository implements ICustomerRepository {
     }
 
     @Override
-    public Customer getByUserName(String username) {
+    public Optional<Customer> getByUserName(String username) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             try {
                 List<Customer> customers = session.createQuery("SELECT customer from Customer customer where customer.userName=: username", Customer.class).setParameter("username", username).list();
-                if (customers.isEmpty()) throw new NoResultException("No customer found");
-                return customers.get(0);
+                return Optional.of(customers.get(0));
             } catch (NoResultException e) {
                 System.out.println(e.getMessage());
                 return null;
@@ -168,7 +166,7 @@ public class CustomerRepository implements ICustomerRepository {
     @Override
     public boolean resetPassword(String email, String password) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            Customer customer = getByMail(email); //get customer by email
+            Customer customer = getByMail(email).get(); //get customer by email
             //update customer's password
             customer.setPassword(password);
             //update customer's status to activated
