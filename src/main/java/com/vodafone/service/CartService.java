@@ -43,10 +43,11 @@ public class CartService {
 
 
     public boolean delete(Long id) {
-        if (get(id) == null)
-            throw new NullPointerException("No cart exists with this id");
         if (id == null)
             throw new NullIdException("Null cart id is provided");
+        Optional<Cart> cart = cartRepository.getById(id);
+        if (!cart.isPresent())
+            throw new HibernateException("No cart exists with this id");
         return cartRepository.delete(id);
     }
 
@@ -128,7 +129,7 @@ public class CartService {
         }
         Optional<Cart> cart = cartRepository.getById(cartId);
         if (!cart.isPresent())
-            throw new NullPointerException("Cart not found with provided id");
+            throw new HibernateException("Cart not found with provided id");
         return cartRepository.clearCart(cart.get());
     }
 
@@ -139,7 +140,7 @@ public class CartService {
             throw new NullCartItemException("Null cart item is provided");
         Optional<Cart> cart = cartRepository.getById(cartId);
         if (!cart.isPresent())
-            throw new NullCartException("Cart not found with provided id");
+            throw new HibernateException("Cart not found with provided id");
         return cartRepository.addItem(cart.get(), item);
     }
 
@@ -148,7 +149,7 @@ public class CartService {
             throw new NullIdException("Null cart id is provided");
         Optional<Cart> cart = cartRepository.getById(cartId);
         if (!cart.isPresent())
-            throw new NullCartException("Cart not found with provided id");
+            throw new HibernateException("Cart not found with provided id");
         return cart.get().getItems();
     }
 
@@ -161,7 +162,7 @@ public class CartService {
             throw new NegativeQuantityException("Negative quantity provided");
         Optional<Cart> cart = cartRepository.getById(cartId);
         if (!cart.isPresent())
-            throw new NullCartException("Cart not found with provided id");
+            throw new HibernateException("Cart not found with provided id");
         return cartRepository.setProductQuantity(cart.get(), itemId, newQuantity);
     }
 
@@ -172,7 +173,7 @@ public class CartService {
             throw new NullIdException("Null cart item is provided");
         Optional<Cart> cart = cartRepository.getById(cartId);
         if (!cart.isPresent())
-            throw new NullCartException("Cart not found with provided id");
+            throw new HibernateException("Cart not found with provided id");
         return cartRepository.incrementProductQuantity(cart.get(), itemId, quantity);
     }
 
@@ -183,7 +184,7 @@ public class CartService {
             throw new NullIdException("Null cart item is provided");
         Optional<Cart> cart = cartRepository.getById(cartId);
         if (!cart.isPresent())
-            throw new NullCartException("Cart not found with provided id");
+            throw new HibernateException("Cart not found with provided id");
         return cartRepository.decrementProductQuantity(cart.get(), itemId);
     }
 }
