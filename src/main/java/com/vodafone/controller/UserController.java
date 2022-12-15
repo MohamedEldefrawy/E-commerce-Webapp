@@ -60,7 +60,7 @@ public class UserController {
         session.setAttribute("email", login.getEmail());
         session.setAttribute("id", user.getId());
         if (user.getUserStatus() == UserStatus.ADMIN) { //Admin-only logic
-            Admin admin = adminService.get(user.getId());
+            Admin admin = adminService.getAdminById(user.getId());
             if (admin.isFirstLogin()) {
                 adminService.setFirstLoginFlag(admin.getId()); //set flag to false
                 return "redirect:/admins/setAdminPassword.htm";
@@ -69,7 +69,7 @@ public class UserController {
             }
         } else if (user.getUserStatus() == UserStatus.ACTIVATED) { //valid credentials customer
             //reset attempts
-            Customer customer = customerService.get(user.getId());
+            Customer customer = customerService.getById(user.getId());
             customer.setLoginAttempts(3);
             customerService.update(customer.getId(), customer);
             return "redirect:/customer/home.htm";

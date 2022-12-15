@@ -4,8 +4,6 @@ import com.vodafone.model.Customer;
 import com.vodafone.service.AdminService;
 import com.vodafone.service.CustomerService;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
@@ -34,12 +32,12 @@ public class CustomerValidator implements Validator {
         }
 
         if (customerService.getByMail(customer.getEmail()) != null ||
-                adminService.getByEmail(customer.getEmail()) != null) {
+                adminService.getAdminByEmail(customer.getEmail()) != null) {
             errors.rejectValue("email", "duplicated", new Object[]{"'email'"},
                     "This Email Already Exists");
         }
         if (customerService.getByUserName(customer.getUserName()) != null ||
-                adminService.getByUsername(customer.getUserName()) != null) {
+                adminService.getAdminByUsername(customer.getUserName()) != null) {
             errors.rejectValue("userName", "duplicated", new Object[]{"'userName'"},
                     "This Username Already Exists");
         }

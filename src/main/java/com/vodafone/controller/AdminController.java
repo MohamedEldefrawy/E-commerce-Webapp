@@ -16,6 +16,7 @@ import com.vodafone.service.ProductService;
 import com.vodafone.service.SendEmailService;
 import com.vodafone.validators.AdminValidator;
 import com.vodafone.validators.UserAuthorizer;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -37,6 +38,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @Controller
+@AllArgsConstructor
 @RequestMapping("/admins")
 
 public class AdminController {
@@ -50,17 +52,6 @@ public class AdminController {
     private final SendEmailService emailService;
 
     private final Logger logger = LoggerFactory.getLogger(AdminController.class);
-
-    public AdminController(AdminService adminService, ProductService productService,
-                           AdminValidator adminValidator, UserAuthorizer userAuthorizer, HashService hashService, SendEmailService emailService) {
-        this.adminService = adminService;
-        this.productService = productService;
-        this.validator = adminValidator;
-        this.userAuthorizer = userAuthorizer;
-        this.hashService = hashService;
-        this.emailService = emailService;
-    }
-
 
     @GetMapping("/admins.htm")
     public String getAll(HttpSession session, Model model) {
@@ -84,7 +75,7 @@ public class AdminController {
         if (userAuthorizer.authorizeAdmin(session)) {
             Long sessionId = (Long) session.getAttribute("id");
             if (id != 2 && !Objects.equals(sessionId, id)) {
-                boolean deleted = adminService.delete(id);
+                boolean deleted = adminService.deleteAdmin(id);
                 if (deleted)
                     return "200"; //deleted successfully
                 return "500"; //server encountered error while processing request
@@ -98,7 +89,7 @@ public class AdminController {
     @GetMapping("/updateAdmin.htm")
     public String updateAdmin(HttpSession session, Model model, @RequestParam Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
-            Admin admin = adminService.get(id);
+            Admin admin = adminService.getAdminById(id);
             int idInt = id.intValue();
             CreateAdmin createAdmin = new CreateAdmin(idInt, admin.getUserName(), admin.getEmail());
             model.addAttribute("admin", createAdmin);
@@ -139,7 +130,7 @@ public class AdminController {
             admin.setRole(Role.Admin);
             admin.setEmail(createAdmin.getEmail());
             admin.setFirstLogin(true);
-            if (adminService.create(admin)) {
+            if (adminService.createAdmin(admin)) {
                 session.setAttribute("dec_password", admin.getPassword());
                 session.setAttribute("newAdminEmail", admin.getEmail());
                 //encrypt admin password in db
@@ -337,7 +328,7 @@ public class AdminController {
             Admin updatedAdmin = new Admin();
             updatedAdmin.setEmail(admin.getEmail());
             updatedAdmin.setUserName(admin.getUserName());
-            boolean result = adminService.update(id, updatedAdmin);
+            boolean result = adminService.updateAdmin(id, updatedAdmin);
             if (result)
                 return "redirect:/admins/admins.htm";
             return "admin/updateAdmin";
@@ -354,7 +345,7 @@ public class AdminController {
     @PostMapping("setAdminPassword.htm")
     public String setAdminPassword(@Valid @NotNull @NotBlank @RequestParam("newPassword") String newPassword, HttpSession session) {
         String email = session.getAttribute("email").toString();
-        Admin admin = adminService.getByEmail(email);
+        Admin admin = adminService.getAdminByEmail(email);
         newPassword = hashService.encryptPassword(newPassword, (String) session.getAttribute("email"));
         admin.setPassword(newPassword);
         adminService.updatePassword(admin.getId(), newPassword);
