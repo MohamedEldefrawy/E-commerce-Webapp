@@ -11,10 +11,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,8 +22,8 @@ import static org.mockito.Mockito.*;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AdminServiceUnitTest {
 
-    private  AdminRepository adminRepositoryMock = mock(AdminRepository.class);
-    private  AdminService adminService = new AdminService(adminRepositoryMock);
+    private AdminRepository adminRepositoryMock = mock(AdminRepository.class);
+    private AdminService adminService = new AdminService(adminRepositoryMock);
     private List<Admin> adminList;
     private Admin admin;
 
@@ -95,7 +93,7 @@ public class AdminServiceUnitTest {
         //Arrange
         when(adminRepositoryMock.getById(any(Long.class))).thenReturn(Optional.empty());
         //Act & Assert
-        assertThrows(GetAdminException.class, ()->adminService.getAdminById(3L));
+        assertThrows(GetAdminException.class, () -> adminService.getAdminById(3L));
         verify(adminRepositoryMock, times(1)).getById(any());
     }
 
@@ -117,7 +115,7 @@ public class AdminServiceUnitTest {
         //Arrange
         when(adminRepositoryMock.getById(any())).thenReturn(Optional.empty());
         //Act & Assert
-        assertThrows(GetAdminException.class, ()->adminService.deleteAdmin(3L));
+        assertThrows(GetAdminException.class, () -> adminService.deleteAdmin(3L));
         verify(adminRepositoryMock, times(1)).getById(any());
     }
 
@@ -129,7 +127,7 @@ public class AdminServiceUnitTest {
         boolean created = adminService.createAdmin(admin);
         //Asset
         assertTrue(created);
-        verify(adminRepositoryMock,times(1)).create(any());
+        verify(adminRepositoryMock, times(1)).create(any());
     }
 
     @Test
@@ -137,7 +135,7 @@ public class AdminServiceUnitTest {
         //Arrange
         when(adminRepositoryMock.create(admin)).thenThrow(CreateAdminException.class);
         //Act & Assert
-        assertThrows(CreateAdminException.class, ()->adminService.createAdmin(admin));
+        assertThrows(CreateAdminException.class, () -> adminService.createAdmin(admin));
         verify(adminRepositoryMock, times(1)).create(any());
     }
 
@@ -146,7 +144,7 @@ public class AdminServiceUnitTest {
         //Arrange
         when(adminRepositoryMock.create(admin)).thenReturn(Optional.empty());
         //Act & Assert
-        assertThrows(CreateAdminException.class, ()->adminService.createAdmin(admin));
+        assertThrows(CreateAdminException.class, () -> adminService.createAdmin(admin));
         verify(adminRepositoryMock, times(1)).create(any());
     }
 
@@ -160,7 +158,7 @@ public class AdminServiceUnitTest {
         //Asset
         assertTrue(updated);
         verify(adminRepositoryMock, times(1)).getById(any());
-        verify(adminRepositoryMock, times(1)).update(any(),any());
+        verify(adminRepositoryMock, times(1)).update(any(), any());
     }
 
     @Test
@@ -168,7 +166,7 @@ public class AdminServiceUnitTest {
         //Arrange
         when(adminRepositoryMock.getById(3L)).thenReturn(Optional.empty());
         //Act & Assert
-        assertThrows(GetAdminException.class, ()->adminService.updateAdmin(3L,admin));
+        assertThrows(GetAdminException.class, () -> adminService.updateAdmin(3L, admin));
         verify(adminRepositoryMock, times(1)).getById(any());
     }
 
@@ -182,7 +180,7 @@ public class AdminServiceUnitTest {
         //Asset
         assertTrue(updated);
         verify(adminRepositoryMock, times(1)).getById(any());
-        verify(adminRepositoryMock, times(1)).updatePassword(any(),any());
+        verify(adminRepositoryMock, times(1)).updatePassword(any(), any());
     }
 
     @Test
@@ -190,7 +188,7 @@ public class AdminServiceUnitTest {
         //Arrange
         when(adminRepositoryMock.getById(any())).thenReturn(Optional.empty());
         //Act & Assert
-        assertThrows(GetAdminException.class, ()->adminService.updatePassword(3L,"2817927839123"));
+        assertThrows(GetAdminException.class, () -> adminService.updatePassword(3L, "2817927839123"));
         verify(adminRepositoryMock, times(1)).getById(any());
     }
 
@@ -206,12 +204,13 @@ public class AdminServiceUnitTest {
         verify(adminRepositoryMock, times(1)).getById(any());
         verify(adminRepositoryMock, times(1)).setFirstLoginFlag(any(Long.class));
     }
+
     @Test
     public void setFirstLogin_sendNonExistentId_throwException() {
         //Arrange
         when(adminRepositoryMock.getById(any())).thenReturn(Optional.empty());
         //Act & Assert
-        assertThrows(GetAdminException.class, ()->adminService.setFirstLoginFlag(3L));
+        assertThrows(GetAdminException.class, () -> adminService.setFirstLoginFlag(3L));
         verify(adminRepositoryMock, times(1)).getById(any(Long.class));
     }
 
@@ -231,7 +230,7 @@ public class AdminServiceUnitTest {
         //Arrange
         when(adminRepositoryMock.getByEmail(any(String.class))).thenReturn(Optional.empty());
         //Act & Assert
-        assertThrows(GetAdminException.class, ()->adminService.getAdminByEmail("admi@gmail.com"));
+        assertThrows(GetAdminException.class, () -> adminService.getAdminByEmail("admi@gmail.com"));
         verify(adminRepositoryMock, times(1)).getByEmail(any());
     }
 
@@ -251,7 +250,7 @@ public class AdminServiceUnitTest {
         //Arrange
         when(adminRepositoryMock.getByUsername(any(String.class))).thenReturn(Optional.empty());
         //Act & Assert
-        assertThrows(GetAdminException.class, ()->adminService.getAdminByUsername("admi"));
+        assertThrows(GetAdminException.class, () -> adminService.getAdminByUsername("admi"));
         verify(adminRepositoryMock, times(1)).getByUsername(any());
     }
 }
