@@ -11,9 +11,7 @@ import com.vodafone.service.OrderService;
 import org.junit.jupiter.api.Test;
 
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -244,6 +242,30 @@ class OrderServiceTest {
         assertEquals(orderService.get(1L),order);
     }
 
+    @Test
+    void getAll_returnTrue(){
+        ///Arrange
+        List<Order> orderList = new ArrayList<>();
 
+        Customer customer = new Customer();
+        customer.setUserName("Neimat");
+        customer.setEmail("neimat.soliman.ismail@gmail.com");
+
+        OrderItem orderItem = new OrderItem();
+        orderItem.setProduct(new Product());
+        orderItem.setQuantity(6);
+
+        Set<OrderItem> orderItems = new HashSet<>();
+        orderItems.add(orderItem);
+
+        Order order =new Order();
+        order.setCustomer(customer);
+        order.setOrderItems(orderItems);
+        orderList.add(order);
+        //Act
+        when(orderRepositoryMock.getAll()).thenReturn(Optional.of(orderList));
+        //Assert
+        assertEquals(orderService.getAll(),orderList);
+    }
 
 }
