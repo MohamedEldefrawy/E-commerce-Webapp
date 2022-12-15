@@ -23,7 +23,7 @@ public class OrderService{
         if(order ==null){
             throw new NullOrderException("Null Order Provided");
         }
-        else if (order.getOrderItems() != null && order.getOrderItems().size() > 0){
+        else if (order.getOrderItems() != null && !order.getOrderItems().isEmpty()){
             return orderRepository.create(order).isPresent();
         }else {
             return false;
