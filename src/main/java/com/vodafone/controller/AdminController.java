@@ -16,6 +16,7 @@ import com.vodafone.service.ProductService;
 import com.vodafone.service.SendEmailService;
 import com.vodafone.validators.AdminValidator;
 import com.vodafone.validators.UserAuthorizer;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -37,6 +38,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @Controller
+@AllArgsConstructor
 @RequestMapping("/admins")
 
 public class AdminController {
@@ -50,17 +52,6 @@ public class AdminController {
     private final SendEmailService emailService;
 
     private final Logger logger = LoggerFactory.getLogger(AdminController.class);
-
-    public AdminController(AdminService adminService, ProductService productService,
-                           AdminValidator adminValidator, UserAuthorizer userAuthorizer, HashService hashService, SendEmailService emailService) {
-        this.adminService = adminService;
-        this.productService = productService;
-        this.validator = adminValidator;
-        this.userAuthorizer = userAuthorizer;
-        this.hashService = hashService;
-        this.emailService = emailService;
-    }
-
 
     @GetMapping("/admins.htm")
     public String getAll(HttpSession session, Model model) {
