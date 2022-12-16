@@ -194,6 +194,7 @@ public class CustomerController {
                 product = productService.getById(itemId);
             } catch (GetProductException e) {
                 logger.warn(e.getMessage());
+                return "/customer/shared/error404";
             }
 
             CartItem cartItem = new CartItem(quantity, product, customerCart);
