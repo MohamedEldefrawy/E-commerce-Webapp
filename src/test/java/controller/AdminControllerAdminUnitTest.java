@@ -16,9 +16,13 @@ import com.vodafone.validators.AdminValidator;
 import com.vodafone.validators.UserAuthorizer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.validation.ObjectError;
 
 import javax.servlet.http.HttpSession;
 
@@ -28,7 +32,15 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
 
 class AdminControllerAdminUnitTest {
@@ -40,6 +52,7 @@ class AdminControllerAdminUnitTest {
     private AdminController adminController;
     private HttpSession session;
     private Admin admin;
+    MockMvc mockMvc;
 
 
     @BeforeEach
@@ -61,6 +74,10 @@ class AdminControllerAdminUnitTest {
         admin.setRole(Role.Admin);
         admin.setUserStatus(UserStatus.ADMIN);
         admin.setId(2L);
+
+        mockMvc = MockMvcBuilders
+                .standaloneSetup(adminController)
+                .build();
     }
 
     @Test
@@ -74,8 +91,8 @@ class AdminControllerAdminUnitTest {
         assertEquals(AdminViews.LOGIN_REDIRECT, page);
     }
     @Test
-    void getAll_throwGetAdminException_getAdminsPage() {
-        //Arrange
+    void getAll_throwGetAdminException_getAdminsPage() throws Exception{
+        /*//Arrange
         Model model = mock(Model.class);
         when(userAuthorizer.authorizeAdmin(session)).thenReturn(true);
         when(adminService.getAll()).thenThrow(GetAdminException.class);
@@ -84,12 +101,17 @@ class AdminControllerAdminUnitTest {
         String page = adminController.getAll(session,model);
         //Assert
         verify(adminService,times(1)).getAll();
-        assertEquals(AdminViews.VIEW_ALL_ADMINS,page);
+        assertEquals(AdminViews.VIEW_ALL_ADMINS,page);*/
+        when(userAuthorizer.authorizeAdmin(any(HttpSession.class))).thenReturn(true);
+        when(adminService.getAll()).thenThrow(GetAdminException.class);
+        mockMvc.perform(get("/admins/admins.htm"))
+                .andExpect(view().name(AdminViews.VIEW_ALL_ADMINS))
+                .andExpect(model().attribute("admins",hasSize(0)));
 
     }
     @Test
-    void getAll_getAdminsList_getHomePage() {
-        //Arrange
+    void getAll_getAdminsList_getAdminsPage() throws Exception{
+        /*//Arrange
         Model model = mock(Model.class);
         when(userAuthorizer.authorizeAdmin(session)).thenReturn(true);
         List<Admin> admins= new ArrayList<>();
@@ -98,7 +120,19 @@ class AdminControllerAdminUnitTest {
         String page = adminController.getAll(session,model);
         //Assert
         verify(adminService,times(1)).getAll();
-        assertEquals(AdminViews.VIEW_ALL_ADMINS,page);
+        assertEquals(AdminViews.VIEW_ALL_ADMINS,page);*/
+        when(userAuthorizer.authorizeAdmin(any(HttpSession.class))).thenReturn(true);
+        List<Admin> admins = new ArrayList<>();
+        admins.add(admin);
+        when(adminService.getAll()).thenReturn(admins);
+        mockMvc.perform(get("/admins/admins.htm"))
+                .andExpect(view().name(AdminViews.VIEW_ALL_ADMINS))
+                .andExpect(model().attribute("admins",hasSize(1)))
+                .andExpect(model().attribute("admins", hasItem(
+                        allOf(
+                                hasProperty("id", is(2L))
+                        )
+                )));
     }
 
     @Test
@@ -248,23 +282,21 @@ class AdminControllerAdminUnitTest {
     }
 
     @Test
-    void create_sendValidationErrors_getCreatePage() {
+    void create_sendValidationErrors_getCreatePage() throws Exception{
         //Arrange
-        when(userAuthorizer.authorizeAdmin(session)).thenReturn(true);
+        when(userAuthorizer.authorizeAdmin(any(HttpSession.class))).thenReturn(true);
         CreateAdmin createAdmin = new CreateAdmin(admin.getId().intValue(),admin.getUserName(),admin.getEmail());
-        BindingResult bindingResult = mock(BindingResult.class);
-        when(bindingResult.hasErrors()).thenReturn(false);
-        FieldError fieldError = mock(FieldError.class);
         //add errors to binding result
         doAnswer(invocation -> {
             Object[] args = invocation.getArguments();
-            ((BindingResult)args[1]).addError(fieldError);
+            ((BindingResult)args[1]).rejectValue("email","duplicated");
             return null; // void method in a block-style lambda, so return null
-        }).when(validator).validate(createAdmin,bindingResult);
+        }).when(validator).validate(any(CreateAdmin.class),any(BindingResult.class));
         //Act
-        String page = adminController.create(createAdmin,session,bindingResult);
-        //Assert
-        assertEquals(AdminViews.CREATE_ADMIN,page);
+        mockMvc.perform(post("/admins/createAdmin.htm")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .sessionAttr("createAdmin", createAdmin))
+                .andExpect(view().name(AdminViews.CREATE_ADMIN));
     }
 
     @Test
@@ -321,23 +353,24 @@ class AdminControllerAdminUnitTest {
     }
 
    @Test
-    void update_sendValidationErrors_getUpdatePage() {
+    void update_sendValidationErrors_getUpdatePage() throws Exception{
         //Arrange
-        when(userAuthorizer.authorizeAdmin(session)).thenReturn(true);
+        when(userAuthorizer.authorizeAdmin(any(HttpSession.class))).thenReturn(true);
         CreateAdmin createAdmin = new CreateAdmin(admin.getId().intValue(),admin.getUserName(),admin.getEmail());
         BindingResult bindingResult = mock(BindingResult.class);
         when(bindingResult.hasErrors()).thenReturn(false);
-        FieldError fieldError = mock(FieldError.class);
         //add errors to binding result
         doAnswer(invocation -> {
             Object[] args = invocation.getArguments();
-            ((BindingResult)args[1]).addError(fieldError);
+            ((BindingResult)args[1]).rejectValue("email","duplicated");
             return null; // void method in a block-style lambda, so return null
-        }).when(validator).validate(createAdmin,bindingResult);
+        }).when(validator).validate(any(CreateAdmin.class),any(BindingResult.class));
         //Act
-        String page = adminController.updateAdmin(createAdmin,session,bindingResult,3L);
-        //Assert
-        assertEquals(AdminViews.UPDATE_ADMIN,page);
+       mockMvc.perform(post("/admins/updateAdmin.htm")
+                       .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                       .sessionAttr("createAdmin", createAdmin)
+                       .param("id", "3"))
+               .andExpect(view().name(AdminViews.UPDATE_ADMIN));
     }
 
     @Test
