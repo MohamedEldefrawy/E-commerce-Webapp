@@ -22,8 +22,9 @@ import static org.mockito.Mockito.*;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AdminServiceUnitTest {
 
-    private AdminRepository adminRepositoryMock = mock(AdminRepository.class);
-    private AdminService adminService = new AdminService(adminRepositoryMock);
+
+    private  AdminRepository adminRepositoryMock;
+    private  AdminService adminService;
     private List<Admin> adminList;
     private Admin admin;
 
@@ -137,6 +138,28 @@ public class AdminServiceUnitTest {
         //Act & Assert
         assertThrows(CreateAdminException.class, () -> adminService.createAdmin(admin));
         verify(adminRepositoryMock, times(1)).create(any());
+    }
+    @Test
+    public void addAdmin_sendAdminWithNullUsername_throwException() {
+        //Arrange
+        admin.setUserName(null);
+        //Act & Assert
+        assertThrows(CreateAdminException.class, ()->adminService.createAdmin(admin));
+        verify(adminRepositoryMock, times(0)).create(any());
+    }
+    public void addAdmin_sendAdminWithNullEmail_throwException() {
+        //Arrange
+        admin.setEmail(null);
+        //Act & Assert
+        assertThrows(CreateAdminException.class, ()->adminService.createAdmin(admin));
+        verify(adminRepositoryMock, times(0)).create(any());
+    }
+    public void addAdmin_sendAdminWithNullPassword_throwException() {
+        //Arrange
+        admin.setPassword(null);
+        //Act & Assert
+        assertThrows(CreateAdminException.class, ()->adminService.createAdmin(admin));
+        verify(adminRepositoryMock, times(0)).create(any());
     }
 
     @Test

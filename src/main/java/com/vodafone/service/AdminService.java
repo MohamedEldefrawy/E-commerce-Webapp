@@ -39,6 +39,12 @@ public class AdminService {
     }
 
     public boolean createAdmin(Admin admin) {
+        if(admin.getUserName()==null)
+            throw new CreateAdminException("Username cannot be null");
+        if(admin.getEmail()==null)
+            throw new CreateAdminException("Email cannot be null");
+        if(admin.getPassword()==null)
+            throw new CreateAdminException("Password cannot be null");
         Optional<Long> optionalLong = adminRepository.create(admin);
         if (optionalLong.isPresent())
             return true;

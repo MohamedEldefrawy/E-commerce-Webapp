@@ -1,5 +1,6 @@
 package com.vodafone.controller;
 
+import com.vodafone.exception.admin.CreateAdminException;
 import com.vodafone.exception.admin.GetAdminException;
 import com.vodafone.exception.product.CreateProductException;
 import com.vodafone.exception.product.GetProductException;
@@ -62,6 +63,7 @@ public class AdminController {
                 adminList.addAll(this.adminService.getAll());
             } catch (GetAdminException e) {
                 logger.warn(e.getMessage());
+                //todo: redirect to 404
             }
             model.addAttribute("admins", adminList);
             return AdminViews.VIEW_ALL_ADMINS;
@@ -76,7 +78,14 @@ public class AdminController {
         if (userAuthorizer.authorizeAdmin(session)) {
             Long sessionId = (Long) session.getAttribute("id");
             if (id != 2 && !Objects.equals(sessionId, id)) {
-                boolean deleted = adminService.deleteAdmin(id);
+                boolean deleted = false;
+                try {
+                    deleted = adminService.deleteAdmin(id);
+                }
+                catch (GetAdminException e){
+                    logger.warn(e.getMessage());
+                    //todo: redirect to 404
+                }
                 if (deleted)
                     return "200"; //deleted successfully
                 return "500"; //server encountered error while processing request
@@ -88,9 +97,16 @@ public class AdminController {
     }
 
     @GetMapping("/updateAdmin.htm")
-    public String updateAdmin(HttpSession session, Model model, @RequestParam Long id) {
+    public String updateAdminPage(HttpSession session, Model model, @RequestParam Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
-            Admin admin = adminService.getAdminById(id);
+            Admin admin;
+            try {
+                admin = adminService.getAdminById(id);
+            }
+            catch (GetAdminException e){
+                logger.warn(e.getMessage());
+                return "admin/viewAllAdmins"; //todo: redirect to 404?
+            }
             int idInt = id.intValue();
             CreateAdmin createAdmin = new CreateAdmin(idInt, admin.getUserName(), admin.getEmail());
             model.addAttribute("admin", createAdmin);
@@ -130,7 +146,14 @@ public class AdminController {
             admin.setRole(Role.Admin);
             admin.setEmail(createAdmin.getEmail());
             admin.setFirstLogin(true);
-            if (adminService.createAdmin(admin)) {
+            boolean created = false;
+            try{
+                created = adminService.createAdmin(admin);
+            }
+            catch (CreateAdminException e){
+                logger.warn(e.getMessage());
+            }
+            if (created) {
                 session.setAttribute("dec_password", admin.getPassword());
                 session.setAttribute("newAdminEmail", admin.getEmail());
                 //encrypt admin password in db
@@ -334,7 +357,14 @@ public class AdminController {
             Admin updatedAdmin = new Admin();
             updatedAdmin.setEmail(admin.getEmail());
             updatedAdmin.setUserName(admin.getUserName());
-            boolean result = adminService.updateAdmin(id, updatedAdmin);
+            boolean result = false;
+            try {
+                result = adminService.updateAdmin(id, updatedAdmin);
+
+            }catch (GetAdminException e){
+                logger.warn(e.getMessage());
+                //todo: redirect to 404
+            }
             if (result)
                 return "redirect:/admins/admins.htm";
             return "admin/updateAdmin";
@@ -351,10 +381,22 @@ public class AdminController {
     @PostMapping("setAdminPassword.htm")
     public String setAdminPassword(@Valid @NotNull @NotBlank @RequestParam("newPassword") String newPassword, HttpSession session) {
         String email = session.getAttribute("email").toString();
-        Admin admin = adminService.getAdminByEmail(email);
-        newPassword = hashService.encryptPassword(newPassword, (String) session.getAttribute("email"));
+        Admin admin = null;
+        try {
+            admin = adminService.getAdminByEmail(email);
+        }
+        catch (GetAdminException e){
+            logger.warn(e.getMessage());
+            return "admin/setAdminPassword";
+        }
+        newPassword = hashService.encryptPassword(newPassword, email);
         admin.setPassword(newPassword);
-        adminService.updatePassword(admin.getId(), newPassword);
-        return "redirect:/admins/home.htm";
+        try {
+            adminService.updatePassword(admin.getId(), newPassword);
+            return "redirect:/admins/home.htm";
+        }catch (GetAdminException e){
+            logger.warn(e.getMessage());
+            return "admin/setAdminPassword";
+        }
     }
 }
