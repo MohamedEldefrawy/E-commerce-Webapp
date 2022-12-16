@@ -61,8 +61,8 @@ public class CustomerController {
     }
 
     @GetMapping("/search/home.htm")
-    public String search(HttpSession session, Model model, @RequestParam(required = false) String category,
-                         @RequestParam(required = false) String name) {
+    public String searchByProductName(HttpSession session, Model model, @RequestParam(required = false) String category,
+                                      @RequestParam(required = false) String name) {
         if (userAuthorizer.isActivatedCustomer(session)) {
             List<Product> products = new ArrayList<>();
             Product selectedProduct;
@@ -129,7 +129,7 @@ public class CustomerController {
                 model.addAttribute("product", product);
             } catch (GetProductException e) {
                 logger.warn(e.getMessage());
-                // return custom 404 error page
+                //todo: return custom 404 error page
             }
             return "/customer/product/detail";
         } else {
