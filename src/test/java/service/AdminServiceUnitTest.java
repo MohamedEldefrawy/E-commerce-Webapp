@@ -64,19 +64,6 @@ public class AdminServiceUnitTest {
         assertThrows(GetAdminException.class, adminService::getAll);
     }
 
-
-    /*@Test
-    public void getAllAdminsTest_returnAdminsById() {
-        //Arrange
-        when(adminRepositoryMock.getAll()).thenReturn(Optional.of(adminList));
-        //Act
-        List<Admin> returnedAdminList = adminService.getAll();
-        //Assert
-        assertNotNull(returnedAdminList);
-        assertEquals(1, returnedAdminList.size());
-        verify(adminRepositoryMock, times(1)).getAll();
-    }*/
-
     @Test
     public void getAdminByIdTest_sendId_returnSavedAdmin() {
         //Arrange
@@ -147,6 +134,8 @@ public class AdminServiceUnitTest {
         assertThrows(CreateAdminException.class, ()->adminService.createAdmin(admin));
         verify(adminRepositoryMock, times(0)).create(any());
     }
+
+    @Test
     public void addAdmin_sendAdminWithNullEmail_throwException() {
         //Arrange
         admin.setEmail(null);
@@ -154,6 +143,8 @@ public class AdminServiceUnitTest {
         assertThrows(CreateAdminException.class, ()->adminService.createAdmin(admin));
         verify(adminRepositoryMock, times(0)).create(any());
     }
+
+    @Test
     public void addAdmin_sendAdminWithNullPassword_throwException() {
         //Arrange
         admin.setPassword(null);
