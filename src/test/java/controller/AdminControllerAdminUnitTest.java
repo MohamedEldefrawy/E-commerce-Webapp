@@ -33,11 +33,9 @@ import static org.mockito.Mockito.*;
 class AdminControllerAdminUnitTest {
 
     private AdminService adminService;
-    private ProductService productService;
     private UserAuthorizer userAuthorizer;
     private AdminValidator validator;
     private HashService hashService;
-    private SendEmailService emailService;
     private AdminController adminController;
     private HttpSession session;
     private Admin admin;
@@ -46,13 +44,13 @@ class AdminControllerAdminUnitTest {
     @BeforeEach
     void setUp() {
         adminService = mock(AdminService.class);
-        productService = mock(ProductService.class);
+        ProductService productService = mock(ProductService.class);
         userAuthorizer = mock(UserAuthorizer.class);
         validator = mock(AdminValidator.class);
         hashService = mock(HashService.class);
-        emailService = mock(SendEmailService.class);
+        SendEmailService emailService = mock(SendEmailService.class);
         session = mock(HttpSession.class);
-        adminController = new AdminController(adminService,productService,validator,userAuthorizer,
+        adminController = new AdminController(adminService,productService,userAuthorizer,validator,
                 hashService,emailService);
         admin = new Admin(); //create new admin
         admin.setUserName("admin");
@@ -152,7 +150,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.delete(session,3L);
         //Assert
-        assertEquals("404",page);
+        assertEquals("500",page);
     }
     @Test
     void delete_sendIdToBeDeleted_get200() {
@@ -224,6 +222,18 @@ class AdminControllerAdminUnitTest {
     }
 
     @Test
+    void create_sendUnauthorizedAdmin_getLoginPage() {
+        //Arrange
+        when(userAuthorizer.authorizeAdmin(session)).thenReturn(false);
+        CreateAdmin createAdmin = new CreateAdmin(admin.getId().intValue(),admin.getUserName(),admin.getEmail());
+        BindingResult bindingResult = mock(BindingResult.class);
+        //Act
+        String page = adminController.create(createAdmin,session,bindingResult);
+        //Assert
+        assertEquals("redirect:/login.htm",page);
+    }
+
+    @Test
     void create_sendBindingErrors_getCreatePage() {
         //Arrange
         when(userAuthorizer.authorizeAdmin(session)).thenReturn(true);
@@ -285,7 +295,19 @@ class AdminControllerAdminUnitTest {
     }
 
     @Test
-    void create_sendBindingErrors_getUpdatePage() {
+    void update_sendUnauthorizedAdmin_getLoginPage() {
+        //Arrange
+        CreateAdmin createAdmin = new CreateAdmin(admin.getId().intValue(),admin.getUserName(),admin.getEmail());
+        BindingResult bindingResult = mock(BindingResult.class);
+        when(userAuthorizer.authorizeAdmin(session)).thenReturn(false);
+        //Act
+        String page = adminController.updateAdmin(createAdmin,session,bindingResult,3L);
+        //Assert
+        assertEquals("redirect:/login.htm",page);
+    }
+
+    @Test
+    void update_sendBindingErrors_getUpdatePage() {
         //Arrange
         when(userAuthorizer.authorizeAdmin(session)).thenReturn(true);
         CreateAdmin createAdmin = new CreateAdmin(admin.getId().intValue(),admin.getUserName(),admin.getEmail());
@@ -298,7 +320,7 @@ class AdminControllerAdminUnitTest {
     }
 
    @Test
-    void create_sendValidationErrors_getUpdatePage() {
+    void update_sendValidationErrors_getUpdatePage() {
         //Arrange
         when(userAuthorizer.authorizeAdmin(session)).thenReturn(true);
         CreateAdmin createAdmin = new CreateAdmin(admin.getId().intValue(),admin.getUserName(),admin.getEmail());
@@ -318,7 +340,7 @@ class AdminControllerAdminUnitTest {
     }
 
     @Test
-    void create_sendInvalidId_getUpdatePage() {
+    void update_sendInvalidId_getUpdatePage() {
         //Arrange
         when(userAuthorizer.authorizeAdmin(session)).thenReturn(true);
         CreateAdmin createAdmin = new CreateAdmin(admin.getId().intValue(),admin.getUserName(),admin.getEmail());
@@ -332,7 +354,7 @@ class AdminControllerAdminUnitTest {
     }
 
     @Test
-    void create_sendValidId_getAdminsPage() {
+    void update_sendValidId_getAdminsPage() {
         //Arrange
         when(userAuthorizer.authorizeAdmin(session)).thenReturn(true);
         CreateAdmin createAdmin = new CreateAdmin(admin.getId().intValue(),admin.getUserName(),admin.getEmail());
