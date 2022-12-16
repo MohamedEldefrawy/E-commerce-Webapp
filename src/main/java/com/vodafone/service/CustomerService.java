@@ -1,10 +1,11 @@
 package com.vodafone.service;
 
+import com.vodafone.exception.NullIdException;
 import com.vodafone.exception.customer.IncompleteUserAttributesException;
 import com.vodafone.exception.customer.NullCustomerException;
-import com.vodafone.exception.NullIdException;
 import com.vodafone.model.Customer;
 import com.vodafone.repository.customer.ICustomerRepository;
+import org.hibernate.HibernateException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,8 +43,9 @@ public class CustomerService {
             throw new NullIdException("Null customer id is provided");
         if (updatedCustomer == null)
             throw new NullCustomerException("Null updated customer entity is provided");
-        if (getById(id) == null)
-            throw new NullCustomerException("Customer not found with provided id");
+        Optional<Customer> customer = customerRepository.getById(id);
+        if (!customer.isPresent())
+            throw new HibernateException("Customer not found with provided id");
         return customerRepository.update(id, updatedCustomer);
     }
 
@@ -52,7 +54,7 @@ public class CustomerService {
             throw new NullPointerException("Null email is provided");
         Optional<Customer> customer = customerRepository.getByMail(email);
         if (!customer.isPresent()) {
-            throw new NullCustomerException("Customer not found with email provided");
+            throw new HibernateException("Customer not found with email provided");
         }
         return customerRepository.updateStatusActivated(customer.get());
     }
@@ -60,9 +62,9 @@ public class CustomerService {
     public boolean delete(Long id) {
         if (id == null)
             throw new NullIdException("Null customer id is provided");
-        if (getById(id) == null) {
-            throw new NullCustomerException("Customer not found with id provided");
-        }
+        Optional<Customer> customer = customerRepository.getById(id);
+        if (!customer.isPresent())
+            throw new HibernateException("Customer not found with id provided");
         return customerRepository.delete(id);
     }
 
@@ -71,7 +73,7 @@ public class CustomerService {
             throw new NullIdException("Null customer id is provided");
         Optional<Customer> customer = customerRepository.getById(id);
         if (!customer.isPresent())
-            throw new NullCustomerException("Customer not found with provided id");
+            throw new HibernateException("Customer not found with provided id");
         return customer.get();
     }
 
@@ -80,7 +82,7 @@ public class CustomerService {
             throw new NullPointerException("Null Email is provided");
         Optional<Customer> customer = customerRepository.getByMail(email);
         if (!customer.isPresent())
-            throw new NullCustomerException("No customer found");
+            throw new HibernateException("No customer found");
         return customer.get();
     }
 
@@ -89,14 +91,14 @@ public class CustomerService {
             throw new NullPointerException("Null Username is provided");
         Optional<Customer> customer = customerRepository.getByUserName(username);
         if (!customer.isPresent())
-            throw new NullCustomerException("No customer found");
+            throw new HibernateException("No customer found");
         return customer.get();
     }
 
     public List<Customer> getAll() {
         Optional<List<Customer>> customer = customerRepository.getAll();
         if (!customer.isPresent())
-            throw new NullCustomerException("Customer not found with provided id");
+            throw new HibernateException("Customer not found with provided id");
         return customer.get();
     }
 
@@ -107,7 +109,7 @@ public class CustomerService {
             throw new NullPointerException("Null Password is provided");
         Optional<Customer> customer = customerRepository.getByMail(email);
         if (!customer.isPresent()) {
-            throw new NullCustomerException("Customer not found with provided email");
+            throw new HibernateException("Customer not found with provided email");
         }
         return customerRepository.resetPassword(customer.get(), password);
     }
@@ -117,7 +119,7 @@ public class CustomerService {
             throw new NullPointerException("Null Username is provided");
         Optional<Customer> customer = customerRepository.getByUserName(userName);
         if (!customer.isPresent()) {
-            throw new NullCustomerException("Customer not found with provided username");
+            throw new HibernateException("Customer not found with provided username");
         }
         return this.customerRepository.expireOtp(customer.get());
     }
