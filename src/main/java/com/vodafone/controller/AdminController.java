@@ -105,12 +105,12 @@ public class AdminController {
             }
             catch (GetAdminException e){
                 logger.warn(e.getMessage());
-                return "admin/viewAllAdmins"; //todo: redirect to 404?
+                return AdminViews.VIEW_ALL_ADMINS; //todo: redirect to 404?
             }
             int idInt = id.intValue();
             CreateAdmin createAdmin = new CreateAdmin(idInt, admin.getUserName(), admin.getEmail());
             model.addAttribute("admin", createAdmin);
-            return "admin/updateAdmin";
+            return AdminViews.UPDATE_ADMIN;
         } else {
             return AdminViews.LOGIN_REDIRECT;
         }
@@ -120,7 +120,7 @@ public class AdminController {
     public String getCreateAdminPage(HttpSession session, Model model) {
         if (userAuthorizer.authorizeAdmin(session)) {
             model.addAttribute("admin", new CreateAdmin());
-            return "admin/createAdmin";
+            return AdminViews.CREATE_ADMIN;
         } else {
             return AdminViews.LOGIN_REDIRECT;
         }
@@ -133,12 +133,12 @@ public class AdminController {
 
             //check input is correct
             if (bindingResult.hasErrors()) {
-                return "admin/createAdmin";
+                return AdminViews.CREATE_ADMIN;
             }
             //validate username and email aren't duplicated
             validator.validate(createAdmin, bindingResult);
             if (bindingResult.hasErrors()) {
-                return "admin/createAdmin";
+                return AdminViews.CREATE_ADMIN;
             }
 
             Admin admin = new Admin();
@@ -159,13 +159,13 @@ public class AdminController {
                 //encrypt admin password in db
                 String encrypted = hashService.encryptPassword(admin.getPassword(), admin.getEmail());
                 admin.setPassword(encrypted);
-                adminService.updatePassword(admin.getId(), encrypted);
+                adminService.updatePassword(admin.getId(), encrypted); //just set id... impossible to not be set?
                 //send email
                 emailService.sendEmail(admin, EmailType.SET_ADMIN_PASSWORD, session);
                 //redirect to set password
-                return "redirect:/admins/admins.htm";
+                return AdminViews.ALL_ADMINS_REDIRECT;
             } else {
-                return "admin/createAdmin";
+                return AdminViews.CREATE_ADMIN;
             }
         } else {
             return AdminViews.LOGIN_REDIRECT;
@@ -347,13 +347,12 @@ public class AdminController {
                               @RequestParam Long id) {
         if (userAuthorizer.authorizeAdmin(session)) {
             if (bindingResult.hasErrors()) {
-                return "admin/updateAdmin";
+                return AdminViews.UPDATE_ADMIN;
             }
             validator.validate(admin, bindingResult);
             if (bindingResult.hasErrors()) {
-                return "admin/updateAdmin";
+                return AdminViews.UPDATE_ADMIN;
             }
-
             Admin updatedAdmin = new Admin();
             updatedAdmin.setEmail(admin.getEmail());
             updatedAdmin.setUserName(admin.getUserName());
@@ -366,16 +365,16 @@ public class AdminController {
                 //todo: redirect to 404
             }
             if (result)
-                return "redirect:/admins/admins.htm";
-            return "admin/updateAdmin";
+                return AdminViews.ALL_ADMINS_REDIRECT;
+            return AdminViews.UPDATE_ADMIN;
         } else {
-            return "redirect:/login.htm";
+            return AdminViews.LOGIN_REDIRECT;
         }
     }
 
     @GetMapping("setAdminPassword.htm")
     public String setAdminPassword() {
-        return "admin/setAdminPassword";
+        return AdminViews.ADMIN_RESET_PASSWORD;
     }
 
     @PostMapping("setAdminPassword.htm")
@@ -387,7 +386,7 @@ public class AdminController {
         }
         catch (GetAdminException e){
             logger.warn(e.getMessage());
-            return "admin/setAdminPassword";
+            return AdminViews.ADMIN_RESET_PASSWORD;
         }
         newPassword = hashService.encryptPassword(newPassword, email);
         admin.setPassword(newPassword);
@@ -396,7 +395,7 @@ public class AdminController {
             return "redirect:/admins/home.htm";
         }catch (GetAdminException e){
             logger.warn(e.getMessage());
-            return "admin/setAdminPassword";
+            return AdminViews.ADMIN_RESET_PASSWORD;
         }
     }
 }
