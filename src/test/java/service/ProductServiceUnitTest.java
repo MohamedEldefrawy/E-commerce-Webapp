@@ -188,7 +188,7 @@ public class ProductServiceUnitTest {
     }
 
 
-    private static Product createProduct() {
+    private  Product createProduct() {
         Product product = new Product();
         product.setId(1L);
         product.setName("dummyProduct");
@@ -201,7 +201,7 @@ public class ProductServiceUnitTest {
         return product;
     }
 
-    private static List<Product> createProducts() {
+    private  List<Product> createProducts() {
         Product product1 = new Product();
         product1.setId(2L);
         product1.setName("dummyProduct");

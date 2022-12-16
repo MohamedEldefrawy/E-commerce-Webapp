@@ -53,16 +53,12 @@ public class CustomerRepository implements ICustomerRepository {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
             Customer customer = session.get(Customer.class, id);
-            if (customer == null) {
-                return false;
-            } else {
-                customer.setCode(updatedCustomer.getCode());
-                customer.setLoginAttempts(updatedCustomer.getLoginAttempts());
-                customer.setUserStatus(updatedCustomer.getUserStatus());
-                session.update(customer);
-                transaction.commit();
-                return true;
-            }
+            customer.setCode(updatedCustomer.getCode());
+            customer.setLoginAttempts(updatedCustomer.getLoginAttempts());
+            customer.setUserStatus(updatedCustomer.getUserStatus());
+            session.update(customer);
+            transaction.commit();
+            return true;
         } catch (HibernateException hibernateException) {
             hibernateException.printStackTrace();
             return false;
@@ -70,18 +66,13 @@ public class CustomerRepository implements ICustomerRepository {
 
     }
 
-    public boolean updateStatusActivated(String email) {
+    public boolean updateStatusActivated(Customer customer) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            Customer customer = getByMail(email);
-            if (customer == null) {
-                return false;
-            } else {
-                customer.setUserStatus(UserStatus.ACTIVATED);
-                session.update(customer);
-                transaction.commit();
-                return true;
-            }
+            customer.setUserStatus(UserStatus.ACTIVATED);
+            session.update(customer);
+            transaction.commit();
+            return true;
         } catch (HibernateException hibernateException) {
             hibernateException.printStackTrace();
             return false;
@@ -90,18 +81,13 @@ public class CustomerRepository implements ICustomerRepository {
     }
 
     @Override
-    public boolean expireOtp(String userName) {
+    public boolean expireOtp(Customer customer) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            Customer customer = getByUserName(userName);
-            if (customer == null) {
-                return false;
-            } else {
-                customer.setCode(null);
-                session.update(customer);
-                transaction.commit();
-                return true;
-            }
+            customer.setCode(null);
+            session.update(customer);
+            transaction.commit();
+            return true;
         } catch (HibernateException hibernateException) {
             hibernateException.printStackTrace();
             return false;
@@ -113,13 +99,10 @@ public class CustomerRepository implements ICustomerRepository {
     public boolean delete(Long id) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             Customer deletedCustomer = session.get(Customer.class, id);
-            if (deletedCustomer == null) {
-                return false;
-            } else {
-                Transaction transaction = session.beginTransaction();
-                session.delete(deletedCustomer);
-                return true;
-            }
+            Transaction transaction = session.beginTransaction();
+            session.delete(deletedCustomer);
+            transaction.commit();
+            return true;
         } catch (HibernateException hibernateException) {
             hibernateException.printStackTrace();
             return false;
@@ -133,41 +116,40 @@ public class CustomerRepository implements ICustomerRepository {
             customer = session.get(Customer.class, id);
         } catch (HibernateException | NoResultException hibernateException) {
             hibernateException.printStackTrace();
+            return Optional.empty();
         }
         return Optional.ofNullable(customer);
     }
 
     @Override
-    public Customer getByMail(String email) {
+    public Optional<Customer> getByMail(String email) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             try {
                 List<Customer> customers = session.createQuery("SELECT customer from Customer customer where customer.email=: email", Customer.class).setParameter("email", email).list();
-                if (customers.isEmpty()) throw new NoResultException("No customer found");
-                return customers.get(0);
+                return Optional.of(customers.get(0));
             } catch (NoResultException e) {
                 System.out.println(e.getMessage());
-                return null;
+                return Optional.empty();
             }
         } catch (HibernateException hibernateException) {
             hibernateException.printStackTrace();
-            return null;
+            return Optional.empty();
         }
     }
 
     @Override
-    public Customer getByUserName(String username) {
+    public Optional<Customer> getByUserName(String username) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             try {
                 List<Customer> customers = session.createQuery("SELECT customer from Customer customer where customer.userName=: username", Customer.class).setParameter("username", username).list();
-                if (customers.isEmpty()) throw new NoResultException("No customer found");
-                return customers.get(0);
+                return Optional.of(customers.get(0));
             } catch (NoResultException e) {
                 System.out.println(e.getMessage());
-                return null;
+                return Optional.empty();
             }
         } catch (HibernateException hibernateException) {
             hibernateException.printStackTrace();
-            return null;
+            return Optional.empty();
         }
     }
 
@@ -182,13 +164,8 @@ public class CustomerRepository implements ICustomerRepository {
     }
 
     @Override
-    public boolean resetPassword(String email, String password) {
+    public boolean resetPassword(Customer customer, String password) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
-            Customer customer = getByMail(email); //get customer by email
-            if (customer == null) {
-                System.out.println("Customer not found in DB");
-                return false;
-            }
             //update customer's password
             customer.setPassword(password);
             //update customer's status to activated
