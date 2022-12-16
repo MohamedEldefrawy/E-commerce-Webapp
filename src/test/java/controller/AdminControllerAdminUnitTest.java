@@ -11,6 +11,7 @@ import com.vodafone.service.AdminService;
 import com.vodafone.service.HashService;
 import com.vodafone.service.ProductService;
 import com.vodafone.service.SendEmailService;
+import com.vodafone.util.AdminViews;
 import com.vodafone.validators.AdminValidator;
 import com.vodafone.validators.UserAuthorizer;
 import org.junit.jupiter.api.BeforeEach;
@@ -70,7 +71,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.getAll(session,model);
         //Assert
-        assertEquals("redirect:/login.htm",page);
+        assertEquals(AdminViews.LOGIN_REDIRECT, page);
     }
     @Test
     void getAll_throwGetAdminException_getAdminsPage() {
@@ -83,7 +84,7 @@ class AdminControllerAdminUnitTest {
         String page = adminController.getAll(session,model);
         //Assert
         verify(adminService,times(1)).getAll();
-        assertEquals("admin/viewAllAdmins",page);
+        assertEquals(AdminViews.VIEW_ALL_ADMINS,page);
 
     }
     @Test
@@ -97,7 +98,7 @@ class AdminControllerAdminUnitTest {
         String page = adminController.getAll(session,model);
         //Assert
         verify(adminService,times(1)).getAll();
-        assertEquals("admin/viewAllAdmins",page);
+        assertEquals(AdminViews.VIEW_ALL_ADMINS,page);
     }
 
     @Test
@@ -172,7 +173,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.updateAdminPage(session,model,1L);
         //Assert
-        assertEquals("redirect:/login.htm",page);
+        assertEquals(AdminViews.LOGIN_REDIRECT,page);
     }
 
     @Test
@@ -184,7 +185,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.updateAdminPage(session,model,1L);
         //Assert
-        assertEquals("admin/viewAllAdmins",page);
+        assertEquals(AdminViews.VIEW_ALL_ADMINS,page);
     }
 
     @Test
@@ -196,7 +197,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.updateAdminPage(session,model,1L);
         //Assert
-        assertEquals("admin/updateAdmin",page);
+        assertEquals(AdminViews.UPDATE_ADMIN,page);
     }
 
     @Test
@@ -207,7 +208,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.getCreateAdminPage(session,model);
         //Assert
-        assertEquals("redirect:/login.htm",page);
+        assertEquals(AdminViews.LOGIN_REDIRECT,page);
     }
 
     @Test
@@ -218,7 +219,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.getCreateAdminPage(session,model);
         //Assert
-        assertEquals("admin/createAdmin",page);
+        assertEquals(AdminViews.CREATE_ADMIN,page);
     }
 
     @Test
@@ -230,7 +231,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.create(createAdmin,session,bindingResult);
         //Assert
-        assertEquals("redirect:/login.htm",page);
+        assertEquals(AdminViews.LOGIN_REDIRECT,page);
     }
 
     @Test
@@ -243,7 +244,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.create(createAdmin,session,bindingResult);
         //Assert
-        assertEquals("admin/createAdmin",page);
+        assertEquals(AdminViews.CREATE_ADMIN,page);
     }
 
     @Test
@@ -263,7 +264,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.create(createAdmin,session,bindingResult);
         //Assert
-        assertEquals("admin/createAdmin",page);
+        assertEquals(AdminViews.CREATE_ADMIN,page);
     }
 
     @Test
@@ -277,7 +278,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.create(createAdmin,session,bindingResult);
         //Assert
-        assertEquals("admin/createAdmin",page);
+        assertEquals(AdminViews.CREATE_ADMIN,page);
     }
 
     @Test
@@ -291,7 +292,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.create(createAdmin,session,bindingResult);
         //Assert
-        assertEquals("redirect:/admins/admins.htm",page);
+        assertEquals(AdminViews.ALL_ADMINS_REDIRECT,page);
     }
 
     @Test
@@ -303,7 +304,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.updateAdmin(createAdmin,session,bindingResult,3L);
         //Assert
-        assertEquals("redirect:/login.htm",page);
+        assertEquals(AdminViews.LOGIN_REDIRECT,page);
     }
 
     @Test
@@ -316,7 +317,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.updateAdmin(createAdmin,session,bindingResult,3L);
         //Assert
-        assertEquals("admin/updateAdmin",page);
+        assertEquals(AdminViews.UPDATE_ADMIN,page);
     }
 
    @Test
@@ -336,7 +337,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.updateAdmin(createAdmin,session,bindingResult,3L);
         //Assert
-        assertEquals("admin/updateAdmin",page);
+        assertEquals(AdminViews.UPDATE_ADMIN,page);
     }
 
     @Test
@@ -350,7 +351,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.updateAdmin(createAdmin,session,bindingResult,3L);
         //Assert
-        assertEquals("admin/updateAdmin",page);
+        assertEquals(AdminViews.UPDATE_ADMIN,page);
     }
 
     @Test
@@ -364,7 +365,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.updateAdmin(createAdmin,session,bindingResult,3L);
         //Assert
-        assertEquals("redirect:/admins/admins.htm",page);
+        assertEquals(AdminViews.ALL_ADMINS_REDIRECT,page);
     }
 
     @Test
@@ -372,7 +373,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.setAdminPassword();
         //Assert
-        assertEquals("admin/setAdminPassword",page);
+        assertEquals(AdminViews.ADMIN_RESET_PASSWORD,page);
     }
 
     @Test
@@ -383,7 +384,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.setAdminPassword("29019280192",session);
         //Assert
-        assertEquals("admin/setAdminPassword",page);
+        assertEquals(AdminViews.ADMIN_RESET_PASSWORD,page);
     }
     @Test
     void testSetAdminPassword_sendValidEmailAndInvalidId_getResetPage() {
@@ -395,7 +396,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.setAdminPassword("29019280192",session);
         //Assert
-        assertEquals("admin/setAdminPassword",page);
+        assertEquals(AdminViews.ADMIN_RESET_PASSWORD,page);
     }
 
     @Test
