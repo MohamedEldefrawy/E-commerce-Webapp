@@ -11,13 +11,18 @@ import com.vodafone.service.AdminService;
 import com.vodafone.service.HashService;
 import com.vodafone.service.ProductService;
 import com.vodafone.service.SendEmailService;
+import com.vodafone.util.AdminViews;
 import com.vodafone.validators.AdminValidator;
 import com.vodafone.validators.UserAuthorizer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.validation.ObjectError;
 
 import javax.servlet.http.HttpSession;
 
@@ -27,30 +32,37 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
 
 class AdminControllerAdminUnitTest {
 
     private AdminService adminService;
-    private ProductService productService;
     private UserAuthorizer userAuthorizer;
     private AdminValidator validator;
     private HashService hashService;
-    private SendEmailService emailService;
     private AdminController adminController;
     private HttpSession session;
     private Admin admin;
+    MockMvc mockMvc;
 
 
     @BeforeEach
     void setUp() {
         adminService = mock(AdminService.class);
-        productService = mock(ProductService.class);
+        ProductService productService = mock(ProductService.class);
         userAuthorizer = mock(UserAuthorizer.class);
         validator = mock(AdminValidator.class);
         hashService = mock(HashService.class);
-        emailService = mock(SendEmailService.class);
+        SendEmailService emailService = mock(SendEmailService.class);
         session = mock(HttpSession.class);
         adminController = new AdminController(adminService,productService,userAuthorizer,validator,
                 hashService,emailService);
@@ -62,6 +74,10 @@ class AdminControllerAdminUnitTest {
         admin.setRole(Role.Admin);
         admin.setUserStatus(UserStatus.ADMIN);
         admin.setId(2L);
+
+        mockMvc = MockMvcBuilders
+                .standaloneSetup(adminController)
+                .build();
     }
 
     @Test
@@ -72,11 +88,11 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.getAll(session,model);
         //Assert
-        assertEquals("redirect:/login.htm",page);
+        assertEquals(AdminViews.LOGIN_REDIRECT, page);
     }
     @Test
-    void getAll_throwGetAdminException_getAdminsPage() {
-        //Arrange
+    void getAll_throwGetAdminException_getAdminsPage() throws Exception{
+        /*//Arrange
         Model model = mock(Model.class);
         when(userAuthorizer.authorizeAdmin(session)).thenReturn(true);
         when(adminService.getAll()).thenThrow(GetAdminException.class);
@@ -85,12 +101,17 @@ class AdminControllerAdminUnitTest {
         String page = adminController.getAll(session,model);
         //Assert
         verify(adminService,times(1)).getAll();
-        assertEquals("admin/viewAllAdmins",page);
+        assertEquals(AdminViews.VIEW_ALL_ADMINS,page);*/
+        when(userAuthorizer.authorizeAdmin(any(HttpSession.class))).thenReturn(true);
+        when(adminService.getAll()).thenThrow(GetAdminException.class);
+        mockMvc.perform(get("/admins/admins.htm"))
+                .andExpect(view().name(AdminViews.VIEW_ALL_ADMINS))
+                .andExpect(model().attribute("admins",hasSize(0)));
 
     }
     @Test
-    void getAll_getAdminsList_getHomePage() {
-        //Arrange
+    void getAll_getAdminsList_getAdminsPage() throws Exception{
+        /*//Arrange
         Model model = mock(Model.class);
         when(userAuthorizer.authorizeAdmin(session)).thenReturn(true);
         List<Admin> admins= new ArrayList<>();
@@ -99,7 +120,19 @@ class AdminControllerAdminUnitTest {
         String page = adminController.getAll(session,model);
         //Assert
         verify(adminService,times(1)).getAll();
-        assertEquals("admin/viewAllAdmins",page);
+        assertEquals(AdminViews.VIEW_ALL_ADMINS,page);*/
+        when(userAuthorizer.authorizeAdmin(any(HttpSession.class))).thenReturn(true);
+        List<Admin> admins = new ArrayList<>();
+        admins.add(admin);
+        when(adminService.getAll()).thenReturn(admins);
+        mockMvc.perform(get("/admins/admins.htm"))
+                .andExpect(view().name(AdminViews.VIEW_ALL_ADMINS))
+                .andExpect(model().attribute("admins",hasSize(1)))
+                .andExpect(model().attribute("admins", hasItem(
+                        allOf(
+                                hasProperty("id", is(2L))
+                        )
+                )));
     }
 
     @Test
@@ -152,7 +185,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.delete(session,3L);
         //Assert
-        assertEquals("404",page);
+        assertEquals("500",page);
     }
     @Test
     void delete_sendIdToBeDeleted_get200() {
@@ -174,7 +207,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.updateAdminPage(session,model,1L);
         //Assert
-        assertEquals("redirect:/login.htm",page);
+        assertEquals(AdminViews.LOGIN_REDIRECT,page);
     }
 
     @Test
@@ -186,7 +219,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.updateAdminPage(session,model,1L);
         //Assert
-        assertEquals("admin/viewAllAdmins",page);
+        assertEquals(AdminViews.VIEW_ALL_ADMINS,page);
     }
 
     @Test
@@ -198,7 +231,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.updateAdminPage(session,model,1L);
         //Assert
-        assertEquals("admin/updateAdmin",page);
+        assertEquals(AdminViews.UPDATE_ADMIN,page);
     }
 
     @Test
@@ -209,7 +242,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.getCreateAdminPage(session,model);
         //Assert
-        assertEquals("redirect:/login.htm",page);
+        assertEquals(AdminViews.LOGIN_REDIRECT,page);
     }
 
     @Test
@@ -220,7 +253,19 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.getCreateAdminPage(session,model);
         //Assert
-        assertEquals("admin/createAdmin",page);
+        assertEquals(AdminViews.CREATE_ADMIN,page);
+    }
+
+    @Test
+    void create_sendUnauthorizedAdmin_getLoginPage() {
+        //Arrange
+        when(userAuthorizer.authorizeAdmin(session)).thenReturn(false);
+        CreateAdmin createAdmin = new CreateAdmin(admin.getId().intValue(),admin.getUserName(),admin.getEmail());
+        BindingResult bindingResult = mock(BindingResult.class);
+        //Act
+        String page = adminController.create(createAdmin,session,bindingResult);
+        //Assert
+        assertEquals(AdminViews.LOGIN_REDIRECT,page);
     }
 
     @Test
@@ -233,27 +278,25 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.create(createAdmin,session,bindingResult);
         //Assert
-        assertEquals("admin/createAdmin",page);
+        assertEquals(AdminViews.CREATE_ADMIN,page);
     }
 
     @Test
-    void create_sendValidationErrors_getCreatePage() {
+    void create_sendValidationErrors_getCreatePage() throws Exception{
         //Arrange
-        when(userAuthorizer.authorizeAdmin(session)).thenReturn(true);
+        when(userAuthorizer.authorizeAdmin(any(HttpSession.class))).thenReturn(true);
         CreateAdmin createAdmin = new CreateAdmin(admin.getId().intValue(),admin.getUserName(),admin.getEmail());
-        BindingResult bindingResult = mock(BindingResult.class);
-        when(bindingResult.hasErrors()).thenReturn(false);
-        FieldError fieldError = mock(FieldError.class);
         //add errors to binding result
         doAnswer(invocation -> {
             Object[] args = invocation.getArguments();
-            ((BindingResult)args[1]).addError(fieldError);
+            ((BindingResult)args[1]).rejectValue("email","duplicated");
             return null; // void method in a block-style lambda, so return null
-        }).when(validator).validate(createAdmin,bindingResult);
+        }).when(validator).validate(any(CreateAdmin.class),any(BindingResult.class));
         //Act
-        String page = adminController.create(createAdmin,session,bindingResult);
-        //Assert
-        assertEquals("admin/createAdmin",page);
+        mockMvc.perform(post("/admins/createAdmin.htm")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .sessionAttr("createAdmin", createAdmin))
+                .andExpect(view().name(AdminViews.CREATE_ADMIN));
     }
 
     @Test
@@ -267,7 +310,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.create(createAdmin,session,bindingResult);
         //Assert
-        assertEquals("admin/createAdmin",page);
+        assertEquals(AdminViews.CREATE_ADMIN,page);
     }
 
     @Test
@@ -281,11 +324,23 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.create(createAdmin,session,bindingResult);
         //Assert
-        assertEquals("redirect:/admins/admins.htm",page);
+        assertEquals(AdminViews.ALL_ADMINS_REDIRECT,page);
     }
 
     @Test
-    void create_sendBindingErrors_getUpdatePage() {
+    void update_sendUnauthorizedAdmin_getLoginPage() {
+        //Arrange
+        CreateAdmin createAdmin = new CreateAdmin(admin.getId().intValue(),admin.getUserName(),admin.getEmail());
+        BindingResult bindingResult = mock(BindingResult.class);
+        when(userAuthorizer.authorizeAdmin(session)).thenReturn(false);
+        //Act
+        String page = adminController.updateAdmin(createAdmin,session,bindingResult,3L);
+        //Assert
+        assertEquals(AdminViews.LOGIN_REDIRECT,page);
+    }
+
+    @Test
+    void update_sendBindingErrors_getUpdatePage() {
         //Arrange
         when(userAuthorizer.authorizeAdmin(session)).thenReturn(true);
         CreateAdmin createAdmin = new CreateAdmin(admin.getId().intValue(),admin.getUserName(),admin.getEmail());
@@ -294,31 +349,32 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.updateAdmin(createAdmin,session,bindingResult,3L);
         //Assert
-        assertEquals("admin/updateAdmin",page);
+        assertEquals(AdminViews.UPDATE_ADMIN,page);
     }
 
    @Test
-    void create_sendValidationErrors_getUpdatePage() {
+    void update_sendValidationErrors_getUpdatePage() throws Exception{
         //Arrange
-        when(userAuthorizer.authorizeAdmin(session)).thenReturn(true);
+        when(userAuthorizer.authorizeAdmin(any(HttpSession.class))).thenReturn(true);
         CreateAdmin createAdmin = new CreateAdmin(admin.getId().intValue(),admin.getUserName(),admin.getEmail());
         BindingResult bindingResult = mock(BindingResult.class);
         when(bindingResult.hasErrors()).thenReturn(false);
-        FieldError fieldError = mock(FieldError.class);
         //add errors to binding result
         doAnswer(invocation -> {
             Object[] args = invocation.getArguments();
-            ((BindingResult)args[1]).addError(fieldError);
+            ((BindingResult)args[1]).rejectValue("email","duplicated");
             return null; // void method in a block-style lambda, so return null
-        }).when(validator).validate(createAdmin,bindingResult);
+        }).when(validator).validate(any(CreateAdmin.class),any(BindingResult.class));
         //Act
-        String page = adminController.updateAdmin(createAdmin,session,bindingResult,3L);
-        //Assert
-        assertEquals("admin/updateAdmin",page);
+       mockMvc.perform(post("/admins/updateAdmin.htm")
+                       .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                       .sessionAttr("createAdmin", createAdmin)
+                       .param("id", "3"))
+               .andExpect(view().name(AdminViews.UPDATE_ADMIN));
     }
 
     @Test
-    void create_sendInvalidId_getUpdatePage() {
+    void update_sendInvalidId_getUpdatePage() {
         //Arrange
         when(userAuthorizer.authorizeAdmin(session)).thenReturn(true);
         CreateAdmin createAdmin = new CreateAdmin(admin.getId().intValue(),admin.getUserName(),admin.getEmail());
@@ -328,11 +384,11 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.updateAdmin(createAdmin,session,bindingResult,3L);
         //Assert
-        assertEquals("admin/updateAdmin",page);
+        assertEquals(AdminViews.UPDATE_ADMIN,page);
     }
 
     @Test
-    void create_sendValidId_getAdminsPage() {
+    void update_sendValidId_getAdminsPage() {
         //Arrange
         when(userAuthorizer.authorizeAdmin(session)).thenReturn(true);
         CreateAdmin createAdmin = new CreateAdmin(admin.getId().intValue(),admin.getUserName(),admin.getEmail());
@@ -342,7 +398,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.updateAdmin(createAdmin,session,bindingResult,3L);
         //Assert
-        assertEquals("redirect:/admins/admins.htm",page);
+        assertEquals(AdminViews.ALL_ADMINS_REDIRECT,page);
     }
 
     @Test
@@ -350,7 +406,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.setAdminPassword();
         //Assert
-        assertEquals("admin/setAdminPassword",page);
+        assertEquals(AdminViews.ADMIN_RESET_PASSWORD,page);
     }
 
     @Test
@@ -361,7 +417,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.setAdminPassword("29019280192",session);
         //Assert
-        assertEquals("admin/setAdminPassword",page);
+        assertEquals(AdminViews.ADMIN_RESET_PASSWORD,page);
     }
     @Test
     void testSetAdminPassword_sendValidEmailAndInvalidId_getResetPage() {
@@ -373,7 +429,7 @@ class AdminControllerAdminUnitTest {
         //Act
         String page = adminController.setAdminPassword("29019280192",session);
         //Assert
-        assertEquals("admin/setAdminPassword",page);
+        assertEquals(AdminViews.ADMIN_RESET_PASSWORD,page);
     }
 
     @Test
