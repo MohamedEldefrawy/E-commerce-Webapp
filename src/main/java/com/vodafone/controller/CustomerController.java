@@ -129,7 +129,7 @@ public class CustomerController {
                 model.addAttribute("product", product);
             } catch (GetProductException e) {
                 logger.warn(e.getMessage());
-                //todo: return custom 404 error page
+                return "/customer/shared/error404";
             }
             return "/customer/product/detail";
         } else {
