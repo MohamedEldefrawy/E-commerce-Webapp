@@ -52,7 +52,7 @@ class AdminControllerAdminUnitTest {
         hashService = mock(HashService.class);
         emailService = mock(SendEmailService.class);
         session = mock(HttpSession.class);
-        adminController = new AdminController(adminService,productService,validator,userAuthorizer,
+        adminController = new AdminController(adminService,productService,userAuthorizer,validator,
                 hashService,emailService);
         admin = new Admin(); //create new admin
         admin.setUserName("admin");
