@@ -1,16 +1,13 @@
 package controller;
 
-import cn.org.rapid_framework.web.session.wrapper.HttpSessionWrapper;
 import com.vodafone.controller.CustomerController;
 import com.vodafone.exception.product.GetProductException;
-import com.vodafone.model.Customer;
-import com.vodafone.model.Product;
+import com.vodafone.model.*;
 import com.vodafone.model.dto.ResetPasswordDTO;
 import com.vodafone.service.*;
 import com.vodafone.validators.CustomerValidator;
 import com.vodafone.validators.UserAuthorizer;
 import org.hibernate.HibernateException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.ui.ConcurrentModel;
 import org.springframework.ui.Model;
@@ -215,7 +212,7 @@ class CustomerControllerUnitTest {
         when(userAuthorizer.customerExists(any(HttpSession.class))).thenReturn(true);
         when(bindingResult.hasErrors()).thenReturn(false);
         when(session.getAttribute("email")).thenReturn(email);
-        when(hashService.encryptPassword(anyString(),anyString())).thenReturn(password);
+        when(hashService.encryptPassword(anyString(), anyString())).thenReturn(password);
         when(customerService.resetPassword(email, password)).thenReturn(true);
         //Act
         String viewName = customerController.resetPassword(new ResetPasswordDTO(password), bindingResult, session);
@@ -223,6 +220,7 @@ class CustomerControllerUnitTest {
         assertNotNull(viewName);
         assertEquals("redirect:/login.htm", viewName);
     }
+
     @Test
     void resetPasswordPost_existUserAndResetPasswordFalse_expectResetPasswordViewString() {
         //Arrange
@@ -231,7 +229,7 @@ class CustomerControllerUnitTest {
         when(userAuthorizer.customerExists(any(HttpSession.class))).thenReturn(true);
         when(bindingResult.hasErrors()).thenReturn(false);
         when(session.getAttribute("email")).thenReturn(email);
-        when(hashService.encryptPassword(anyString(),anyString())).thenReturn(password);
+        when(hashService.encryptPassword(anyString(), anyString())).thenReturn(password);
         when(customerService.resetPassword(email, password)).thenReturn(false);
         //Act
         String viewName = customerController.resetPassword(new ResetPasswordDTO(password), bindingResult, session);
@@ -239,6 +237,7 @@ class CustomerControllerUnitTest {
         assertNotNull(viewName);
         assertEquals("resetPassword", viewName);
     }
+
     @Test
     void resetPasswordPost_notExistingUser_expectLoginViewString() {
         //Arrange
@@ -250,6 +249,7 @@ class CustomerControllerUnitTest {
         assertNotNull(viewName);
         assertEquals("redirect:/login.htm", viewName);
     }
+
     @Test
     void resetPasswordPost_bindingResultErrors_expectRegistrationViewString() {
         //Arrange
@@ -263,62 +263,321 @@ class CustomerControllerUnitTest {
     }
 
     @Test
-    void viewProductDetails_customerIsActivatedAndProductExists_expectDetailViewString(){
+    void viewProductDetails_customerIsActivatedAndProductExists_expectDetailViewString() {
         //Arrange
         when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(true);
         when(productService.getById(anyLong())).thenReturn(new Product());
         //Act
-        String viewName = customerController.viewProductDetails(session,model,1L);
+        String viewName = customerController.viewProductDetails(session, model, 1L);
         //Assert
         assertNotNull(viewName);
-        assertEquals("/customer/product/detail",viewName);
+        assertEquals("/customer/product/detail", viewName);
     }
+
     //todo: update function to expect error page
     @Test
-    void viewProductDetails_customerIsActivatedAndProductNotExists_expectDetailViewString(){
+    void viewProductDetails_customerIsActivatedAndProductNotExists_expectErrorPageViewString() {
         //Arrange
         when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(true);
         when(productService.getById(anyLong())).thenThrow(new GetProductException("Error occurred while fetching product by id"));
         //Act
-        String viewName = customerController.viewProductDetails(session,model,1L);
+        String viewName = customerController.viewProductDetails(session, model, 1L);
         //Assert
         assertNotNull(viewName);
-        assertEquals("/customer/product/detail",viewName);
+        assertEquals("/customer/shared/error404", viewName);
     }
 
     @Test
-    void viewProductDetails_customerIsNotActivated_expectLoginViewString(){
+    void viewProductDetails_customerIsNotActivated_expectLoginViewString() {
         //Arrange
         when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(false);
         //Act
-        String viewName = customerController.viewProductDetails(session,model,1L);
+        String viewName = customerController.viewProductDetails(session, model, 1L);
         //Assert
         assertNotNull(viewName);
-        assertEquals("redirect:/login.htm",viewName);
+        assertEquals("redirect:/login.htm", viewName);
     }
 
     @Test
-    void getCustomerOrders_customerIsActivated_expectOrdersViewString(){
+    void getCustomerOrders_customerIsActivated_expectOrdersViewString() {
         //Arrange
         when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(true);
         when(session.getAttribute("id")).thenReturn(1L);
         when(orderService.getByCustomerId(anyLong())).thenReturn(new ArrayList<>());
         //Act
-        String viewName = customerController.getCustomerOrders(session,model);
+        String viewName = customerController.getCustomerOrders(session, model);
         //Assert
         assertNotNull(viewName);
-        assertEquals("/customer/shared/orders",viewName);
+        assertEquals("/customer/shared/orders", viewName);
     }
+
     @Test
-    void getCustomerOrders_customerIsNotActivated_expectLoginViewString(){
+    void getCustomerOrders_customerIsNotActivated_expectLoginViewString() {
         //Arrange
         when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(false);
         //Act
-        String viewName = customerController.getCustomerOrders(session,model);
+        String viewName = customerController.getCustomerOrders(session, model);
+        //Assert
+        assertNotNull(viewName);
+        assertEquals("redirect:/login.htm", viewName);
+    }
+
+    @Test
+    void submitFinalOrder_customerIsActivatedAndOrderIsCreated_expect200() {
+        //Arrange
+        Customer customer = new Customer();
+        customer.setCart(new Cart(1L, customer, new ArrayList<>()));
+        Order order = new Order();
+        order.setCustomer(customer);
+        when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(true);
+        when(session.getAttribute("id")).thenReturn(1L);
+        when(customerService.getById(1L)).thenReturn(customer);
+        when(cartService.submitFinalOrder(1L)).thenReturn(order);
+        when(orderService.create(any(Order.class))).thenReturn(true);
+        //Act
+        String responseBodyString = customerController.submitFinalOrder(session);
+        //Assert
+        assertNotNull(responseBodyString);
+        assertEquals("200", responseBodyString);
+    }
+
+    @Test
+    void submitFinalOrder_customerIsActivatedAndOrderIsNotCreated_expect500() {
+        //Arrange
+        Customer customer = new Customer();
+        customer.setCart(new Cart(1L, customer, new ArrayList<>()));
+        Order order = new Order();
+        order.setCustomer(customer);
+        when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(true);
+        when(session.getAttribute("id")).thenReturn(1L);
+        when(customerService.getById(1L)).thenReturn(customer);
+        when(cartService.submitFinalOrder(anyLong())).thenReturn(order);
+        when(orderService.create(any(Order.class))).thenReturn(false);
+        //Act
+        String responseBodyString = customerController.submitFinalOrder(session);
+        //Assert
+        assertNotNull(responseBodyString);
+        assertEquals("500", responseBodyString);
+    }
+
+    @Test
+    void submitFinalOrder_customerIsNotActivated_expect401() {
+        //Arrange
+        when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(false);
+        //Act
+        String responseBodyString = customerController.submitFinalOrder(session);
+        //Assert
+        assertNotNull(responseBodyString);
+        assertEquals("401", responseBodyString);
+    }
+
+    @Test
+    void showCustomerCart_customerIsActivated_expectCartViewString() {
+        //Arrange
+        Customer customer = new Customer();
+        customer.setCart(new Cart(1L, customer, new ArrayList<>()));
+        Order order = new Order();
+        order.setCustomer(customer);
+        when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(true);
+        when(session.getAttribute("id")).thenReturn(1L);
+        when(customerService.getById(anyLong())).thenReturn(customer);
+        //Act
+        String viewName = customerController.showCustomerCart(model, session);
+        //Assert
+        assertNotNull(viewName);
+        assertEquals("/customer/shared/cart", viewName);
+    }
+
+    @Test
+    void showCustomerCart_customerIsNotActivated_expectLoginViewString() {
+        //Arrange
+        when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(false);
+        //Act
+        String viewName = customerController.showCustomerCart(model, session);
+        //Assert
+        assertNotNull(viewName);
+        assertEquals("redirect:/login.htm", viewName);
+    }
+
+    //product fetching error -> return error404
+    @Test
+    void addItemToCart_customerIsActivatedAndProductExistAndPositiveQuantity_expect200() {
+        //Arrange
+        Customer customer = new Customer();
+        customer.setCart(new Cart(1L, customer, new ArrayList<>()));
+        Order order = new Order();
+        order.setCustomer(customer);
+        when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(true);
+        when(session.getAttribute("id")).thenReturn(1L);
+        when(customerService.getById(anyLong())).thenReturn(customer);
+        when(productService.getById(anyLong())).thenReturn(new Product());
+        when(cartService.addItem(anyLong(), any(CartItem.class))).thenReturn(5);
+        //Act
+        String viewName = customerController.addItemToCart(session, 1L, 5);
+        //Assert
+        assertNotNull(viewName);
+        assertEquals("200", viewName);
+    }
+
+    @Test
+    void addItemToCart_customerIsActivatedAndProductNotExist_expect404Error() {
+        //Arrange
+        Customer customer = new Customer();
+        customer.setCart(new Cart(1L, customer, new ArrayList<>()));
+        Order order = new Order();
+        order.setCustomer(customer);
+        when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(true);
+        when(session.getAttribute("id")).thenReturn(1L);
+        when(customerService.getById(anyLong())).thenReturn(customer);
+        when(productService.getById(anyLong())).thenThrow(new GetProductException("Error occurred while fetching product by id"));
+        //Act
+        String viewName = customerController.addItemToCart(session, 1L, 5);
+        //Assert
+        assertNotNull(viewName);
+        assertEquals("/customer/shared/error404", viewName);
+    }
+
+    @Test
+    void addItemToCart_customerIsActivatedAndProductExistAndNegativeQuantity_expect500() {
+        //Arrange
+        Customer customer = new Customer();
+        customer.setCart(new Cart(1L, customer, new ArrayList<>()));
+        Order order = new Order();
+        order.setCustomer(customer);
+        when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(true);
+        when(session.getAttribute("id")).thenReturn(1L);
+        when(customerService.getById(anyLong())).thenReturn(customer);
+        when(productService.getById(anyLong())).thenReturn(new Product());
+        when(cartService.addItem(anyLong(), any(CartItem.class))).thenReturn(-1);
+        //Act
+        String viewName = customerController.addItemToCart(session, 1L, -1);
+        //Assert
+        assertNotNull(viewName);
+        assertEquals("500", viewName);
+    }
+
+    @Test
+    void addItemToCart_customerIsActivatedAndProductExistAndZeroQuantity_expect409() {
+        //Arrange
+        Customer customer = new Customer();
+        customer.setCart(new Cart(1L, customer, new ArrayList<>()));
+        Order order = new Order();
+        order.setCustomer(customer);
+        when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(true);
+        when(session.getAttribute("id")).thenReturn(1L);
+        when(customerService.getById(anyLong())).thenReturn(customer);
+        when(productService.getById(anyLong())).thenReturn(new Product());
+        when(cartService.addItem(anyLong(), any(CartItem.class))).thenReturn(0);
+        //Act
+        String viewName = customerController.addItemToCart(session, 1L, 0);
+        //Assert
+        assertNotNull(viewName);
+        assertEquals("409", viewName);
+    }
+
+    @Test
+    void addItemToCart_customerIsNotActivated_expect401() {
+        //Arrange
+        when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(false);
+        //Act
+        String viewName = customerController.addItemToCart(session, 1L, 100);
+        //Assert
+        assertNotNull(viewName);
+        assertEquals("401", viewName);
+    }
+
+    @Test
+    void removeItemFromCart_customerIsActivatedAndItemIsRemoved_expect200(){
+        //Arrange
+        Customer customer = new Customer();
+        customer.setCart(new Cart(1L,customer,new ArrayList<>()));
+        when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(true);
+        when(session.getAttribute("id")).thenReturn(1L);
+        when(customerService.getById(anyLong())).thenReturn(customer);
+        when(cartService.removeItem(anyLong(),anyLong())).thenReturn(true);
+        //Act
+        String viewName = customerController.removeItemFromCart(session,1L);
+        //Assert
+        assertNotNull(viewName);
+        assertEquals("200",viewName);
+    }
+
+    @Test
+    void removeItemFromCart_customerIsActivatedAndItemIsNotRemoved_expect500(){
+        //Arrange
+        Customer customer = new Customer();
+        customer.setCart(new Cart(1L,customer,new ArrayList<>()));
+        when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(true);
+        when(session.getAttribute("id")).thenReturn(1L);
+        when(customerService.getById(anyLong())).thenReturn(customer);
+        when(cartService.removeItem(anyLong(),anyLong())).thenReturn(false);
+        //Act
+        String viewName = customerController.removeItemFromCart(session,1L);
+        //Assert
+        assertNotNull(viewName);
+        assertEquals("500",viewName);
+    }
+
+    @Test
+    void removeItemFromCart_customerIsNotActivated_expect401(){
+        //Arrange
+        when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(false);
+        //Act
+        String viewName = customerController.removeItemFromCart(session,1L);
+        //Assert
+        assertNotNull(viewName);
+        assertEquals("401",viewName);
+    }
+
+    @Test
+    void registrationGet_expectRegistrationViewString(){
+        //Act
+        String actualView = customerController.registration(model);
+        //Assert
+        assertNotNull(actualView);
+        assertEquals("registration",actualView);
+    }
+
+    @Test
+    void resendOtp_customerExistsAndEmailIsSent_expectVerifyViewString(){
+        //Arrange
+        Customer customer = new Customer();
+        when(userAuthorizer.customerExists(any(HttpSession.class))).thenReturn(true);
+        when(session.getAttribute("username")).thenReturn("mi");
+        when(customerService.getByUserName(anyString())).thenReturn(customer);
+        when(sendEmailService.getRandom()).thenReturn("153255");
+        when(customerService.update(1L,customer)).thenReturn(true);
+        when(sendEmailService.sendEmail(customer,EmailType.ACTIVATION,session)).thenReturn(true);
+        //Act
+        String viewName = customerController.resendOtp(session);
+        //Assert
+        assertNotNull(viewName);
+        assertEquals("redirect:/customer/verify.htm",viewName);
+    }
+    @Test
+    void resendOtp_customerExistsAndEmailIsNotSent_expectVerifyViewString(){
+        //Arrange
+        Customer customer = new Customer();
+        when(userAuthorizer.customerExists(any(HttpSession.class))).thenReturn(true);
+        when(session.getAttribute("username")).thenReturn("mi");
+        when(customerService.getByUserName(anyString())).thenReturn(customer);
+        when(sendEmailService.getRandom()).thenReturn("153255");
+        when(customerService.update(1L,customer)).thenReturn(true);
+        when(sendEmailService.sendEmail(customer,EmailType.ACTIVATION,session)).thenReturn(false);
+        //Act
+        String viewName = customerController.resendOtp(session);
+        //Assert
+        assertNotNull(viewName);
+        assertEquals("registration",viewName);
+    }
+    @Test
+    void resendOtp_customerNotExists_expectLoginViewString(){
+        //Arrange
+        when(userAuthorizer.customerExists(any(HttpSession.class))).thenReturn(false);
+        //Act
+        String viewName = customerController.resendOtp(session);
         //Assert
         assertNotNull(viewName);
         assertEquals("redirect:/login.htm",viewName);
     }
-
-
 }
