@@ -116,6 +116,7 @@ public class CustomerRepository implements ICustomerRepository {
             customer = session.get(Customer.class, id);
         } catch (HibernateException | NoResultException hibernateException) {
             hibernateException.printStackTrace();
+            return Optional.empty();
         }
         return Optional.ofNullable(customer);
     }
