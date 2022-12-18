@@ -9,7 +9,7 @@ import com.vodafone.model.EmailType;
 import com.vodafone.model.Product;
 import com.vodafone.model.Role;
 import com.vodafone.model.dto.CreateAdmin;
-import com.vodafone.model.dto.CreateProduct;
+import com.vodafone.model.dto.CreateProductDto;
 import com.vodafone.model.dto.UpdateProductDto;
 import com.vodafone.service.AdminService;
 import com.vodafone.service.HashService;
@@ -26,7 +26,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -81,8 +80,7 @@ public class AdminController {
                 boolean deleted = false;
                 try {
                     deleted = adminService.deleteAdmin(id);
-                }
-                catch (GetAdminException e){
+                } catch (GetAdminException e) {
                     logger.warn(e.getMessage());
                     //todo: redirect to 404
                 }
@@ -102,8 +100,7 @@ public class AdminController {
             Admin admin;
             try {
                 admin = adminService.getAdminById(id);
-            }
-            catch (GetAdminException e){
+            } catch (GetAdminException e) {
                 logger.warn(e.getMessage());
                 return AdminViews.VIEW_ALL_ADMINS; //todo: redirect to 404?
             }
@@ -147,10 +144,9 @@ public class AdminController {
             admin.setEmail(createAdmin.getEmail());
             admin.setFirstLogin(true);
             boolean created = false;
-            try{
+            try {
                 created = adminService.createAdmin(admin);
-            }
-            catch (CreateAdminException e){
+            } catch (CreateAdminException e) {
                 logger.warn(e.getMessage());
             }
             if (created) {
@@ -236,7 +232,7 @@ public class AdminController {
                     fileOutputStream.write(imageData);
                 }
             } catch (IOException e) {
-                logger.warn(e.getMessage());
+                logger.warn("No image has been selected to upload");
             }
 
             Product updatedProduct;
@@ -250,7 +246,7 @@ public class AdminController {
             }
             updatedProduct.setDescription(product.getDescription());
             updatedProduct.setCategory(product.getCategory());
-            if (imageData.length > 0)
+            if (product.getImage() != null)
                 updatedProduct.setImage(product.getImage().getOriginalFilename());
             updatedProduct.setPrice(product.getPrice());
             updatedProduct.setName(product.getName());
@@ -267,7 +263,7 @@ public class AdminController {
     @GetMapping("/products/create.htm")
     public String createProduct(HttpSession session, Model model) {
         if (userAuthorizer.authorizeAdmin(session)) {
-            model.addAttribute(PRODUCT_ATTRIBUTE, new CreateProduct());
+            model.addAttribute(PRODUCT_ATTRIBUTE, new CreateProductDto());
             return AdminViews.ADMIN_CREATE_PRODUCT;
         } else {
             return AdminViews.LOGIN_REDIRECT;
@@ -275,9 +271,8 @@ public class AdminController {
     }
 
     @PostMapping("/products/create.htm")
-    public String submitCreate(@Valid @ModelAttribute("product") CreateProduct product,
+    public String submitCreate(@Valid @ModelAttribute("product") CreateProductDto product,
                                BindingResult bindingResult,
-                               @RequestParam("image") CommonsMultipartFile image,
                                HttpSession session) {
         if (userAuthorizer.authorizeAdmin(session)) {
             if (bindingResult.hasErrors()) {
@@ -285,9 +280,9 @@ public class AdminController {
             }
             byte[] imageData = new byte[0];
             String path = "";
-            if (image != null) {
-                imageData = image.getBytes();
-                path = session.getServletContext().getRealPath("/") + "resources/static/images/" + image.getOriginalFilename();
+            if (product.getImage() != null) {
+                imageData = product.getImage().getBytes();
+                path = session.getServletContext().getRealPath("/") + "resources/static/images/" + product.getImage().getOriginalFilename();
             }
             try (FileOutputStream fileOutputStream = new FileOutputStream(path)) {
                 if (imageData.length > 0) {
@@ -301,8 +296,8 @@ public class AdminController {
             Product newProduct = new Product();
             newProduct.setDescription(product.getDescription());
             newProduct.setCategory(product.getCategory());
-            if (image != null)
-                newProduct.setImage(image.getOriginalFilename());
+            if (product.getImage() != null)
+                newProduct.setImage(product.getImage().getOriginalFilename());
             newProduct.setPrice(product.getPrice());
             newProduct.setName(product.getName());
             newProduct.setInStock(product.getInStock());
@@ -360,7 +355,7 @@ public class AdminController {
             try {
                 result = adminService.updateAdmin(id, updatedAdmin);
 
-            }catch (GetAdminException e){
+            } catch (GetAdminException e) {
                 logger.warn(e.getMessage());
                 //todo: redirect to 404
             }
@@ -383,8 +378,7 @@ public class AdminController {
         Admin admin = null;
         try {
             admin = adminService.getAdminByEmail(email);
-        }
-        catch (GetAdminException e){
+        } catch (GetAdminException e) {
             logger.warn(e.getMessage());
             return AdminViews.ADMIN_RESET_PASSWORD;
         }
@@ -393,7 +387,7 @@ public class AdminController {
         try {
             adminService.updatePassword(admin.getId(), newPassword);
             return "redirect:/admins/home.htm";
-        }catch (GetAdminException e){
+        } catch (GetAdminException e) {
             logger.warn(e.getMessage());
             return AdminViews.ADMIN_RESET_PASSWORD;
         }
