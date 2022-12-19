@@ -330,7 +330,7 @@ class CustomerControllerUnitTest {
         order.setCustomer(customer);
         when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(true);
         when(session.getAttribute("id")).thenReturn(1L);
-        when(customerService.getById(1L)).thenReturn(customer);
+        when(customerService.findCustomerById(1L)).thenReturn(customer);
         when(cartService.submitFinalOrder(1L)).thenReturn(order);
         when(orderService.create(any(Order.class))).thenReturn(true);
         //Act
@@ -349,7 +349,7 @@ class CustomerControllerUnitTest {
         order.setCustomer(customer);
         when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(true);
         when(session.getAttribute("id")).thenReturn(1L);
-        when(customerService.getById(1L)).thenReturn(customer);
+        when(customerService.findCustomerById(1L)).thenReturn(customer);
         when(cartService.submitFinalOrder(anyLong())).thenReturn(order);
         when(orderService.create(any(Order.class))).thenReturn(false);
         //Act
@@ -379,7 +379,7 @@ class CustomerControllerUnitTest {
         order.setCustomer(customer);
         when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(true);
         when(session.getAttribute("id")).thenReturn(1L);
-        when(customerService.getById(anyLong())).thenReturn(customer);
+        when(customerService.findCustomerById(anyLong())).thenReturn(customer);
         //Act
         String viewName = customerController.showCustomerCart(model, session);
         //Assert
@@ -408,7 +408,7 @@ class CustomerControllerUnitTest {
         order.setCustomer(customer);
         when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(true);
         when(session.getAttribute("id")).thenReturn(1L);
-        when(customerService.getById(anyLong())).thenReturn(customer);
+        when(customerService.findCustomerById(anyLong())).thenReturn(customer);
         when(productService.getById(anyLong())).thenReturn(new Product());
         when(cartService.addItem(anyLong(), any(CartItem.class))).thenReturn(5);
         //Act
@@ -427,7 +427,7 @@ class CustomerControllerUnitTest {
         order.setCustomer(customer);
         when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(true);
         when(session.getAttribute("id")).thenReturn(1L);
-        when(customerService.getById(anyLong())).thenReturn(customer);
+        when(customerService.findCustomerById(anyLong())).thenReturn(customer);
         when(productService.getById(anyLong())).thenThrow(new GetProductException("Error occurred while fetching product by id"));
         //Act
         String viewName = customerController.addItemToCart(session, 1L, 5);
@@ -445,7 +445,7 @@ class CustomerControllerUnitTest {
         order.setCustomer(customer);
         when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(true);
         when(session.getAttribute("id")).thenReturn(1L);
-        when(customerService.getById(anyLong())).thenReturn(customer);
+        when(customerService.findCustomerById(anyLong())).thenReturn(customer);
         when(productService.getById(anyLong())).thenReturn(new Product());
         when(cartService.addItem(anyLong(), any(CartItem.class))).thenReturn(-1);
         //Act
@@ -464,7 +464,7 @@ class CustomerControllerUnitTest {
         order.setCustomer(customer);
         when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(true);
         when(session.getAttribute("id")).thenReturn(1L);
-        when(customerService.getById(anyLong())).thenReturn(customer);
+        when(customerService.findCustomerById(anyLong())).thenReturn(customer);
         when(productService.getById(anyLong())).thenReturn(new Product());
         when(cartService.addItem(anyLong(), any(CartItem.class))).thenReturn(0);
         //Act
@@ -492,7 +492,7 @@ class CustomerControllerUnitTest {
         customer.setCart(new Cart(1L, customer, new ArrayList<>()));
         when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(true);
         when(session.getAttribute("id")).thenReturn(1L);
-        when(customerService.getById(anyLong())).thenReturn(customer);
+        when(customerService.findCustomerById(anyLong())).thenReturn(customer);
         when(cartService.removeItem(anyLong(), anyLong())).thenReturn(true);
         //Act
         String responseBody = customerController.removeItemFromCart(session, 1L);
@@ -508,7 +508,7 @@ class CustomerControllerUnitTest {
         customer.setCart(new Cart(1L, customer, new ArrayList<>()));
         when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(true);
         when(session.getAttribute("id")).thenReturn(1L);
-        when(customerService.getById(anyLong())).thenReturn(customer);
+        when(customerService.findCustomerById(anyLong())).thenReturn(customer);
         when(cartService.removeItem(anyLong(), anyLong())).thenReturn(false);
         //Act
         String responseBody = customerController.removeItemFromCart(session, 1L);
@@ -543,9 +543,9 @@ class CustomerControllerUnitTest {
         Customer customer = new Customer();
         when(userAuthorizer.customerExists(any(HttpSession.class))).thenReturn(true);
         when(session.getAttribute("username")).thenReturn("mi");
-        when(customerService.getByUserName(anyString())).thenReturn(customer);
+        when(customerService.findCustomerByUserName(anyString())).thenReturn(customer);
         when(sendEmailService.getRandom()).thenReturn("153255");
-        when(customerService.update(1L, customer)).thenReturn(true);
+        when(customerService.update(1L, customer)).thenReturn(customer);
         when(sendEmailService.sendEmail(customer, EmailType.ACTIVATION, session)).thenReturn(true);
         //Act
         String viewName = customerController.resendOtp(session);
@@ -560,9 +560,9 @@ class CustomerControllerUnitTest {
         Customer customer = new Customer();
         when(userAuthorizer.customerExists(any(HttpSession.class))).thenReturn(true);
         when(session.getAttribute("username")).thenReturn("mi");
-        when(customerService.getByUserName(anyString())).thenReturn(customer);
+        when(customerService.findCustomerByUserName(anyString())).thenReturn(customer);
         when(sendEmailService.getRandom()).thenReturn("153255");
-        when(customerService.update(1L, customer)).thenReturn(true);
+        when(customerService.update(1L, customer)).thenReturn(customer);
         when(sendEmailService.sendEmail(customer, EmailType.ACTIVATION, session)).thenReturn(false);
         //Act
         String viewName = customerController.resendOtp(session);
@@ -616,7 +616,7 @@ class CustomerControllerUnitTest {
         customer.setCode(code);
         when(userAuthorizer.customerExists(session)).thenReturn(true);
         when(session.getAttribute("email")).thenReturn(email);
-        when(customerService.getByMail(email)).thenReturn(customer);
+        when(customerService.findCustomerByEmail(email)).thenReturn(customer);
         when(customerService.updateStatusActivated(email)).thenReturn(true);
         //Act
         String viewName = customerController.verifyCustomer(code, session, model);
@@ -632,7 +632,7 @@ class CustomerControllerUnitTest {
         String email = "mohammedre4a@gmail.com";
         when(userAuthorizer.customerExists(session)).thenReturn(true);
         when(session.getAttribute("email")).thenReturn(email);
-        when(customerService.getByMail(email)).thenReturn(null);
+        when(customerService.findCustomerByEmail(email)).thenReturn(null);
         //Act
         String viewName = customerController.verifyCustomer(code, session, model);
         //Assert
@@ -647,7 +647,7 @@ class CustomerControllerUnitTest {
         String email = "mohammedre4a@gmail.com";
         when(userAuthorizer.customerExists(session)).thenReturn(true);
         when(session.getAttribute("email")).thenReturn(email);
-        when(customerService.getByMail(email)).thenReturn(new Customer());
+        when(customerService.findCustomerByEmail(email)).thenReturn(new Customer());
         when(customerService.updateStatusActivated(email)).thenReturn(true);
         //Act
         String viewName = customerController.verifyCustomer(code, session, model);
@@ -665,7 +665,7 @@ class CustomerControllerUnitTest {
         customer.setCode(code);
         when(userAuthorizer.customerExists(session)).thenReturn(true);
         when(session.getAttribute("email")).thenReturn(email);
-        when(customerService.getByMail(email)).thenReturn(customer);
+        when(customerService.findCustomerByEmail(email)).thenReturn(customer);
         when(customerService.updateStatusActivated(email)).thenReturn(true);
         //Act
         String viewName = customerController.verifyCustomer("wrong_code", session, model);
@@ -693,7 +693,7 @@ class CustomerControllerUnitTest {
         customer.setCart(cart);
         when(userAuthorizer.isActivatedCustomer(session)).thenReturn(true);
         when(session.getAttribute("id")).thenReturn(1L);
-        when(customerService.getById(anyLong())).thenReturn(customer);
+        when(customerService.findCustomerById(anyLong())).thenReturn(customer);
         when(cartService.incrementProductQuantity(anyLong(), anyLong(), anyInt())).thenReturn(10);
         //Act
         String responseBody = customerController.incrementProductQuantity(session, 1L);
@@ -710,7 +710,7 @@ class CustomerControllerUnitTest {
         customer.setCart(cart);
         when(userAuthorizer.isActivatedCustomer(session)).thenReturn(true);
         when(session.getAttribute("id")).thenReturn(1L);
-        when(customerService.getById(anyLong())).thenReturn(customer);
+        when(customerService.findCustomerById(anyLong())).thenReturn(customer);
         when(cartService.incrementProductQuantity(anyLong(), anyLong(), anyInt())).thenReturn(-1);
         //Act
         String responseBody = customerController.incrementProductQuantity(session, 1L);
@@ -727,7 +727,7 @@ class CustomerControllerUnitTest {
         customer.setCart(cart);
         when(userAuthorizer.isActivatedCustomer(session)).thenReturn(true);
         when(session.getAttribute("id")).thenReturn(1L);
-        when(customerService.getById(anyLong())).thenReturn(customer);
+        when(customerService.findCustomerById(anyLong())).thenReturn(customer);
         when(cartService.incrementProductQuantity(anyLong(), anyLong(), anyInt())).thenReturn(0);
         //Act
         String responseBody = customerController.incrementProductQuantity(session, 1L);
@@ -755,7 +755,7 @@ class CustomerControllerUnitTest {
         customer.setCart(cart);
         when(userAuthorizer.isActivatedCustomer(session)).thenReturn(true);
         when(session.getAttribute("id")).thenReturn(1L);
-        when(customerService.getById(anyLong())).thenReturn(customer);
+        when(customerService.findCustomerById(anyLong())).thenReturn(customer);
         when(cartService.decrementProductQuantity(anyLong(), anyLong(), anyInt())).thenReturn(10);
         //Act
         String responseBody = customerController.decrementProductQuantity(session, 1L);
@@ -772,7 +772,7 @@ class CustomerControllerUnitTest {
         customer.setCart(cart);
         when(userAuthorizer.isActivatedCustomer(session)).thenReturn(true);
         when(session.getAttribute("id")).thenReturn(1L);
-        when(customerService.getById(anyLong())).thenReturn(customer);
+        when(customerService.findCustomerById(anyLong())).thenReturn(customer);
         when(cartService.decrementProductQuantity(anyLong(), anyLong(), anyInt())).thenReturn(-1);
         //Act
         String responseBody = customerController.decrementProductQuantity(session, 1L);
@@ -798,7 +798,7 @@ class CustomerControllerUnitTest {
         Customer customer = new Customer();
         when(bindingResult.hasErrors()).thenReturn(false);
         when(sendEmailService.getRandom()).thenReturn("132465");
-        when(customerService.create(customer)).thenReturn(true);
+        when(customerService.create(customer)).thenReturn(customer);
         when(sendEmailService.sendEmail(customer, EmailType.ACTIVATION, session)).thenReturn(true);
         //Act
         String viewName = customerController.register(customer, bindingResult, session);
@@ -813,7 +813,7 @@ class CustomerControllerUnitTest {
         Customer customer = new Customer();
         when(bindingResult.hasErrors()).thenReturn(false);
         when(sendEmailService.getRandom()).thenReturn("132465");
-        when(customerService.create(customer)).thenReturn(true);
+        when(customerService.create(customer)).thenReturn(customer);
         when(sendEmailService.sendEmail(customer, EmailType.ACTIVATION, session)).thenReturn(false);
         //Act
         String viewName = customerController.register(customer, bindingResult, session);
