@@ -1,6 +1,5 @@
 package com.vodafone.repository.user;
 
-import com.vodafone.config.HibernateConfig;
 import com.vodafone.model.User;
 import lombok.AllArgsConstructor;
 import org.hibernate.HibernateException;
