@@ -19,52 +19,42 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ProductServiceUnitTest {
+class ProductServiceUnitTest {
     private final IProductRepository productRepository = mock(IProductRepository.class);
     private final ProductService productService = new ProductService(productRepository);
     private final Logger logger = LoggerFactory.getLogger(ProductServiceUnitTest.class);
 
 
     @Test
-    public void createTest_sendProductObject_returnTrue() {
+    void createTest_sendProductObject_returnTrue() {
         Product dummyProduct = createProduct();
-        when(productRepository.save(any(Product.class))).thenReturn(Optional.of(1L));
-        boolean result = false;
-        try {
-            result = productService.create(dummyProduct);
-        } catch (CreateProductException e) {
-            logger.info(e.getMessage());
-        }
+        when(productRepository.save(any(Product.class))).thenReturn(dummyProduct);
+        boolean result = productService.create(dummyProduct);
         assertTrue(result);
     }
 
     @Test
-    public void createTest_sendProductObject_returnFalse() {
+    void createTest_sendProductObject_returnFalse() {
         Product dummyProduct = createProduct();
-        when(productRepository.create(any(Product.class))).thenReturn(Optional.empty());
+        when(productRepository.save(any(Product.class))).thenReturn(dummyProduct);
 
         assertThrows(CreateProductException.class, () -> productService.create(dummyProduct));
     }
 
     @Test
-    public void updateTest_sendProductIdAndProductObject_returnTrue() {
+    void updateTest_sendProductIdAndProductObject_returnTrue() {
         Product dummyProduct = createProduct();
-        when(productRepository.getById(any(Long.class))).thenReturn(Optional.of(dummyProduct));
-        when(productRepository.update(any(Long.class), any(Product.class))).thenReturn(true);
-        boolean result = false;
-        try {
-            result = productService.update(dummyProduct.getId(), dummyProduct);
-        } catch (GetProductException e) {
-            logger.info(e.getMessage());
-        }
+        when(productRepository.findById(any(Long.class))).thenReturn(Optional.of(dummyProduct));
+        when(productRepository.save(any(Product.class))).thenReturn(dummyProduct);
+        boolean result = productService.update(dummyProduct.getId(), dummyProduct);
         assertTrue(result);
     }
 
     @Test
-    public void updateTest_sendProductIdAndProductObject_throwsGetProductException() {
-        when(productRepository.getById(any(Long.class))).thenReturn(Optional.empty());
-        when(productRepository.update(any(Long.class), any(Product.class))).thenReturn(false);
-        assertThrows(GetProductException.class, () -> productService.update(1L, new Product()));
+    void updateTest_sendProductIdAndProductObject_throwsGetProductException() {
+        when(productRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+        when(productRepository.save(any(Product.class))).thenReturn(createProduct());
+        assertThrows(GetProductException.class, () -> productService.update(new Product()));
     }
 
     @Test
@@ -187,7 +177,7 @@ public class ProductServiceUnitTest {
     }
 
 
-    private  Product createProduct() {
+    private Product createProduct() {
         Product product = new Product();
         product.setId(1L);
         product.setName("dummyProduct");
@@ -200,7 +190,7 @@ public class ProductServiceUnitTest {
         return product;
     }
 
-    private  List<Product> createProducts() {
+    private List<Product> createProducts() {
         Product product1 = new Product();
         product1.setId(2L);
         product1.setName("dummyProduct");
