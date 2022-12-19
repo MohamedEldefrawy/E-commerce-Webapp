@@ -1,6 +1,5 @@
 package com.vodafone.repository.customer;
 
-import com.vodafone.config.HibernateConfig;
 import com.vodafone.model.Cart;
 import com.vodafone.model.Customer;
 import com.vodafone.model.Role;

@@ -4,7 +4,6 @@ import com.vodafone.exception.product.CreateProductException;
 import com.vodafone.exception.product.GetProductException;
 import com.vodafone.model.Product;
 import com.vodafone.repository.product.IProductRepository;
-import com.vodafone.repository.product.ProductRepository;
 import com.vodafone.service.ProductService;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -21,7 +20,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class ProductServiceUnitTest {
-    private final IProductRepository productRepository = mock(ProductRepository.class);
+    private final IProductRepository productRepository = mock(IProductRepository.class);
     private final ProductService productService = new ProductService(productRepository);
     private final Logger logger = LoggerFactory.getLogger(ProductServiceUnitTest.class);
 
@@ -29,7 +28,7 @@ public class ProductServiceUnitTest {
     @Test
     public void createTest_sendProductObject_returnTrue() {
         Product dummyProduct = createProduct();
-        when(productRepository.create(any(Product.class))).thenReturn(Optional.of(1L));
+        when(productRepository.save(any(Product.class))).thenReturn(Optional.of(1L));
         boolean result = false;
         try {
             result = productService.create(dummyProduct);

@@ -1,6 +1,5 @@
 package com.vodafone.repository.cart;
 
-import com.vodafone.config.HibernateConfig;
 import com.vodafone.model.Cart;
 import com.vodafone.model.CartItem;
 import lombok.AllArgsConstructor;

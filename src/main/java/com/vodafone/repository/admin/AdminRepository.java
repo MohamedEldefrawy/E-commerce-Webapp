@@ -1,6 +1,5 @@
 package com.vodafone.repository.admin;
 
-import com.vodafone.config.HibernateConfig;
 import com.vodafone.exception.admin.CreateAdminException;
 import com.vodafone.model.Admin;
 import org.hibernate.HibernateException;
@@ -154,7 +153,7 @@ public class AdminRepository implements IAdminRepository {
     public Optional<Admin> getByUsername(String username) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             try {
-                Admin admin =  session.createQuery("SELECT a from Admin a where a.userName=: username", Admin.class)
+                Admin admin = session.createQuery("SELECT a from Admin a where a.userName=: username", Admin.class)
                         .setParameter("username", username).getSingleResult();
                 return Optional.ofNullable(admin);
             } catch (NoResultException e) {
@@ -170,7 +169,7 @@ public class AdminRepository implements IAdminRepository {
     public Optional<Admin> getByEmail(String email) {
         try (Session session = hibernateConfig.getSessionFactory().openSession()) {
             try {
-                Admin admin= session.createQuery("SELECT a from Admin a where a.email=: email", Admin.class)
+                Admin admin = session.createQuery("SELECT a from Admin a where a.email=: email", Admin.class)
                         .setParameter("email", email).getSingleResult();
                 return Optional.of(admin);
             } catch (NoResultException e) {

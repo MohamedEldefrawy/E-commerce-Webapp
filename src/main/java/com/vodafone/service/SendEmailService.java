@@ -5,20 +5,17 @@ import com.vodafone.model.Email;
 import com.vodafone.model.EmailType;
 import com.vodafone.model.User;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 import java.util.Date;
 import java.util.Properties;
 import java.util.Random;
 
 @Service
-@PropertySource("classpath:application.properties")
 public class SendEmailService {
     @Value("${EMAIL}")
     public String EMAIL;

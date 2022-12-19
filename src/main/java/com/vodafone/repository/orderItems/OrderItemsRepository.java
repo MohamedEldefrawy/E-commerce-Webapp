@@ -1,6 +1,5 @@
 package com.vodafone.repository.orderItems;
 
-import com.vodafone.config.HibernateConfig;
 import com.vodafone.model.OrderItem;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
