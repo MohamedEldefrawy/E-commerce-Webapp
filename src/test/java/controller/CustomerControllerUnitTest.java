@@ -274,7 +274,6 @@ class CustomerControllerUnitTest {
         assertEquals("/customer/product/detail", viewName);
     }
 
-    //todo: update function to expect error page
     @Test
     void viewProductDetails_customerIsActivatedAndProductNotExists_expectErrorPageViewString() {
         //Arrange
@@ -413,10 +412,10 @@ class CustomerControllerUnitTest {
         when(productService.getById(anyLong())).thenReturn(new Product());
         when(cartService.addItem(anyLong(), any(CartItem.class))).thenReturn(5);
         //Act
-        String viewName = customerController.addItemToCart(session, 1L, 5);
+        String responseBody = customerController.addItemToCart(session, 1L, 5);
         //Assert
-        assertNotNull(viewName);
-        assertEquals("200", viewName);
+        assertNotNull(responseBody);
+        assertEquals("200", responseBody);
     }
 
     @Test
@@ -450,10 +449,10 @@ class CustomerControllerUnitTest {
         when(productService.getById(anyLong())).thenReturn(new Product());
         when(cartService.addItem(anyLong(), any(CartItem.class))).thenReturn(-1);
         //Act
-        String viewName = customerController.addItemToCart(session, 1L, -1);
+        String responseBody = customerController.addItemToCart(session, 1L, -1);
         //Assert
-        assertNotNull(viewName);
-        assertEquals("500", viewName);
+        assertNotNull(responseBody);
+        assertEquals("500", responseBody);
     }
 
     @Test
@@ -469,10 +468,10 @@ class CustomerControllerUnitTest {
         when(productService.getById(anyLong())).thenReturn(new Product());
         when(cartService.addItem(anyLong(), any(CartItem.class))).thenReturn(0);
         //Act
-        String viewName = customerController.addItemToCart(session, 1L, 0);
+        String responseBody = customerController.addItemToCart(session, 1L, 0);
         //Assert
-        assertNotNull(viewName);
-        assertEquals("409", viewName);
+        assertNotNull(responseBody);
+        assertEquals("409", responseBody);
     }
 
     @Test
@@ -480,104 +479,357 @@ class CustomerControllerUnitTest {
         //Arrange
         when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(false);
         //Act
-        String viewName = customerController.addItemToCart(session, 1L, 100);
+        String responseBody = customerController.addItemToCart(session, 1L, 100);
         //Assert
-        assertNotNull(viewName);
-        assertEquals("401", viewName);
+        assertNotNull(responseBody);
+        assertEquals("401", responseBody);
     }
 
     @Test
-    void removeItemFromCart_customerIsActivatedAndItemIsRemoved_expect200(){
+    void removeItemFromCart_customerIsActivatedAndItemIsRemoved_expect200() {
         //Arrange
         Customer customer = new Customer();
-        customer.setCart(new Cart(1L,customer,new ArrayList<>()));
+        customer.setCart(new Cart(1L, customer, new ArrayList<>()));
         when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(true);
         when(session.getAttribute("id")).thenReturn(1L);
         when(customerService.getById(anyLong())).thenReturn(customer);
-        when(cartService.removeItem(anyLong(),anyLong())).thenReturn(true);
+        when(cartService.removeItem(anyLong(), anyLong())).thenReturn(true);
         //Act
-        String viewName = customerController.removeItemFromCart(session,1L);
+        String responseBody = customerController.removeItemFromCart(session, 1L);
         //Assert
-        assertNotNull(viewName);
-        assertEquals("200",viewName);
+        assertNotNull(responseBody);
+        assertEquals("200", responseBody);
     }
 
     @Test
-    void removeItemFromCart_customerIsActivatedAndItemIsNotRemoved_expect500(){
+    void removeItemFromCart_customerIsActivatedAndItemIsNotRemoved_expect500() {
         //Arrange
         Customer customer = new Customer();
-        customer.setCart(new Cart(1L,customer,new ArrayList<>()));
+        customer.setCart(new Cart(1L, customer, new ArrayList<>()));
         when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(true);
         when(session.getAttribute("id")).thenReturn(1L);
         when(customerService.getById(anyLong())).thenReturn(customer);
-        when(cartService.removeItem(anyLong(),anyLong())).thenReturn(false);
+        when(cartService.removeItem(anyLong(), anyLong())).thenReturn(false);
         //Act
-        String viewName = customerController.removeItemFromCart(session,1L);
+        String responseBody = customerController.removeItemFromCart(session, 1L);
         //Assert
-        assertNotNull(viewName);
-        assertEquals("500",viewName);
+        assertNotNull(responseBody);
+        assertEquals("500", responseBody);
     }
 
     @Test
-    void removeItemFromCart_customerIsNotActivated_expect401(){
+    void removeItemFromCart_customerIsNotActivated_expect401() {
         //Arrange
         when(userAuthorizer.isActivatedCustomer(any(HttpSession.class))).thenReturn(false);
         //Act
-        String viewName = customerController.removeItemFromCart(session,1L);
+        String responseBody = customerController.removeItemFromCart(session, 1L);
         //Assert
-        assertNotNull(viewName);
-        assertEquals("401",viewName);
+        assertNotNull(responseBody);
+        assertEquals("401", responseBody);
     }
 
     @Test
-    void registrationGet_expectRegistrationViewString(){
+    void registrationGet_expectRegistrationViewString() {
         //Act
         String actualView = customerController.registration(model);
         //Assert
         assertNotNull(actualView);
-        assertEquals("registration",actualView);
+        assertEquals("registration", actualView);
     }
 
     @Test
-    void resendOtp_customerExistsAndEmailIsSent_expectVerifyViewString(){
+    void resendOtp_customerExistsAndEmailIsSent_expectVerifyViewString() {
         //Arrange
         Customer customer = new Customer();
         when(userAuthorizer.customerExists(any(HttpSession.class))).thenReturn(true);
         when(session.getAttribute("username")).thenReturn("mi");
         when(customerService.getByUserName(anyString())).thenReturn(customer);
         when(sendEmailService.getRandom()).thenReturn("153255");
-        when(customerService.update(1L,customer)).thenReturn(true);
-        when(sendEmailService.sendEmail(customer,EmailType.ACTIVATION,session)).thenReturn(true);
+        when(customerService.update(1L, customer)).thenReturn(true);
+        when(sendEmailService.sendEmail(customer, EmailType.ACTIVATION, session)).thenReturn(true);
         //Act
         String viewName = customerController.resendOtp(session);
         //Assert
         assertNotNull(viewName);
-        assertEquals("redirect:/customer/verify.htm",viewName);
+        assertEquals("redirect:/customer/verify.htm", viewName);
     }
+
     @Test
-    void resendOtp_customerExistsAndEmailIsNotSent_expectVerifyViewString(){
+    void resendOtp_customerExistsAndEmailIsNotSent_expectVerifyViewString() {
         //Arrange
         Customer customer = new Customer();
         when(userAuthorizer.customerExists(any(HttpSession.class))).thenReturn(true);
         when(session.getAttribute("username")).thenReturn("mi");
         when(customerService.getByUserName(anyString())).thenReturn(customer);
         when(sendEmailService.getRandom()).thenReturn("153255");
-        when(customerService.update(1L,customer)).thenReturn(true);
-        when(sendEmailService.sendEmail(customer,EmailType.ACTIVATION,session)).thenReturn(false);
+        when(customerService.update(1L, customer)).thenReturn(true);
+        when(sendEmailService.sendEmail(customer, EmailType.ACTIVATION, session)).thenReturn(false);
         //Act
         String viewName = customerController.resendOtp(session);
         //Assert
         assertNotNull(viewName);
-        assertEquals("registration",viewName);
+        assertEquals("registration", viewName);
     }
+
     @Test
-    void resendOtp_customerNotExists_expectLoginViewString(){
+    void resendOtp_customerNotExists_expectLoginViewString() {
         //Arrange
         when(userAuthorizer.customerExists(any(HttpSession.class))).thenReturn(false);
         //Act
         String viewName = customerController.resendOtp(session);
         //Assert
         assertNotNull(viewName);
-        assertEquals("redirect:/login.htm",viewName);
+        assertEquals("redirect:/login.htm", viewName);
+    }
+
+    @Test
+    void verifyGet_authorizedUser_expectVerifyViewString() {
+        //Arrange
+        String username = "mohammed";
+        when(userAuthorizer.customerExists(session)).thenReturn(true);
+        when(customerService.expireOtp(anyString())).thenReturn(true);
+        when(session.getAttribute("username")).thenReturn(username);
+        //Act
+        String viewName = customerController.verify(model, session);
+        //Assert
+        assertNotNull(viewName);
+        assertEquals("verify", viewName);
+    }
+
+    @Test
+    void verifyGet_unAuthorizedUser_expectLoginViewString() {
+        //Arrange
+        when(userAuthorizer.customerExists(session)).thenReturn(false);
+        //Act
+        String viewName = customerController.verify(model, session);
+        //Assert
+        assertNotNull(viewName);
+        assertEquals("redirect:/login.htm", viewName);
+    }
+
+    @Test
+    void verifyCustomer_existsAndRegisteredCustomer_expectHomeViewString() {
+        //Arrange
+        String code = "abc123";
+        String email = "mohammedre4a@gmail.com";
+        Customer customer = new Customer();
+        customer.setCode(code);
+        when(userAuthorizer.customerExists(session)).thenReturn(true);
+        when(session.getAttribute("email")).thenReturn(email);
+        when(customerService.getByMail(email)).thenReturn(customer);
+        when(customerService.updateStatusActivated(email)).thenReturn(true);
+        //Act
+        String viewName = customerController.verifyCustomer(code, session, model);
+        //Assert
+        assertNotNull(viewName);
+        assertEquals("redirect:/customer/home.htm", viewName);
+    }
+
+    @Test
+    void verifyCustomer_existsAndNotRegisteredCustomer_expectRegistrationViewString() {
+        //Arrange
+        String code = "abc123";
+        String email = "mohammedre4a@gmail.com";
+        when(userAuthorizer.customerExists(session)).thenReturn(true);
+        when(session.getAttribute("email")).thenReturn(email);
+        when(customerService.getByMail(email)).thenReturn(null);
+        //Act
+        String viewName = customerController.verifyCustomer(code, session, model);
+        //Assert
+        assertNotNull(viewName);
+        assertEquals("registration", viewName);
+    }
+
+    @Test
+    void verifyCustomer_nullCode_expectVerifyViewString() {
+        //Arrange
+        String code = "abc123";
+        String email = "mohammedre4a@gmail.com";
+        when(userAuthorizer.customerExists(session)).thenReturn(true);
+        when(session.getAttribute("email")).thenReturn(email);
+        when(customerService.getByMail(email)).thenReturn(new Customer());
+        when(customerService.updateStatusActivated(email)).thenReturn(true);
+        //Act
+        String viewName = customerController.verifyCustomer(code, session, model);
+        //Assert
+        assertNotNull(viewName);
+        assertEquals("verify", viewName);
+    }
+
+    @Test
+    void verifyCustomer_wrongCodeEntered_expectVerifyViewString() {
+        //Arrange
+        String code = "abc123";
+        String email = "mohammedre4a@gmail.com";
+        Customer customer = new Customer();
+        customer.setCode(code);
+        when(userAuthorizer.customerExists(session)).thenReturn(true);
+        when(session.getAttribute("email")).thenReturn(email);
+        when(customerService.getByMail(email)).thenReturn(customer);
+        when(customerService.updateStatusActivated(email)).thenReturn(true);
+        //Act
+        String viewName = customerController.verifyCustomer("wrong_code", session, model);
+        //Assert
+        assertNotNull(viewName);
+        assertEquals("verify", viewName);
+    }
+
+    @Test
+    void verifyCustomer_notExistingCustomer_expectLoginViewString() {
+        //Arrange
+        when(userAuthorizer.customerExists(session)).thenReturn(false);
+        //Act
+        String viewName = customerController.verifyCustomer(anyString(), session, model);
+        //Assert
+        assertNotNull(viewName);
+        assertEquals("redirect:/login.htm", viewName);
+    }
+
+    @Test
+    void incrementProductQuantity_activatedCustomerAndPositiveQuantity_expect200() {
+        //Arrange
+        Customer customer = new Customer();
+        Cart cart = new Cart(1L, customer, new ArrayList<>());
+        customer.setCart(cart);
+        when(userAuthorizer.isActivatedCustomer(session)).thenReturn(true);
+        when(session.getAttribute("id")).thenReturn(1L);
+        when(customerService.getById(anyLong())).thenReturn(customer);
+        when(cartService.incrementProductQuantity(anyLong(), anyLong(), anyInt())).thenReturn(10);
+        //Act
+        String responseBody = customerController.incrementProductQuantity(session, 1L);
+        //Assert
+        assertNotNull(responseBody);
+        assertEquals("200", responseBody);
+    }
+
+    @Test
+    void incrementProductQuantity_activatedCustomerAndNegativeQuantity_expect500() {
+        //Arrange
+        Customer customer = new Customer();
+        Cart cart = new Cart(1L, customer, new ArrayList<>());
+        customer.setCart(cart);
+        when(userAuthorizer.isActivatedCustomer(session)).thenReturn(true);
+        when(session.getAttribute("id")).thenReturn(1L);
+        when(customerService.getById(anyLong())).thenReturn(customer);
+        when(cartService.incrementProductQuantity(anyLong(), anyLong(), anyInt())).thenReturn(-1);
+        //Act
+        String responseBody = customerController.incrementProductQuantity(session, 1L);
+        //Assert
+        assertNotNull(responseBody);
+        assertEquals("500", responseBody);
+    }
+
+    @Test
+    void incrementProductQuantity_activatedCustomerAndZeroQuantity_expect409() {
+        //Arrange
+        Customer customer = new Customer();
+        Cart cart = new Cart(1L, customer, new ArrayList<>());
+        customer.setCart(cart);
+        when(userAuthorizer.isActivatedCustomer(session)).thenReturn(true);
+        when(session.getAttribute("id")).thenReturn(1L);
+        when(customerService.getById(anyLong())).thenReturn(customer);
+        when(cartService.incrementProductQuantity(anyLong(), anyLong(), anyInt())).thenReturn(0);
+        //Act
+        String responseBody = customerController.incrementProductQuantity(session, 1L);
+        //Assert
+        assertNotNull(responseBody);
+        assertEquals("409", responseBody);
+    }
+
+    @Test
+    void incrementProductQuantity_nonActivateCustomer_expect401() {
+        //Arrange
+        when(userAuthorizer.isActivatedCustomer(session)).thenReturn(false);
+        //Act
+        String responseBody = customerController.incrementProductQuantity(session, 1L);
+        //Assert
+        assertNotNull(responseBody);
+        assertEquals("401", responseBody);
+    }
+
+    @Test
+    void decrementProductQuantity_activatedCustomerAndPositiveQuantity_expect200() {
+        //Arrange
+        Customer customer = new Customer();
+        Cart cart = new Cart(1L, customer, new ArrayList<>());
+        customer.setCart(cart);
+        when(userAuthorizer.isActivatedCustomer(session)).thenReturn(true);
+        when(session.getAttribute("id")).thenReturn(1L);
+        when(customerService.getById(anyLong())).thenReturn(customer);
+        when(cartService.decrementProductQuantity(anyLong(), anyLong(), anyInt())).thenReturn(10);
+        //Act
+        String responseBody = customerController.decrementProductQuantity(session, 1L);
+        //Assert
+        assertNotNull(responseBody);
+        assertEquals("200", responseBody);
+    }
+
+    @Test
+    void decrementProductQuantity_activatedCustomerAndNegativeQuantity_expect500() {
+        //Arrange
+        Customer customer = new Customer();
+        Cart cart = new Cart(1L, customer, new ArrayList<>());
+        customer.setCart(cart);
+        when(userAuthorizer.isActivatedCustomer(session)).thenReturn(true);
+        when(session.getAttribute("id")).thenReturn(1L);
+        when(customerService.getById(anyLong())).thenReturn(customer);
+        when(cartService.decrementProductQuantity(anyLong(), anyLong(), anyInt())).thenReturn(-1);
+        //Act
+        String responseBody = customerController.decrementProductQuantity(session, 1L);
+        //Assert
+        assertNotNull(responseBody);
+        assertEquals("500", responseBody);
+    }
+
+    @Test
+    void decrementProductQuantity_nonActivateCustomer_expect401() {
+        //Arrange
+        when(userAuthorizer.isActivatedCustomer(session)).thenReturn(false);
+        //Act
+        String responseBody = customerController.decrementProductQuantity(session, 1L);
+        //Assert
+        assertNotNull(responseBody);
+        assertEquals("401", responseBody);
+    }
+
+    @Test
+    void registerPost_customerValidAndEmailSent_expectVerifyViewString() {
+        //Arrange
+        Customer customer = new Customer();
+        when(bindingResult.hasErrors()).thenReturn(false);
+        when(sendEmailService.getRandom()).thenReturn("132465");
+        when(customerService.create(customer)).thenReturn(true);
+        when(sendEmailService.sendEmail(customer, EmailType.ACTIVATION, session)).thenReturn(true);
+        //Act
+        String viewName = customerController.register(customer, bindingResult, session);
+        //Assert
+        assertNotNull(viewName);
+        assertEquals("redirect:/customer/verify.htm", viewName);
+    }
+
+    @Test
+    void registerPost_customerValidAndEmailNotSent_expectRegistrationViewString() {
+        //Arrange
+        Customer customer = new Customer();
+        when(bindingResult.hasErrors()).thenReturn(false);
+        when(sendEmailService.getRandom()).thenReturn("132465");
+        when(customerService.create(customer)).thenReturn(true);
+        when(sendEmailService.sendEmail(customer, EmailType.ACTIVATION, session)).thenReturn(false);
+        //Act
+        String viewName = customerController.register(customer, bindingResult, session);
+        //Assert
+        assertNotNull(viewName);
+        assertEquals("registration", viewName);
+    }
+
+    @Test
+    void registerPost_frontEndErrors_expectRegistrationViewString() {
+        //Arrange
+        when(bindingResult.hasErrors()).thenReturn(true);
+        //Act
+        String viewName = customerController.register(new Customer(), bindingResult, session);
+        //Assert
+        assertNotNull(viewName);
+        assertEquals("registration", viewName);
     }
 }
