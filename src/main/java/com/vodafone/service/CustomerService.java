@@ -54,16 +54,17 @@ public class CustomerService {
         return customerRepository.updateStatusActivated(customer.get());
     }
 
-    public void delete(Long id) {
+    public boolean delete(Long id) {
         if (id == null)
             throw new NullIdException("Null customer id is provided");
         Optional<Customer> customer = customerRepository.findById(id);
         if (!customer.isPresent())
             throw new HibernateException("Customer not found with id provided");
         customerRepository.delete(customer.get());
+        return !customerRepository.findById(id).isPresent(); //return true if customer is deleted
     }
 
-    public Customer getById(Long id) {
+    public Customer findCustomerById(Long id) {
         if (id == null)
             throw new NullIdException("Null customer id is provided");
         Optional<Customer> customer = customerRepository.findById(id);
@@ -72,7 +73,7 @@ public class CustomerService {
         return customer.get();
     }
 
-    public Customer getByMail(String email) {
+    public Customer findCustomerByEmail(String email) {
         if (email == null)
             throw new NullPointerException("Null Email is provided");
         Optional<Customer> customer = customerRepository.findCustomerByEmail(email);
@@ -81,7 +82,7 @@ public class CustomerService {
         return customer.get();
     }
 
-    public Customer getByUserName(String username) {
+    public Customer findCustomerByUserName(String username) {
         if (username == null)
             throw new NullPointerException("Null Username is provided");
         Optional<Customer> customer = customerRepository.findCustomerByUserName(username);

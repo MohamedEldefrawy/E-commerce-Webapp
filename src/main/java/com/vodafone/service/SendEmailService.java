@@ -12,7 +12,6 @@ import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 import java.util.Date;
 import java.util.Properties;
 import java.util.Random;
@@ -93,7 +92,7 @@ public class SendEmailService {
         //set subject and body based on EmailType flag
         switch (emailType) {
             case ACTIVATION:
-                Customer customer = customerService.getByMail((String) session.getAttribute("email"));
+                Customer customer = customerService.findCustomerByEmail((String) session.getAttribute("email"));
                 String otp = customer.getCode();
                 if (otp == null) //if otp is expired then generate new one
                 {

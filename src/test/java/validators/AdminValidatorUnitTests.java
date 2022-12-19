@@ -102,7 +102,7 @@ public class AdminValidatorUnitTests {
         CreateAdmin createAdmin = new CreateAdmin(0,"miand","miandmostafa@gmail.com");
         Errors errors = new BeanPropertyBindingResult(createAdmin, "createAdmin");
         when(adminService.getAdminByEmail(any(String.class))).thenReturn(null);
-        when(customerService.getByMail(anyString())).thenReturn(new Customer());
+        when(customerService.findCustomerByEmail(anyString())).thenReturn(new Customer());
         //Act
         adminValidator.validate(createAdmin,errors);
         //Assert
@@ -115,7 +115,7 @@ public class AdminValidatorUnitTests {
         CreateAdmin createAdmin = new CreateAdmin(0,"miand","miandmostafa@gmail.com");
         Errors errors = new BeanPropertyBindingResult(createAdmin, "createAdmin");
         when(adminService.getAdminByEmail(any(String.class))).thenReturn(null);
-        when(customerService.getByMail(anyString())).thenReturn(null);
+        when(customerService.findCustomerByEmail(anyString())).thenReturn(null);
         when(adminService.getAdminByUsername(anyString())).thenReturn(new Admin());
         //Act
         adminValidator.validate(createAdmin,errors);
@@ -128,9 +128,9 @@ public class AdminValidatorUnitTests {
         CreateAdmin createAdmin = new CreateAdmin(0,"miand","miandmostafa@gmail.com");
         Errors errors = new BeanPropertyBindingResult(createAdmin, "createAdmin");
         when(adminService.getAdminByEmail(any(String.class))).thenReturn(null);
-        when(customerService.getByMail(anyString())).thenReturn(null);
+        when(customerService.findCustomerByEmail(anyString())).thenReturn(null);
         when(adminService.getAdminByUsername(anyString())).thenReturn(null);
-        when(customerService.getByUserName(anyString())).thenReturn(new Customer());
+        when(customerService.findCustomerByUserName(anyString())).thenReturn(new Customer());
         //Act
         adminValidator.validate(createAdmin,errors);
         //Assert
@@ -143,9 +143,9 @@ public class AdminValidatorUnitTests {
         CreateAdmin createAdmin = new CreateAdmin(0,"miand","miandmostafa@gmail.com");
         Errors errors = new BeanPropertyBindingResult(createAdmin, "createAdmin");
         when(adminService.getAdminByEmail(any(String.class))).thenReturn(null);
-        when(customerService.getByMail(anyString())).thenReturn(null);
+        when(customerService.findCustomerByEmail(anyString())).thenReturn(null);
         when(adminService.getAdminByUsername(anyString())).thenReturn(null);
-        when(customerService.getByUserName(anyString())).thenReturn(null);
+        when(customerService.findCustomerByUserName(anyString())).thenReturn(null);
         //Act
         adminValidator.validate(createAdmin,errors);
         //Assert
@@ -172,7 +172,7 @@ public class AdminValidatorUnitTests {
         Errors errors = new BeanPropertyBindingResult(createAdmin, "createAdmin");
         when(adminService.getAdminById(anyLong())).thenReturn(admin);
         when(adminService.getAdminByEmail(any(String.class))).thenReturn(null);
-        when(customerService.getByMail(anyString())).thenReturn(new Customer());
+        when(customerService.findCustomerByEmail(anyString())).thenReturn(new Customer());
         //Act
         adminValidator.validate(createAdmin,errors);
         //Assert
@@ -186,7 +186,7 @@ public class AdminValidatorUnitTests {
         Errors errors = new BeanPropertyBindingResult(createAdmin, "createAdmin");
         when(adminService.getAdminById(anyLong())).thenReturn(admin);
         when(adminService.getAdminByEmail(any(String.class))).thenReturn(null);
-        when(customerService.getByMail(anyString())).thenReturn(null);
+        when(customerService.findCustomerByEmail(anyString())).thenReturn(null);
         when(adminService.getAdminByUsername(anyString())).thenReturn(new Admin());
         //Act
         adminValidator.validate(createAdmin,errors);
@@ -201,9 +201,9 @@ public class AdminValidatorUnitTests {
         Errors errors = new BeanPropertyBindingResult(createAdmin, "createAdmin");
         when(adminService.getAdminById(anyLong())).thenReturn(admin);
         when(adminService.getAdminByEmail(any(String.class))).thenReturn(null);
-        when(customerService.getByMail(anyString())).thenReturn(null);
+        when(customerService.findCustomerByEmail(anyString())).thenReturn(null);
         when(adminService.getAdminByUsername(anyString())).thenReturn(null);
-        when(customerService.getByUserName(anyString())).thenReturn(new Customer());
+        when(customerService.findCustomerByUserName(anyString())).thenReturn(new Customer());
         //Act
         adminValidator.validate(createAdmin,errors);
         //Assert
@@ -217,9 +217,9 @@ public class AdminValidatorUnitTests {
         Errors errors = new BeanPropertyBindingResult(createAdmin, "createAdmin");
         when(adminService.getAdminById(anyLong())).thenReturn(admin);
         when(adminService.getAdminByEmail(any(String.class))).thenReturn(null);
-        when(customerService.getByMail(anyString())).thenReturn(null);
+        when(customerService.findCustomerByEmail(anyString())).thenReturn(null);
         when(adminService.getAdminByUsername(anyString())).thenReturn(null);
-        when(customerService.getByUserName(anyString())).thenReturn(null);
+        when(customerService.findCustomerByUserName(anyString())).thenReturn(null);
         //Act
         adminValidator.validate(createAdmin,errors);
         //Assert

@@ -41,12 +41,12 @@ public class AdminValidator implements Validator {
         }
         if (admin.getId() <= 0) {
             if (adminService.getAdminByEmail(admin.getEmail()) != null ||
-                    customerService.getByMail(admin.getEmail()) != null) {
+                    customerService.findCustomerByEmail(admin.getEmail()) != null) {
                 errors.rejectValue("email", "duplicated", new Object[]{"'email'"},
                         "This Email Already Exists");
             }
             if (adminService.getAdminByUsername(admin.getUserName()) != null ||
-                    customerService.getByUserName(admin.getUserName()) != null) {
+                    customerService.findCustomerByUserName(admin.getUserName()) != null) {
                 errors.rejectValue("userName", "duplicated", new Object[]{"'userName'"},
                         "This Username Already Exists");
             }
@@ -56,14 +56,14 @@ public class AdminValidator implements Validator {
             if (!toBeUpdated.getEmail().equals(admin.getEmail())) {
                 //check updated email is not duplicated
                 if (adminService.getAdminByEmail(admin.getEmail()) != null ||
-                        customerService.getByMail(admin.getEmail()) != null) {
+                        customerService.findCustomerByEmail(admin.getEmail()) != null) {
                     errors.rejectValue("email", "duplicated", new Object[]{"'email'"},
                             "This Email Already Exists");
                 }
             }
             if (!toBeUpdated.getUserName().equals(admin.getUserName())) {
                 if (adminService.getAdminByUsername(admin.getUserName()) != null ||
-                        customerService.getByUserName(admin.getUserName()) != null) {
+                        customerService.findCustomerByUserName(admin.getUserName()) != null) {
                     errors.rejectValue("userName", "duplicated", new Object[]{"'userName'"},
                             "This Username Already Exists");
                 }

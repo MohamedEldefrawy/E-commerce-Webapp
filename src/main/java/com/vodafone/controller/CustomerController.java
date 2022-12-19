@@ -154,7 +154,7 @@ public class CustomerController {
     public String submitFinalOrder(HttpSession session) {
         if (userAuthorizer.isActivatedCustomer(session)) {
             Long customerId = (long) session.getAttribute("id");
-            Cart customerCart = customerService.getById(customerId).getCart();
+            Cart customerCart = customerService.findCustomerById(customerId).getCart();
             Order submittedOrder = cartService.submitFinalOrder(customerCart.getId());
             boolean created = orderService.create(submittedOrder);
             if (created)
@@ -169,7 +169,7 @@ public class CustomerController {
     public String showCustomerCart(Model model, HttpSession session) {
         if (userAuthorizer.isActivatedCustomer(session)) {
             Long customerId = (long) session.getAttribute("id");
-            Cart customerCart = customerService.getById(customerId).getCart();
+            Cart customerCart = customerService.findCustomerById(customerId).getCart();
             List<CartItem> cartItems = customerCart.getItems();
             double totalCartPrice = cartItems.stream().mapToDouble(CartItem::getTotal).sum();
             model.addAttribute("items", cartItems);
@@ -188,7 +188,7 @@ public class CustomerController {
                                 @RequestParam int quantity) {
         if (userAuthorizer.isActivatedCustomer(session)) {
             Long customerId = (long) session.getAttribute("id");
-            Cart customerCart = customerService.getById(customerId).getCart();
+            Cart customerCart = customerService.findCustomerById(customerId).getCart();
             Product product = null;
             try {
                 product = productService.getById(itemId);
@@ -215,7 +215,7 @@ public class CustomerController {
     public String removeItemFromCart(HttpSession session, @RequestParam Long itemId) {
         if (userAuthorizer.isActivatedCustomer(session)) {
             Long customerId = (long) session.getAttribute("id");
-            Cart customerCart = customerService.getById(customerId).getCart();
+            Cart customerCart = customerService.findCustomerById(customerId).getCart();
             boolean deleted = cartService.removeItem(customerCart.getId(), itemId);
             if (deleted)
                 return "200";
@@ -267,7 +267,7 @@ public class CustomerController {
     @GetMapping("resend.htm")
     public String resendOtp(HttpSession session) {
         if (userAuthorizer.customerExists(session)) {
-            Customer selectedCustomer = this.customerService.getByUserName(session.getAttribute("username").toString());
+            Customer selectedCustomer = this.customerService.findCustomerByUserName(session.getAttribute("username").toString());
             String otp = this.sendEmailService.getRandom();
             selectedCustomer.setCode(otp);
             session.setAttribute("verificationCode", otp);
@@ -302,7 +302,7 @@ public class CustomerController {
     @PostMapping("verify.htm")
     public String verifyCustomer(@Valid @NotNull @NotBlank @RequestParam("verificationCode") String verificationCode, HttpSession session, Model model) {
         if (userAuthorizer.customerExists(session)) {
-            Customer selectedCustomer = customerService.getByMail((String) session.getAttribute("email"));
+            Customer selectedCustomer = customerService.findCustomerByEmail((String) session.getAttribute("email"));
             if (selectedCustomer == null) {
                 return "registration";
             }
@@ -330,7 +330,7 @@ public class CustomerController {
         if (userAuthorizer.isActivatedCustomer(session)) {
             //retrieve cartId from session
             Long customerId = (long) session.getAttribute("id");
-            Long cartId = customerService.getById(customerId).getCart().getId();
+            Long cartId = customerService.findCustomerById(customerId).getCart().getId();
             int newQuantity = cartService.incrementProductQuantity(cartId, productId, 1);
             if (newQuantity == 0)
                 return "409";  //conflict
@@ -347,7 +347,7 @@ public class CustomerController {
     public String decrementProductQuantity(HttpSession session, @RequestParam Long productId) {
         if (userAuthorizer.isActivatedCustomer(session)) {
             Long customerId = (long) session.getAttribute("id");
-            Long cartId = customerService.getById(customerId).getCart().getId();
+            Long cartId = customerService.findCustomerById(customerId).getCart().getId();
             int newQuantity = cartService.decrementProductQuantity(cartId, productId,1);
             if (newQuantity == -1)
                 return "500";
