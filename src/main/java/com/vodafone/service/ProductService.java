@@ -56,10 +56,10 @@ public class ProductService {
         throw new GetProductException("no product found with id: " + id);
     }
 
-    public Product getByName(String name) throws GetProductException {
+    public List<Product> getByName(String name) throws GetProductException {
         Optional<List<Product>> optionalProducts = this.productRepository.findAllByName(name);
         if (optionalProducts.isPresent() && !optionalProducts.get().isEmpty())
-            return optionalProducts.get().get(0);
+            return optionalProducts.get();
         throw new GetProductException("No product found with name: " + name);
     }
 
