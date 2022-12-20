@@ -77,4 +77,11 @@ public class ProductService {
 
         throw new GetProductException("No products found");
     }
+
+    public List<Product> getByNameAndCategory(String name, String category) {
+        Optional<List<Product>> optionalProducts = this.productRepository.findAllByNameAndCategory(name, category);
+        if (optionalProducts.isPresent() && !optionalProducts.get().isEmpty())
+            return optionalProducts.get();
+        throw new GetProductException("No product found with name: " + name + " category:" + category);
+    }
 }
