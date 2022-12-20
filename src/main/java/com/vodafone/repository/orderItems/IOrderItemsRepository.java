@@ -1,8 +1,8 @@
 package com.vodafone.repository.orderItems;
 
 import com.vodafone.model.OrderItem;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 
-public interface IOrderItemsRepository extends CrudRepository<OrderItem,Long> {
+public interface IOrderItemsRepository extends JpaRepository<OrderItem,Long> {
 }
