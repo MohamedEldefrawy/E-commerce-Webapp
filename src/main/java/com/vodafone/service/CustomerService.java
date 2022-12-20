@@ -5,6 +5,7 @@ import com.vodafone.exception.customer.IncompleteUserAttributesException;
 import com.vodafone.exception.customer.NullCustomerException;
 import com.vodafone.model.Customer;
 import com.vodafone.repository.customer.ICustomerRepository;
+import lombok.AllArgsConstructor;
 import org.hibernate.HibernateException;
 import org.springframework.stereotype.Service;
 
@@ -12,15 +13,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class CustomerService {
     private final ICustomerRepository customerRepository;
 
     private final HashService hashService;
-
-    public CustomerService(ICustomerRepository customerRepository, HashService hashService) {
-        this.customerRepository = customerRepository;
-        this.hashService = hashService;
-    }
 
     public boolean isCustomerAttributesValid(Customer customer) {
         return customer.getUserName() != null && customer.getEmail() != null
@@ -28,31 +25,29 @@ public class CustomerService {
                 && customer.getUserStatus() != null;
     }
 
-    public boolean create(Customer customer) {
+    public Customer create(Customer customer) {
         if (customer == null)
             throw new NullCustomerException("Null customer entity is provided");
         if (!isCustomerAttributesValid(customer))
             throw new IncompleteUserAttributesException("Customer Data is not completed, nulls exist");
         String originalPassword = customer.getPassword();
         customer.setPassword(hashService.encryptPassword(originalPassword, customer.getEmail()));
-        return customerRepository.create(customer).isPresent();
+        return customerRepository.save(customer);
     }
 
-    public boolean update(Long id, Customer updatedCustomer) {
+    //todo: may need to remove id from param
+    public Customer update(Long id, Customer updatedCustomer) {
         if (id == null)
             throw new NullIdException("Null customer id is provided");
         if (updatedCustomer == null)
             throw new NullCustomerException("Null updated customer entity is provided");
-        Optional<Customer> customer = customerRepository.getById(id);
-        if (!customer.isPresent())
-            throw new HibernateException("Customer not found with provided id");
-        return customerRepository.update(id, updatedCustomer);
+        return customerRepository.save(updatedCustomer);
     }
 
     public boolean updateStatusActivated(String email) {
         if (email == null)
             throw new NullPointerException("Null email is provided");
-        Optional<Customer> customer = customerRepository.getByMail(email);
+        Optional<Customer> customer = customerRepository.findCustomerByEmail(email);
         if (!customer.isPresent()) {
             throw new HibernateException("Customer not found with email provided");
         }
@@ -62,44 +57,42 @@ public class CustomerService {
     public boolean delete(Long id) {
         if (id == null)
             throw new NullIdException("Null customer id is provided");
-        Optional<Customer> customer = customerRepository.getById(id);
+        Optional<Customer> customer = customerRepository.findById(id);
         if (!customer.isPresent())
             throw new HibernateException("Customer not found with id provided");
-        return customerRepository.delete(id);
+        customerRepository.delete(customer.get());
+        return !customerRepository.findById(id).isPresent(); //return true if customer is deleted
     }
 
-    public Customer getById(Long id) {
+    public Customer findCustomerById(Long id) {
         if (id == null)
             throw new NullIdException("Null customer id is provided");
-        Optional<Customer> customer = customerRepository.getById(id);
+        Optional<Customer> customer = customerRepository.findById(id);
         if (!customer.isPresent())
             throw new HibernateException("Customer not found with provided id");
         return customer.get();
     }
 
-    public Customer getByMail(String email) {
+    public Customer findCustomerByEmail(String email) {
         if (email == null)
             throw new NullPointerException("Null Email is provided");
-        Optional<Customer> customer = customerRepository.getByMail(email);
+        Optional<Customer> customer = customerRepository.findCustomerByEmail(email);
         if (!customer.isPresent())
             throw new HibernateException("No customer found");
         return customer.get();
     }
 
-    public Customer getByUserName(String username) {
+    public Customer findCustomerByUserName(String username) {
         if (username == null)
             throw new NullPointerException("Null Username is provided");
-        Optional<Customer> customer = customerRepository.getByUserName(username);
+        Optional<Customer> customer = customerRepository.findCustomerByUserName(username);
         if (!customer.isPresent())
             throw new HibernateException("No customer found");
         return customer.get();
     }
 
     public List<Customer> getAll() {
-        Optional<List<Customer>> customer = customerRepository.getAll();
-        if (!customer.isPresent())
-            throw new HibernateException("Customer not found with provided id");
-        return customer.get();
+        return (List<Customer>) customerRepository.findAll();
     }
 
     public boolean resetPassword(String email, String password) {
@@ -107,7 +100,7 @@ public class CustomerService {
             throw new NullPointerException("Null Email is provided");
         if (password == null)
             throw new NullPointerException("Null Password is provided");
-        Optional<Customer> customer = customerRepository.getByMail(email);
+        Optional<Customer> customer = customerRepository.findCustomerByEmail(email);
         if (!customer.isPresent()) {
             throw new HibernateException("Customer not found with provided email");
         }
@@ -117,7 +110,7 @@ public class CustomerService {
     public boolean expireOtp(String userName) {
         if (userName == null)
             throw new NullPointerException("Null Username is provided");
-        Optional<Customer> customer = customerRepository.getByUserName(userName);
+        Optional<Customer> customer = customerRepository.findCustomerByUserName(userName);
         if (!customer.isPresent()) {
             throw new HibernateException("Customer not found with provided username");
         }
@@ -125,3 +118,5 @@ public class CustomerService {
     }
 
 }
+
+//todo: check if thrown exceptions are needed

@@ -28,7 +28,7 @@ public class UserAuthorizer {
         //user isn't logged in
         if(session.getAttribute("email")==null)
             return false;
-        Customer customer = customerService.getByMail((String) session.getAttribute("email"));
+        Customer customer = customerService.findCustomerByEmail((String) session.getAttribute("email"));
         //user is not a customer
         if(customer==null)
             return false;
@@ -39,7 +39,7 @@ public class UserAuthorizer {
         if(session.getAttribute("id")==null)
             return false;
         Long id = (long) session.getAttribute("id");
-        Customer customer = customerService.getById(id);
+        Customer customer = customerService.findCustomerById(id);
         //user is not a customer
         if(customer==null)
             return false;

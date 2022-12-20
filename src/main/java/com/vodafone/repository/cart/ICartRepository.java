@@ -2,12 +2,9 @@ package com.vodafone.repository.cart;
 
 import com.vodafone.model.Cart;
 import com.vodafone.model.CartItem;
-import com.vodafone.model.Order;
-import com.vodafone.repository.Repository;
+import org.springframework.data.repository.CrudRepository;
 
-import java.util.List;
-
-public interface ICartRepository extends Repository<Long, Cart> {
+public interface ICartRepository extends CrudRepository<Cart,Long> {
     boolean removeItem(Cart cart, Long itemId);
 
     boolean clearCart(Cart cart);

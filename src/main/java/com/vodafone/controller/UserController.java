@@ -45,7 +45,7 @@ public class UserController {
             //user is suspended but not customer
             User user = userService.getUserByEmail(login.getEmail());
             if ( user != null && !(user instanceof Admin)) {
-                Customer customer = customerService.getByMail(login.getEmail());
+                Customer customer = customerService.findCustomerByEmail(login.getEmail());
                 if (customer.getUserStatus() == UserStatus.SUSPENDED) { // if user status is suspended after validation
                     session.setAttribute("email", login.getEmail());
                     if (emailService.sendEmail(customer, EmailType.FORGET_PASSWORD, session)) {
@@ -69,7 +69,7 @@ public class UserController {
             }
         } else if (user.getUserStatus() == UserStatus.ACTIVATED) { //valid credentials customer
             //reset attempts
-            Customer customer = customerService.getById(user.getId());
+            Customer customer = customerService.findCustomerById(user.getId());
             customer.setLoginAttempts(3);
             customerService.update(customer.getId(), customer);
             return "redirect:/customer/home.htm";

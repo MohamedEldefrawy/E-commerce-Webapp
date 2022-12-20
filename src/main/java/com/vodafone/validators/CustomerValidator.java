@@ -31,12 +31,12 @@ public class CustomerValidator implements Validator {
                     "Email address is not valid");
         }
 
-        if (customerService.getByMail(customer.getEmail()) != null ||
+        if (customerService.findCustomerByEmail(customer.getEmail()) != null ||
                 adminService.getAdminByEmail(customer.getEmail()) != null) {
             errors.rejectValue("email", "duplicated", new Object[]{"'email'"},
                     "This Email Already Exists");
         }
-        if (customerService.getByUserName(customer.getUserName()) != null ||
+        if (customerService.findCustomerByUserName(customer.getUserName()) != null ||
                 adminService.getAdminByUsername(customer.getUserName()) != null) {
             errors.rejectValue("userName", "duplicated", new Object[]{"'userName'"},
                     "This Username Already Exists");

@@ -90,7 +90,7 @@ public class SendEmailService {
         //set subject and body based on EmailType flag
         switch (emailType) {
             case ACTIVATION:
-                Customer customer = customerService.getByMail((String) session.getAttribute("email"));
+                Customer customer = customerService.findCustomerByEmail((String) session.getAttribute("email"));
                 String otp = customer.getCode();
                 if (otp == null) //if otp is expired then generate new one
                 {

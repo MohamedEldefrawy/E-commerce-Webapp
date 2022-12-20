@@ -14,8 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import javax.servlet.http.HttpSession;
-
 @AllArgsConstructor
 @Component
 public class LoginValidator implements Validator {
@@ -45,7 +43,7 @@ public class LoginValidator implements Validator {
                     "Incorrect password");
             if (!(userService.getUserByEmail(user.getEmail()) instanceof Admin)) {
                 //handle suspend logic for customer
-                Customer customer = customerService.getById(user.getId());
+                Customer customer = customerService.findCustomerById(user.getId());
                 if (customer.getLoginAttempts() > 1) {//decrement attempts
                     customer.setLoginAttempts(customer.getLoginAttempts() - 1);
                     customerService.update(customer.getId(), customer);
