@@ -3,7 +3,7 @@ package com.vodafone.model;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "products")
