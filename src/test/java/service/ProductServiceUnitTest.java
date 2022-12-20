@@ -4,191 +4,145 @@ import com.vodafone.exception.product.CreateProductException;
 import com.vodafone.exception.product.GetProductException;
 import com.vodafone.model.Product;
 import com.vodafone.repository.product.IProductRepository;
-import com.vodafone.repository.product.ProductRepository;
 import com.vodafone.service.ProductService;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-public class ProductServiceUnitTest {
-    private final IProductRepository productRepository = mock(ProductRepository.class);
+class ProductServiceUnitTest {
+    private final IProductRepository productRepository = mock(IProductRepository.class);
     private final ProductService productService = new ProductService(productRepository);
-    private final Logger logger = LoggerFactory.getLogger(ProductServiceUnitTest.class);
 
 
     @Test
-    public void createTest_sendProductObject_returnTrue() {
+    void createTest_sendProductObject_returnTrue() {
         Product dummyProduct = createProduct();
-        when(productRepository.create(any(Product.class))).thenReturn(Optional.of(1L));
-        boolean result = false;
-        try {
-            result = productService.create(dummyProduct);
-        } catch (CreateProductException e) {
-            logger.info(e.getMessage());
-        }
+        when(productRepository.save(any(Product.class))).thenReturn(dummyProduct);
+        boolean result = productService.create(dummyProduct);
         assertTrue(result);
     }
 
     @Test
-    public void createTest_sendProductObject_returnFalse() {
+    void createTest_sendProductObject_returnFalse() {
         Product dummyProduct = createProduct();
-        when(productRepository.create(any(Product.class))).thenReturn(Optional.empty());
+        when(productRepository.save(any(Product.class))).thenReturn(dummyProduct);
 
         assertThrows(CreateProductException.class, () -> productService.create(dummyProduct));
     }
 
     @Test
-    public void updateTest_sendProductIdAndProductObject_returnTrue() {
+    void updateTest_sendProductIdAndProductObject_returnTrue() {
         Product dummyProduct = createProduct();
-        when(productRepository.getById(any(Long.class))).thenReturn(Optional.of(dummyProduct));
-        when(productRepository.update(any(Long.class), any(Product.class))).thenReturn(true);
-        boolean result = false;
-        try {
-            result = productService.update(dummyProduct.getId(), dummyProduct);
-        } catch (GetProductException e) {
-            logger.info(e.getMessage());
-        }
+        when(productRepository.findById(any(Long.class))).thenReturn(Optional.of(dummyProduct));
+        when(productRepository.save(any(Product.class))).thenReturn(dummyProduct);
+        boolean result = productService.update(dummyProduct);
         assertTrue(result);
     }
 
     @Test
-    public void updateTest_sendProductIdAndProductObject_throwsGetProductException() {
-        when(productRepository.getById(any(Long.class))).thenReturn(Optional.empty());
-        when(productRepository.update(any(Long.class), any(Product.class))).thenReturn(false);
-        assertThrows(GetProductException.class, () -> productService.update(1L, new Product()));
+    void updateTest_sendProductIdAndProductObject_throwsGetProductException() {
+        when(productRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+        when(productRepository.save(any(Product.class))).thenReturn(createProduct());
+        assertThrows(GetProductException.class, () -> productService.update(new Product()));
     }
 
     @Test
-    public void getAllTest_sendNothing_returnListOfProducts() {
+    void getAllTest_sendNothing_returnListOfProducts() {
         List<Product> dummyProducts = createProducts();
-        when(productRepository.getAll()).thenReturn(Optional.of(dummyProducts));
-        List<Product> result = null;
-        try {
-            result = productService.getAll();
-        } catch (GetProductException e) {
-            logger.info(e.getMessage());
-        }
+        when(productRepository.findAll()).thenReturn(dummyProducts);
+        List<Product> result = productService.getAll();
         assertNotNull(result);
         assertEquals(2, dummyProducts.size());
     }
 
     @Test
-    public void getAllTest_sendNothing_throwsGetProductException() {
-        when(productRepository.getAll()).thenReturn(Optional.empty());
+    void getAllTest_sendNothing_throwsGetProductException() {
+        when(productRepository.findAll()).thenReturn(new ArrayList<>());
         assertThrows(GetProductException.class, productService::getAll);
     }
 
     @Test
-    public void getByIdTest_sendProductId_returnProduct() {
+    void getByIdTest_sendProductId_returnProduct() {
         Product dummyProduct = createProduct();
-        when(productRepository.getById(any(Long.class))).thenReturn(Optional.of(dummyProduct));
-        Product result = null;
-        try {
-            result = productService.getById(dummyProduct.getId());
-        } catch (GetProductException e) {
-            logger.info(e.getMessage());
-        }
+        when(productRepository.findById(any(Long.class))).thenReturn(Optional.of(dummyProduct));
+        Product result = productService.getById(dummyProduct.getId());
         assertNotNull(result);
         assertEquals(dummyProduct.getId(), result.getId());
         assertEquals(dummyProduct.getName(), result.getName());
     }
 
     @Test
-    public void getByIdTest_sendProductId_throwGetProductException() {
-        when(productRepository.getById(any(Long.class))).thenReturn(Optional.empty());
+    void getByIdTest_sendProductId_throwGetProductException() {
+        when(productRepository.findById(any(Long.class))).thenReturn(Optional.empty());
         assertThrows(GetProductException.class, () -> productService.getById(1L));
     }
 
     @Test
-    public void getByNameTest_sendProductName_returnProduct() {
+    void getByNameTest_sendProductName_returnProduct() {
         List<Product> dummyProducts = Collections.singletonList(createProduct());
-        when(productRepository.getByName(any(String.class))).thenReturn(Optional.of(dummyProducts));
-        Product result = null;
-        try {
-            result = productService.getByName(dummyProducts.get(0).getName());
-        } catch (GetProductException e) {
-            logger.info(e.getMessage());
-        }
+        when(productRepository.findAllByName(any(String.class))).thenReturn(Optional.of(dummyProducts));
+        List<Product> result = productService.getByName(dummyProducts.get(0).getName());
         assertNotNull(result);
-        assertEquals(dummyProducts.get(0).getId(), result.getId());
-        assertEquals(dummyProducts.get(0).getName(), result.getName());
+        assertEquals(dummyProducts.size(), result.size());
     }
 
     @Test
-    public void getByNameTest_sendProductName_throwsGetProductException() {
-        when(productRepository.getByName(any(String.class))).thenReturn(Optional.empty());
+    void getByNameTest_sendProductName_throwsGetProductException() {
+        when(productRepository.findAllByName(any(String.class))).thenReturn(Optional.empty());
         assertThrows(GetProductException.class, () -> productService.getByName("test"));
     }
 
     @Test
-    public void getByCategoryTest_sendProductCategory_returnProduct() {
+    void getByCategoryTest_sendProductCategory_returnProduct() {
         List<Product> dummyProducts = createProducts();
-        when(productRepository.getByCategory(any(String.class))).thenReturn(Optional.of(dummyProducts));
-        List<Product> result = null;
-        try {
-            result = productService.getByCategory(dummyProducts.get(0).getCategory());
-        } catch (GetProductException e) {
-            logger.info(e.getMessage());
-        }
+        when(productRepository.findAllByCategory(any(String.class))).thenReturn(Optional.of(dummyProducts));
+        List<Product> result = productService.getByCategory(dummyProducts.get(0).getCategory());
         assertNotNull(result);
         assertEquals(dummyProducts.size(), result.size());
     }
 
 
     @Test
-    public void getByCategoryTest_sendProductCategory_throwsGetProductException() {
-        when(productRepository.getByCategory(any(String.class))).thenReturn(Optional.empty());
+    void getByCategoryTest_sendProductCategory_throwsGetProductException() {
+        when(productRepository.findAllByCategory(any(String.class))).thenReturn(Optional.empty());
         assertThrows(GetProductException.class, () -> productService.getByCategory("test"));
     }
 
     @Test
-    public void deleteTest_sendProductId_returnTrue() {
-        when(productRepository.getById(any(Long.class))).thenReturn(Optional.of(createProduct()));
-        when(productRepository.delete(any(Long.class))).thenReturn(true);
-        boolean result = false;
-        try {
-            result = productService.delete(1L);
-        } catch (GetProductException e) {
-            logger.info(e.getMessage());
-        }
+    void deleteTest_sendProductId_returnTrue() {
+        when(productRepository.findById(any(Long.class))).thenReturn(Optional.of(createProduct()));
+        doNothing().when(productRepository).delete(any(Product.class));
+        boolean result = productService.delete(1L);
         assertTrue(result);
     }
 
     @Test
-    public void deleteTest_sendProductId_throwsGetProductException() {
-        when(productRepository.getById(any(Long.class))).thenReturn(Optional.empty());
-        when(productRepository.delete(any(Long.class))).thenReturn(false);
-
+    void deleteTest_sendProductId_throwsGetProductException() {
+        when(productRepository.findById(any(Long.class))).thenReturn(Optional.empty());
         assertThrows(GetProductException.class, () -> productService.delete(1L));
     }
 
     @Test
-    public void getAvailableProduct_sendNothing_returnListOfProducts() {
+    void getAvailableProduct_sendNothing_returnListOfProducts() {
         List<Product> products = createProducts();
-        when(productRepository.getAvailableProducts()).thenReturn(Optional.of(products));
+        when(productRepository.findAllByDeletedEquals(false)).thenReturn(Optional.of(products));
         List<Product> result = productService.getAvailableProducts();
         assertNotNull(result);
         assertEquals(products.size(), result.size());
     }
 
     @Test
-    public void getAvailableProduct_sendNothing_throwsGetProductException() {
-        when(productRepository.getAvailableProducts()).thenReturn(Optional.empty());
+    void getAvailableProduct_sendNothing_throwsGetProductException() {
+        when(productRepository.findAllByDeletedEquals(false)).thenReturn(Optional.empty());
         assertThrows(GetProductException.class, productService::getAvailableProducts);
     }
 
 
-    private  Product createProduct() {
+    private Product createProduct() {
         Product product = new Product();
         product.setId(1L);
         product.setName("dummyProduct");
@@ -201,7 +155,7 @@ public class ProductServiceUnitTest {
         return product;
     }
 
-    private  List<Product> createProducts() {
+    private List<Product> createProducts() {
         Product product1 = new Product();
         product1.setId(2L);
         product1.setName("dummyProduct");

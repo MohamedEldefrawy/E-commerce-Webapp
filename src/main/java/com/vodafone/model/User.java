@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.mapping.Join;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -24,14 +23,17 @@ public abstract class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true)
-    @NotNull @NotBlank
+    @NotNull
+    @NotBlank
     String userName;
     @Column(unique = true)
+    @NotNull
     @Email
-    @NotNull @NotBlank
+    @NotBlank
     String email;
     @Column(nullable = false)
-    @NotNull @NotBlank
+    @NotNull
+    @NotBlank
     @Size(min = 4, message = "Password can't be less than 4 characters")
     String password;
     @Column(nullable = false)
