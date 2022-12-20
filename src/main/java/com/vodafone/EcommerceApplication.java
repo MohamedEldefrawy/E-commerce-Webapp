@@ -1,16 +1,15 @@
 package com.vodafone;
 
-import com.vodafone.config.FileStorageConfig;
+import com.vodafone.service.file.StorageProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
-@EnableConfigurationProperties({
-        FileStorageConfig.class
-})
+@EnableConfigurationProperties(StorageProperties.class)
+
 public class EcommerceApplication {
     public static void main(String[] args) {
-        SpringApplication.run(EcommerceApplication.class,args);
+        SpringApplication.run(EcommerceApplication.class, args);
     }
 }

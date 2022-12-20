@@ -1,5 +1,6 @@
 package com.vodafone.controller;
 
+import com.vodafone.exception.FileStorageException;
 import com.vodafone.exception.admin.CreateAdminException;
 import com.vodafone.exception.admin.GetAdminException;
 import com.vodafone.exception.product.CreateProductException;
@@ -15,6 +16,7 @@ import com.vodafone.service.AdminService;
 import com.vodafone.service.HashService;
 import com.vodafone.service.ProductService;
 import com.vodafone.service.SendEmailService;
+import com.vodafone.service.file.FileStorageService;
 import com.vodafone.util.AdminViews;
 import com.vodafone.validators.AdminValidator;
 import com.vodafone.validators.UserAuthorizer;
@@ -31,8 +33,6 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -50,6 +50,8 @@ public class AdminRestController {
     private final HashService hashService;
 
     private final SendEmailService emailService;
+
+    private final FileStorageService fileStorageService;
 
     private final Logger logger = LoggerFactory.getLogger(AdminRestController.class);
     private static final String PRODUCT_ATTRIBUTE = "product";
@@ -218,28 +220,22 @@ public class AdminRestController {
                 return AdminViews.ADMIN_UPDATE_PRODUCT;
             }
 
-            byte[] imageData = new byte[0];
-            String path = "";
-            if (product.getImage() != null) {
-                imageData = product.getImage().getBytes();
-                path = session.getServletContext().getRealPath("/") + "resources/static/images/" + product.getImage().getOriginalFilename();
-            }
-            try (FileOutputStream fileOutputStream = new FileOutputStream(path)) {
-                if (imageData.length > 0) {
-                    fileOutputStream.write(imageData);
-                }
-            } catch (IOException e) {
-                logger.warn("No image has been selected to upload");
-            }
-
             Product updatedProduct;
-            boolean result;
+
             try {
                 updatedProduct = this.productService.getById(product.getId());
             } catch (GetProductException e) {
                 // todo redirect to 404 custom page error
                 logger.warn(e.getMessage());
                 return AdminViews.ADMIN_UPDATE_PRODUCT;
+            }
+
+            try {
+                fileStorageService.store(product.getImage());
+                updatedProduct.setImage(product.getImage().getOriginalFilename());
+
+            } catch (FileStorageException | NullPointerException e) {
+                logger.warn(e.getMessage());
             }
             updatedProduct.setDescription(product.getDescription());
             updatedProduct.setCategory(product.getCategory());
@@ -251,8 +247,7 @@ public class AdminRestController {
             try {
                 this.productService.update(updatedProduct);
                 return AdminViews.ADMIN_SHOW_PRODUCT_REDIRECT;
-            }
-            catch (GetProductException e) {
+            } catch (GetProductException e) {
                 return AdminViews.ADMIN_UPDATE_PRODUCT;
             }
         } else {
@@ -278,27 +273,15 @@ public class AdminRestController {
             if (bindingResult.hasErrors()) {
                 return AdminViews.ADMIN_CREATE_PRODUCT;
             }
-            byte[] imageData = new byte[0];
-            String path = "";
-            if (product.getImage() != null) {
-                try {
-                    imageData = product.getImage().getBytes();
-                } catch (IOException e) {
-                    logger.warn(e.getMessage());
-                    throw new RuntimeException(e);
-                }
-                path = session.getServletContext().getRealPath("/") + "resources/static/images/" + product.getImage().getOriginalFilename();
-            }
-            try (FileOutputStream fileOutputStream = new FileOutputStream(path)) {
-                if (imageData.length > 0) {
-                    fileOutputStream.write(imageData);
-                }
-            } catch (IOException e) {
-                logger.warn(e.getMessage());
-            }
-
 
             Product newProduct = new Product();
+            try {
+                fileStorageService.store(product.getImage());
+                newProduct.setImage(product.getImage().getOriginalFilename());
+
+            } catch (FileStorageException | NullPointerException e) {
+                logger.warn(e.getMessage());
+            }
             newProduct.setDescription(product.getDescription());
             newProduct.setCategory(product.getCategory());
             if (product.getImage() != null)
@@ -365,7 +348,6 @@ public class AdminRestController {
                 logger.warn(e.getMessage());
                 return AdminViews.UPDATE_ADMIN;
             }
-
 
 
         } else {

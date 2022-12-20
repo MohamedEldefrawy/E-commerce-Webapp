@@ -1,6 +1,4 @@
-
-
-insert into products (name, description, category, image, price, rate)
+insert ignore into products (name, description, category, image, price, rate)
 values ('Meow', '2 months old super cute cat', 'Cats', 'cat1.jpg', 100, 3),
        ('Home cat', '1 year old and loves to play with knitting balls', 'Cats', 'cat2.jpg', 102, 3),
        ('Ginger', 'Very precious', 'Cats', 'cat3.jpg', 103, 3),
