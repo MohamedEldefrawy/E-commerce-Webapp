@@ -1,9 +1,9 @@
 package com.vodafone.controller.rest;
 
+import com.vodafone.controller.AdminRestController;
 import com.vodafone.exception.admin.CreateAdminException;
 import com.vodafone.exception.admin.GetAdminException;
 import com.vodafone.model.Admin;
-import com.vodafone.model.EmailType;
 import com.vodafone.model.Role;
 import com.vodafone.model.dto.CreateAdmin;
 import com.vodafone.service.AdminService;
@@ -29,7 +29,7 @@ public class AdminController {
     private final AdminService adminService;
     private final HashService hashService;
     private final SendEmailService emailService;
-    private final Logger logger = LoggerFactory.getLogger(com.vodafone.controller.AdminController.class);
+    private final Logger logger = LoggerFactory.getLogger(AdminRestController.class);
 
     @GetMapping
     public ResponseEntity<List<Admin>> getAllAdmins(){

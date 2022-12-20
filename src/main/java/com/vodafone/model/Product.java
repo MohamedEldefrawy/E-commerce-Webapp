@@ -3,7 +3,7 @@ package com.vodafone.model;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "products")
@@ -26,6 +26,6 @@ public class Product {
     private double price;
     @ColumnDefault("10")
     private int inStock;
-    private boolean isDeleted;
+    private Boolean deleted;
 
 }

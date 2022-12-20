@@ -1,34 +1,4 @@
 package controller;
-
-import com.vodafone.controller.AdminController;
-import com.vodafone.exception.admin.CreateAdminException;
-import com.vodafone.exception.admin.GetAdminException;
-import com.vodafone.model.Admin;
-import com.vodafone.model.Role;
-import com.vodafone.model.UserStatus;
-import com.vodafone.model.dto.CreateAdmin;
-import com.vodafone.service.AdminService;
-import com.vodafone.service.HashService;
-import com.vodafone.service.ProductService;
-import com.vodafone.service.SendEmailService;
-import com.vodafone.util.AdminViews;
-import com.vodafone.validators.AdminValidator;
-import com.vodafone.validators.UserAuthorizer;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.validation.ObjectError;
-
-import javax.servlet.http.HttpSession;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;

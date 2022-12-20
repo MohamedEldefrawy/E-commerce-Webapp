@@ -1,5 +1,4 @@
-use
-    ecommerce;
+
 
 insert into products (name, description, category, image, price, rate)
 values ('Meow', '2 months old super cute cat', 'Cats', 'cat1.jpg', 100, 3),

@@ -1,7 +1,7 @@
 package controller;
 
-import cn.org.rapid_framework.web.session.wrapper.HttpSessionWrapper;
-import com.vodafone.controller.AdminController;
+//import cn.org.rapid_framework.web.session.wrapper.HttpSessionWrapper;
+import com.vodafone.controller.AdminRestController;
 import com.vodafone.exception.product.CreateProductException;
 import com.vodafone.exception.product.GetProductException;
 import com.vodafone.model.Product;
@@ -284,6 +284,5 @@ class AdminControllerProductUnitTest {
         return createProductDto;
     }
 
-     */
-
+*/
 }

@@ -41,7 +41,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @RequestMapping("/admins")
 
-public class AdminController {
+public class AdminRestController {
     private final AdminService adminService;
     private final ProductService productService;
     private final UserAuthorizer userAuthorizer;
@@ -51,7 +51,7 @@ public class AdminController {
 
     private final SendEmailService emailService;
 
-    private final Logger logger = LoggerFactory.getLogger(AdminController.class);
+    private final Logger logger = LoggerFactory.getLogger(AdminRestController.class);
     private static final String PRODUCT_ATTRIBUTE = "product";
 
     @GetMapping("/admins.htm")
@@ -145,11 +145,7 @@ public class AdminController {
             admin.setFirstLogin(true);
             boolean created = false;
             try {
-                created = adminService.createAdmin(admin);
-            } catch (CreateAdminException e) {
-                logger.warn(e.getMessage());
-            }
-            if (created) {
+                adminService.createAdmin(admin);
                 session.setAttribute("dec_password", admin.getPassword());
                 session.setAttribute("newAdminEmail", admin.getEmail());
                 //encrypt admin password in db
@@ -160,7 +156,8 @@ public class AdminController {
                 emailService.sendEmail(admin, EmailType.SET_ADMIN_PASSWORD, session);
                 //redirect to set password
                 return AdminViews.ALL_ADMINS_REDIRECT;
-            } else {
+            } catch (CreateAdminException e) {
+                logger.warn(e.getMessage());
                 return AdminViews.CREATE_ADMIN;
             }
         } else {
@@ -251,10 +248,13 @@ public class AdminController {
             updatedProduct.setPrice(product.getPrice());
             updatedProduct.setName(product.getName());
             updatedProduct.setInStock(product.getInStock());
-            result = this.productService.update(updatedProduct);
-            if (result)
+            try {
+                this.productService.update(updatedProduct);
                 return AdminViews.ADMIN_SHOW_PRODUCT_REDIRECT;
-            return AdminViews.ADMIN_UPDATE_PRODUCT;
+            }
+            catch (GetProductException e) {
+                return AdminViews.ADMIN_UPDATE_PRODUCT;
+            }
         } else {
             return AdminViews.LOGIN_REDIRECT;
         }
@@ -281,7 +281,12 @@ public class AdminController {
             byte[] imageData = new byte[0];
             String path = "";
             if (product.getImage() != null) {
-                imageData = product.getImage().getBytes();
+                try {
+                    imageData = product.getImage().getBytes();
+                } catch (IOException e) {
+                    logger.warn(e.getMessage());
+                    throw new RuntimeException(e);
+                }
                 path = session.getServletContext().getRealPath("/") + "resources/static/images/" + product.getImage().getOriginalFilename();
             }
             try (FileOutputStream fileOutputStream = new FileOutputStream(path)) {
@@ -353,15 +358,16 @@ public class AdminController {
             updatedAdmin.setUserName(admin.getUserName());
             boolean result = false;
             try {
-                result = adminService.updateAdmin(id, updatedAdmin);
+                adminService.updateAdmin(id, updatedAdmin);
+                return AdminViews.ALL_ADMINS_REDIRECT;
 
             } catch (GetAdminException e) {
                 logger.warn(e.getMessage());
-                //todo: redirect to 404
+                return AdminViews.UPDATE_ADMIN;
             }
-            if (result)
-                return AdminViews.ALL_ADMINS_REDIRECT;
-            return AdminViews.UPDATE_ADMIN;
+
+
+
         } else {
             return AdminViews.LOGIN_REDIRECT;
         }

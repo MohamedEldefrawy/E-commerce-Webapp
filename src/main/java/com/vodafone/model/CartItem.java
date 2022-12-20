@@ -2,7 +2,7 @@ package com.vodafone.model;
 
 
 import lombok.*;
-import jakarta.persistence.*;
+import javax.persistence.*;
 import com.vodafone.model.Product;
 import java.util.List;
 

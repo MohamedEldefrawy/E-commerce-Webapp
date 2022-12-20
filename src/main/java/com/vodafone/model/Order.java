@@ -6,7 +6,7 @@ import lombok.Setter;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import java.sql.Date;
 import java.util.HashSet;
 import java.util.Set;

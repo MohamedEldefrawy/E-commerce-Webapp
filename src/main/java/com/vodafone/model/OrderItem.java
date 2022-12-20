@@ -7,7 +7,7 @@ import lombok.Setter;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 
 @Entity
