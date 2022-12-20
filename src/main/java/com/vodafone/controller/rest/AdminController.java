@@ -3,10 +3,12 @@ package com.vodafone.controller.rest;
 import com.vodafone.exception.admin.CreateAdminException;
 import com.vodafone.exception.admin.GetAdminException;
 import com.vodafone.model.Admin;
+import com.vodafone.model.EmailType;
 import com.vodafone.model.Role;
 import com.vodafone.model.dto.CreateAdmin;
 import com.vodafone.service.AdminService;
 import com.vodafone.service.HashService;
+import com.vodafone.service.SendEmailService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +16,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import javax.servlet.http.HttpSession;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @AllArgsConstructor
@@ -24,6 +28,7 @@ import java.util.List;
 public class AdminController {
     private final AdminService adminService;
     private final HashService hashService;
+    private final SendEmailService emailService;
     private final Logger logger = LoggerFactory.getLogger(com.vodafone.controller.AdminController.class);
 
     @GetMapping
@@ -51,8 +56,9 @@ public class AdminController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
-        if (id != 2) {
+    public ResponseEntity delete(@PathVariable Long id,HttpSession session) {
+        Long sessionId = (Long) session.getAttribute("id");
+        if (id != 2 && !Objects.equals(sessionId, id)) {
             boolean deleted;
             try {
                 deleted = adminService.deleteAdmin(id);
@@ -69,7 +75,7 @@ public class AdminController {
     }
 
     @PostMapping
-    public ResponseEntity<Admin> create(@RequestBody CreateAdmin createAdmin) {
+    public ResponseEntity<Admin> create(@RequestBody CreateAdmin createAdmin, HttpSession session) {
         Admin admin = new Admin();
         admin.setUserName(createAdmin.getUserName());
         admin.setRole(Role.Admin);
@@ -77,8 +83,8 @@ public class AdminController {
         admin.setFirstLogin(true);
         try {
             adminService.createAdmin(admin);
-            /*session.setAttribute("dec_password", admin.getPassword());
-            session.setAttribute("newAdminEmail", admin.getEmail());*/
+            session.setAttribute("dec_password", admin.getPassword());
+            session.setAttribute("newAdminEmail", admin.getEmail());
             //encrypt admin password in db
             String encrypted = hashService.encryptPassword(admin.getPassword(), admin.getEmail());
             admin.setPassword(encrypted);
