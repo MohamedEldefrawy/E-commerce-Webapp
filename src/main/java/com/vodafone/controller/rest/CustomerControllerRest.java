@@ -1,13 +1,16 @@
 package com.vodafone.controller.rest;
 
+import com.vodafone.exception.EntityNotFoundException;
+import com.vodafone.exception.NullIdException;
+import com.vodafone.exception.cart.NegativeQuantityException;
+import com.vodafone.exception.cart.NullCartItemException;
 import com.vodafone.model.Cart;
 import com.vodafone.model.Customer;
 import com.vodafone.model.Order;
-import com.vodafone.model.Product;
+import com.vodafone.model.CartItem;
 import com.vodafone.service.CartService;
 import com.vodafone.service.CustomerService;
 import com.vodafone.service.OrderService;
-import com.vodafone.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +26,7 @@ public class CustomerControllerRest {
     private CustomerService customerService;
     private OrderService orderService;
     private CartService cartService;
+
     //Get
     @GetMapping
     public ResponseEntity<List<Customer>> getAll() {
@@ -88,6 +92,58 @@ public class CustomerControllerRest {
         if (customerService.resetPassword(email, password))
             return new ResponseEntity<>("Customer's password is reset successfully", HttpStatus.OK);
         return new ResponseEntity<>("Customer's password can't be updated", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @PutMapping("{id}/cart-clear")
+    public ResponseEntity<Customer> clearCustomerCart(@PathVariable("id") Long customerId) {
+        try {
+            Customer customer = customerService.findCustomerById(customerId);
+            if (cartService.clearCart(customer.getCart().getId()))
+                return new ResponseEntity<>(customer, HttpStatus.OK);
+            return new ResponseEntity<>(customer, HttpStatus.BAD_REQUEST);
+        } catch (NullIdException | EntityNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    @PutMapping("{id}/cart/add-item")
+    public ResponseEntity<Customer> addItemToCustomerCart(@PathVariable("id") Long customerId, @RequestBody CartItem item) {
+        Customer customer = customerService.findCustomerById(customerId);
+        try {
+            if (cartService.addItem(customer.getCart().getId(), item) > 0)
+                return new ResponseEntity<>(customer, HttpStatus.OK);
+            return new ResponseEntity<>(customer, HttpStatus.BAD_REQUEST);
+        } catch (NullIdException | NullCartItemException | EntityNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    @PutMapping("{id}/cart/{itemId}")
+    public ResponseEntity<Customer> removeItemToCustomerCart(@PathVariable("id") Long customerId, @PathVariable Long itemId) {
+        Customer customer = customerService.findCustomerById(customerId);
+        try {
+            if (cartService.removeItem(customer.getCart().getId(), itemId))
+                return new ResponseEntity<>(customer, HttpStatus.OK);
+            return new ResponseEntity<>(customer, HttpStatus.BAD_REQUEST);
+        } catch (NullIdException | EntityNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    @PutMapping("{id}/cart/quantity/{itemId}/{quantity}")
+    public ResponseEntity<Customer> setProductQuantity(@PathVariable("id") Long customerId, @PathVariable("itemId") Long itemId, @PathVariable("quantity") int quantity) {
+        Customer customer = customerService.findCustomerById(customerId);
+        try {
+            if (cartService.setProductQuantity(customer.getCart().getId(), itemId, quantity) > 0)
+                return new ResponseEntity<>(customer, HttpStatus.OK);
+            return new ResponseEntity<>(customer, HttpStatus.BAD_REQUEST);
+        } catch (NullIdException | NegativeQuantityException | EntityNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
     }
 
     //Delete
