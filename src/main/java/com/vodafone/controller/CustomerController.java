@@ -65,7 +65,7 @@ public class CustomerController {
                                       @RequestParam(required = false) String name) {
         if (userAuthorizer.isActivatedCustomer(session)) {
             List<Product> products = new ArrayList<>();
-            Product selectedProduct;
+            List<Product> selectedProducts;
 
             try {
                 products.addAll(this.productService.getByCategory(category));
@@ -74,8 +74,8 @@ public class CustomerController {
             }
 
             try {
-                selectedProduct = this.productService.getByName(name);
-                products.add(selectedProduct);
+                selectedProducts = this.productService.getByName(name);
+                products.addAll(selectedProducts);
             } catch (GetProductException e) {
                 logger.info(e.getMessage());
             }
@@ -156,7 +156,7 @@ public class CustomerController {
             Long customerId = (long) session.getAttribute("id");
             Cart customerCart = customerService.findCustomerById(customerId).getCart();
             Order submittedOrder = cartService.submitFinalOrder(customerCart.getId());
-            boolean created = orderService.create(submittedOrder);
+            boolean created = orderService.createOrder(submittedOrder) != null;
             if (created)
                 return "200";
             return "500";
@@ -348,7 +348,7 @@ public class CustomerController {
         if (userAuthorizer.isActivatedCustomer(session)) {
             Long customerId = (long) session.getAttribute("id");
             Long cartId = customerService.findCustomerById(customerId).getCart().getId();
-            int newQuantity = cartService.decrementProductQuantity(cartId, productId,1);
+            int newQuantity = cartService.decrementProductQuantity(cartId, productId, 1);
             if (newQuantity == -1)
                 return "500";
             return "200";
