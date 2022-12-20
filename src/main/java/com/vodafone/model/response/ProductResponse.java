@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class CreateProductResponse {
+public class ProductResponse {
     private Long productId;
     private String message;
 }

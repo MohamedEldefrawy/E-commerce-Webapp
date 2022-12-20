@@ -231,7 +231,7 @@ public class AdminRestController {
             }
 
             try {
-                fileStorageService.store(product.getImage());
+                fileStorageService.storeFile(product.getImage());
                 updatedProduct.setImage(product.getImage().getOriginalFilename());
 
             } catch (FileStorageException | NullPointerException e) {
@@ -276,7 +276,7 @@ public class AdminRestController {
 
             Product newProduct = new Product();
             try {
-                fileStorageService.store(product.getImage());
+                fileStorageService.storeFile(product.getImage());
                 newProduct.setImage(product.getImage().getOriginalFilename());
 
             } catch (FileStorageException | NullPointerException e) {

@@ -53,3 +53,4 @@ build/
 ### database.properties ###
 /src/main/resources/application.properties
 /apache-tomcat-9.0.69/
+/uploads/
