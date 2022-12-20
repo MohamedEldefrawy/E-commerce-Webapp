@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class OrderServiceTest {
-    private static final IOrderRepository orderRepositoryMock =mock(IOrderRepository.class); ;
+    /*private static final IOrderRepository orderRepositoryMock =mock(IOrderRepository.class); ;
     private static final OrderService orderService =new OrderService(orderRepositoryMock);
     @Test
     void create_NullOrder_returnException(){
@@ -343,5 +343,7 @@ class OrderServiceTest {
 //        //Assert
 //        assertEquals(orderService.getByCustomerId(1L),orderList);
 //    }
+
+     */
 
 }

@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 class AdminControllerProductUnitTest {
-    private final AdminService adminService = mock(AdminService.class);
+    /*private final AdminService adminService = mock(AdminService.class);
     private final ProductService productService = mock(ProductService.class);
     private final UserAuthorizer userAuthorizer = mock(UserAuthorizer.class);
     private final AdminValidator validator = mock(AdminValidator.class);
@@ -283,5 +283,7 @@ class AdminControllerProductUnitTest {
         createProductDto.setInStock(10);
         return createProductDto;
     }
+
+     */
 
 }
