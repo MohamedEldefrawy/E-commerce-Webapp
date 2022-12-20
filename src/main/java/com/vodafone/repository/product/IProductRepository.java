@@ -7,13 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IProductRepository extends JpaRepository<Product, Long> {
-//    Optional<List<Product>> getByName(String name);
-//
-//    Optional<List<Product>> getByCategory(String category);
-//
-//    Optional<List<Product>> getAvailableProducts();
-
-    Optional<List<Product>> findByName(String name);
+    Optional<List<Product>> findAllByName(String name);
 
     Optional<List<Product>> findAllByCategory(String category);
 
