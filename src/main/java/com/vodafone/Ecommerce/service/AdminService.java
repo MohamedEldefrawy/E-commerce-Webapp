@@ -36,10 +36,12 @@ public class AdminService {
         throw new GetAdminException("No admin found with id: " + id);
     }
 
-    public void deleteAdmin(Long id) {
+    public boolean deleteAdmin(Long id) {
         Optional<Admin> admin = adminRepository.findById(id);
-        if (admin.isPresent())
+        if (admin.isPresent()) {
             adminRepository.deleteById(id);
+            return !adminRepository.findById(id).isPresent();
+        }
         else {
             throw new GetAdminException("No admin found with id: " + id);
         }
