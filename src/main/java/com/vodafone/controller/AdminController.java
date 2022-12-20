@@ -251,7 +251,7 @@ public class AdminController {
             updatedProduct.setPrice(product.getPrice());
             updatedProduct.setName(product.getName());
             updatedProduct.setInStock(product.getInStock());
-            result = this.productService.update(id, updatedProduct);
+            result = this.productService.update(updatedProduct);
             if (result)
                 return AdminViews.ADMIN_SHOW_PRODUCT_REDIRECT;
             return AdminViews.ADMIN_UPDATE_PRODUCT;
