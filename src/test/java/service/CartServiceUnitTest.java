@@ -1,24 +1,5 @@
 package service;
 
-import com.vodafone.exception.NullIdException;
-import com.vodafone.exception.cart.NegativeQuantityException;
-import com.vodafone.exception.cart.NullCartException;
-import com.vodafone.exception.cart.NullCartItemException;
-import com.vodafone.model.*;
-import com.vodafone.repository.cart.CartRepository;
-import com.vodafone.repository.cart.ICartRepository;
-import com.vodafone.service.CartService;
-import org.hibernate.HibernateException;
-import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
 class CartServiceUnitTest {
     /*private static final ICartRepository cartRepositoryMock = mock(CartRepository.class);
     private static final CartService cartService = new CartService(cartRepositoryMock);

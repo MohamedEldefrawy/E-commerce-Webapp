@@ -8,7 +8,6 @@ import com.vodafone.model.Cart;
 import com.vodafone.model.CartItem;
 import com.vodafone.model.Order;
 import com.vodafone.model.OrderItem;
-import com.vodafone.repository.cart.CartRepository;
 import com.vodafone.repository.cart.ICartRepository;
 import org.hibernate.HibernateException;
 import org.slf4j.Logger;
@@ -17,10 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CartService {
@@ -29,7 +26,7 @@ public class CartService {
 
     public CartService(ICartRepository cartRepository) {
         this.cartRepository = cartRepository;
-        this.logger = LoggerFactory.getLogger(CartRepository.class);
+        this.logger = LoggerFactory.getLogger(CartService.class);
     }
 
     public Cart create(Cart entity) {
@@ -83,7 +80,10 @@ public class CartService {
         Optional<Cart> cart = cartRepository.findById(cartId);
         if (!cart.isPresent())
             throw new HibernateException("No cart exists with this id");
-        return cartRepository.removeItem(cart.get(), itemId);
+        cart.get().getItems().removeIf(item -> Objects.equals(item.getId(), itemId)); //remove desired item
+        cart = Optional.of(cartRepository.save(cart.get()));
+        //todo: test below line to return true if item is not found anymore
+        return cart.get().getItems().stream().noneMatch(cartItem -> cartItem.getId().equals(itemId));
     }
 
 
@@ -94,7 +94,7 @@ public class CartService {
         if (!cart.isPresent())
             throw new HibernateException("Cart not found with provided id");
         Order order = showFinalOrder(cartId); //calculate total and transform CartItem to OrderItem
-        cartRepository.clearCart(cart.get()); //submit and clear the cart
+        clearCart(cart.get().getId()); //submit and clear the cart
         return order;
     }
 
@@ -153,7 +153,9 @@ public class CartService {
         Optional<Cart> cart = cartRepository.findById(cartId);
         if (!cart.isPresent())
             throw new HibernateException("Cart not found with provided id");
-        return cartRepository.clearCart(cart.get());
+        cart.get().getItems().clear();
+        cart = Optional.of(cartRepository.save(cart.get()));
+        return cart.get().getItems().size() == 0;
     }
 
     public int addItem(Long cartId, CartItem item) {
@@ -164,7 +166,27 @@ public class CartService {
         Optional<Cart> cart = cartRepository.findById(cartId);
         if (!cart.isPresent())
             throw new HibernateException("Cart not found with provided id");
-        return cartRepository.addItem(cart.get(), item);
+        return addItemHelper(cart.get(), item);
+    }
+
+    private int addItemHelper(Cart cart, CartItem item) {
+        List<CartItem> items = cart.getItems();
+        //checks if item is already in cart then increments quantity
+        List<CartItem> matchingProduct = items.stream()
+                .filter(i -> i.getProduct().getId().equals(item.getProduct().getId()))
+                .collect(Collectors.toList());
+        //if product already in cart then add to quantity
+        if (!matchingProduct.isEmpty()) {
+            return incrementProductQuantity(cart.getId(), item.getProduct().getId(), item.getQuantity());
+        } else {
+            if (item.getProduct().getInStock() >= item.getQuantity()) {
+                items.add(item); //add item to cart list
+                cart = cartRepository.save(cart); //update cart
+            } else {
+                return 0;
+            }
+        }
+        return item.getQuantity();
     }
 
     public int setProductQuantity(Long cartId, Long itemId, int newQuantity) {
@@ -177,7 +199,12 @@ public class CartService {
         Optional<Cart> cart = cartRepository.findById(cartId);
         if (!cart.isPresent())
             throw new HibernateException("Cart not found with provided id");
-        return cartRepository.setProductQuantity(cart.get(), itemId, newQuantity);
+        for (CartItem item : cart.get().getItems()) {
+            if (item.getId().equals(itemId))
+                item.setQuantity(newQuantity);
+        }
+        cartRepository.save(cart.get()); //update cart
+        return newQuantity;
     }
 
     public int incrementProductQuantity(Long cartId, Long itemId, int quantity) {
@@ -188,7 +215,15 @@ public class CartService {
         Optional<Cart> cart = cartRepository.findById(cartId);
         if (!cart.isPresent())
             throw new HibernateException("Cart not found with provided id");
-        return cartRepository.incrementProductQuantity(cart.get(), itemId, quantity);
+        //increment quantity
+        final int[] newQuantity = {0};
+        cart.get().getItems().stream().filter(item -> item.getId().equals(itemId)).forEach(item -> {
+            newQuantity[0] = item.getQuantity() + quantity;
+            if (item.getProduct().getInStock() >= newQuantity[0])
+                item.setQuantity(newQuantity[0]);
+        });
+        cartRepository.save(cart.get()); //update cart
+        return newQuantity[0];
     }
 
     public int decrementProductQuantity(Long cartId, Long itemId, int quantity) {
@@ -199,8 +234,14 @@ public class CartService {
         Optional<Cart> cart = cartRepository.findById(cartId);
         if (!cart.isPresent())
             throw new HibernateException("Cart not found with provided id");
-        return cartRepository.decrementProductQuantity(cart.get(), itemId, quantity);
+        //decrement quantity
+        final int[] newQuantity = {0};
+        cart.get().getItems().stream().filter(item -> item.getId().equals(itemId)).forEach(item -> {
+            newQuantity[0] = item.getQuantity() - quantity;
+            if (newQuantity[0] >= 0)
+                item.setQuantity(newQuantity[0]);
+        });
+        cartRepository.save(cart.get()); //update cart
+        return newQuantity[0];
     }
 }
-
-//Todo: refactor hibernate exceptions
