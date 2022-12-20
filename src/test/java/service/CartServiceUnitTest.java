@@ -1,14 +1,13 @@
 package service;
 
+import com.vodafone.exception.NullIdException;
 import com.vodafone.exception.cart.NegativeQuantityException;
 import com.vodafone.exception.cart.NullCartException;
 import com.vodafone.exception.cart.NullCartItemException;
-import com.vodafone.exception.NullIdException;
 import com.vodafone.model.*;
 import com.vodafone.repository.cart.CartRepository;
 import com.vodafone.repository.cart.ICartRepository;
 import com.vodafone.service.CartService;
-import org.hibernate.HibernateError;
 import org.hibernate.HibernateException;
 import org.junit.jupiter.api.Test;
 
@@ -18,8 +17,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class CartServiceUnitTest {
     private static final ICartRepository cartRepositoryMock = mock(CartRepository.class);
@@ -33,9 +31,9 @@ class CartServiceUnitTest {
         customer.setEmail("mohammedre4a@gmail.com");
         ArrayList<CartItem> items = new ArrayList<>();
         Cart cart = new Cart(customer, items);
-        when(cartRepositoryMock.create(cart)).thenReturn(Optional.of(any(Long.class)));
+        when(cartRepositoryMock.save(cart)).thenReturn(cart);
         //Act
-        boolean isCartCreated = cartService.create(cart);
+        boolean isCartCreated = cartService.create(cart) != null;
         //Assert
         assertTrue(isCartCreated);
     }
@@ -43,9 +41,9 @@ class CartServiceUnitTest {
     @Test
     void creatCart_nullEntity_expectException() {
         //Arrange
-        when(cartRepositoryMock.create(null)).thenThrow(new NullCartException("Null cart is provided"));
+        Cart cart = null;
         //Act
-        assertThrows(NullCartException.class, () -> cartService.create(null));
+        assertThrows(NullCartException.class, () -> cartService.create(cart));
     }
 
     @Test
@@ -57,6 +55,7 @@ class CartServiceUnitTest {
         ArrayList<CartItem> items = new ArrayList<>();
         Cart cart = new Cart(customer, items);
         //update cart
+        Cart updatedCart = cart;
         //create new dummy product
         Product product = new Product();
         product.setName("WC football 2022");
@@ -64,11 +63,11 @@ class CartServiceUnitTest {
         product.setPrice(300);
         product.setRate(4.7f);
         product.setDescription("World Cup 2022 Official football");
-        items.add(new CartItem(2, product, cart));
-        cart.setItems(items);
-        when(cartRepositoryMock.update(1L, cart)).thenReturn(true);
+        items.add(new CartItem(2, product, updatedCart));
+        updatedCart.setItems(items);
+        when(cartRepositoryMock.save(cart)).thenReturn(updatedCart);
         //Act
-        boolean isCartUpdated = cartService.update(1L, cart);
+        boolean isCartUpdated = cartService.update(1L, cart) == updatedCart;
         //Assert
         assertTrue(isCartUpdated);
     }
@@ -81,7 +80,6 @@ class CartServiceUnitTest {
         customer.setEmail("mohammedre4a@gmail.com");
         ArrayList<CartItem> items = new ArrayList<>();
         Cart cart = new Cart(customer, items);
-        when(cartRepositoryMock.update(null, cart)).thenThrow(new NullIdException("Null cart id is provided"));
         //Act
         assertThrows(NullIdException.class, () -> cartService.update(null, cart));
     }
@@ -89,16 +87,17 @@ class CartServiceUnitTest {
     @Test
     void updateCart_nullCartEntity_expectException() {
         //Arrange
-        when(cartRepositoryMock.update(anyLong(), any(Cart.class))).thenThrow(new NullCartException("Null cart is provided"));
+        Cart cart = null;
         //Act
-        assertThrows(NullCartException.class, () -> cartService.update(1L, null));
+        assertThrows(NullCartException.class, () -> cartService.update(1L, cart));
     }
 
     @Test
     void deleteCart_nonNullableEntity_expectTrue() {
         //Arrange
-        when(cartRepositoryMock.delete(anyLong())).thenReturn(true);
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.of(new Cart()));
+        Cart cart = new Cart();
+        doNothing().when(cartRepositoryMock.delete(cart));
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.of(cart));
         //Act
         boolean isCartDeleted = cartService.delete(1L);
         //Assert
@@ -108,7 +107,7 @@ class CartServiceUnitTest {
     @Test
     void deleteCart_nullCartId_expectNullIdException() {
         //Arrange
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.of(new Cart()));
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.of(new Cart()));
         //Act
         assertThrows(NullIdException.class, () -> cartService.delete(null));
     }
@@ -116,7 +115,7 @@ class CartServiceUnitTest {
     @Test
     void deleteCart_nonExistingCart_expectHibernateException() {
         //Arrange
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.empty());
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.empty());
         //Act
         assertThrows(HibernateException.class, () -> cartService.delete(anyLong()));
     }
@@ -124,7 +123,7 @@ class CartServiceUnitTest {
     @Test
     void getCart_nonNullEntity_expectObject() {
         //Arrange
-        when(cartRepositoryMock.getById(any(Long.class))).thenReturn(Optional.of(new Cart()));
+        when(cartRepositoryMock.findById(any(Long.class))).thenReturn(Optional.of(new Cart()));
         //Act
         Cart cartEntity = cartService.get(1L);
         //Assert
@@ -142,7 +141,7 @@ class CartServiceUnitTest {
     @Test
     void getCart_nonExistingCart_expectHibernateException() {
         //Arrange
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.empty());
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.empty());
         //Act
         assertThrows(HibernateException.class, () -> cartService.get(anyLong()));
     }
@@ -160,7 +159,7 @@ class CartServiceUnitTest {
         cart.setCustomer(customer);
         cart.setItems(items);
         carts.add(cart);
-        when(cartRepositoryMock.getAll()).thenReturn(Optional.of(carts));
+        when(cartRepositoryMock.findAll()).thenReturn(carts);
         //Act
         List<Cart> cartList = cartService.getAll();
         //Assert
@@ -168,17 +167,9 @@ class CartServiceUnitTest {
     }
 
     @Test
-    void getAllCarts_expectHibernateException() {
-        //Arrange
-        when(cartRepositoryMock.getAll()).thenReturn(Optional.empty());
-        //Act
-        assertThrows(HibernateException.class, () -> cartService.getAll());
-    }
-
-    @Test
     void removeItem_nonNullCartIdAndNonNullItemId_expectTrue() {
         //Arrange
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.of(new Cart()));
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.of(new Cart()));
         when(cartRepositoryMock.removeItem(any(Cart.class), anyLong())).thenReturn(true);
         //Act
         boolean isItemDeleted = cartService.removeItem(1L, 1L);
@@ -206,7 +197,7 @@ class CartServiceUnitTest {
     void removeItem_notExistCart_expectHibernateException() {
         //Arrange
         when(cartRepositoryMock.removeItem(any(Cart.class), anyLong())).thenThrow(new NullIdException("Null cart id is provided"));
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.empty());
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.empty());
         //Act
         assertThrows(HibernateException.class, () -> cartService.removeItem(1L, 1L));
     }
@@ -223,7 +214,7 @@ class CartServiceUnitTest {
     void clearCart_nonNullCartId_expectTrue() {
         //Arrange
         when(cartRepositoryMock.clearCart(any(Cart.class))).thenReturn(true);
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.of(new Cart()));
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.of(new Cart()));
         //Act
         boolean isCartCleared = cartService.clearCart(1L);
         //Assert
@@ -242,7 +233,7 @@ class CartServiceUnitTest {
     void clearCart_notExistingCart_expectHibernateException() {
         //Arrange
         when(cartRepositoryMock.clearCart(any(Cart.class))).thenReturn(true);
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.empty());
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.empty());
         //Act
         assertThrows(HibernateException.class, () -> cartService.clearCart(1L));
     }
@@ -251,7 +242,7 @@ class CartServiceUnitTest {
     void addItem_nonNullCartAndCartItem_expectTrue() {
         //Arrange
         when(cartRepositoryMock.addItem(any(Cart.class), any(CartItem.class))).thenReturn(10);
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.of(new Cart()));
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.of(new Cart()));
         //Act
         int quantityAdded = cartService.addItem(1L, new CartItem());
         //Assert
@@ -277,7 +268,7 @@ class CartServiceUnitTest {
     @Test
     void addItem_notExistingCart_expectException() {
         //Arrange
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.empty());
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.empty());
         //Act
         assertThrows(HibernateException.class, () -> cartService.addItem(anyLong(), new CartItem()));
     }
@@ -287,7 +278,7 @@ class CartServiceUnitTest {
     void setProductQuantity_nonNullCartAndNonNullCartItemAndPositiveQuantity_expectInt() {
         //Arrange
         int newQuantity = 30;
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.of(new Cart()));
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.of(new Cart()));
         when(cartRepositoryMock.setProductQuantity(any(Cart.class), anyLong(), anyInt())).thenReturn(newQuantity);
         //Act
         int quantity = cartService.setProductQuantity(1L, 1L, newQuantity);
@@ -306,7 +297,7 @@ class CartServiceUnitTest {
     @Test
     void setProductQuantity_nonNullCartAndNullCartItemAndPositiveQuantity_expectNullIdException() throws NegativeQuantityException {
         //Arrange
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.of(new Cart()));
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.of(new Cart()));
         when(cartRepositoryMock.setProductQuantity(new Cart(), null, 30)).thenThrow(new NullIdException("Null cart item id is provided"));
         //Act
         assertThrows(NullIdException.class, () -> cartService.setProductQuantity(1L, null, 30));
@@ -315,7 +306,7 @@ class CartServiceUnitTest {
     @Test
     void setProductQuantity_nonNullCartAndNonNullCartItemAndNegativeQuantity_expectNegativeQuantityException() {
         //Arrange
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.of(new Cart()));
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.of(new Cart()));
         //Act
         assertThrows(NegativeQuantityException.class, () -> cartService.setProductQuantity(1L, 1L, -100));
     }
@@ -323,7 +314,7 @@ class CartServiceUnitTest {
     @Test
     void setProductQuantity_notExistingCart_expectHibernateException() {
         //Arrange
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.empty());
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.empty());
         //Act
         assertThrows(HibernateException.class, () -> cartService.setProductQuantity(1L, 1L, 100));
     }
@@ -335,7 +326,7 @@ class CartServiceUnitTest {
         items.add(new CartItem());
         Cart cart = new Cart();
         cart.setItems(items);
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.of(cart));
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.of(cart));
         //Act
         List<CartItem> cartItems = cartService.getCartItems(anyLong());
         //Assert
@@ -345,7 +336,7 @@ class CartServiceUnitTest {
     @Test
     void getCartItems_nullCartIdAndExistingCart_expectNullIdException() {
         //Arrange
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.of(new Cart()));
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.of(new Cart()));
         //Act
         assertThrows(NullIdException.class, () -> cartService.getCartItems(null));
     }
@@ -353,7 +344,7 @@ class CartServiceUnitTest {
     @Test
     void getCartItems_notExistingCart_expectHibernateException() {
         //Arrange
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.empty());
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.empty());
         //Act
         assertThrows(HibernateException.class, () -> cartService.getCartItems(anyLong()));
     }
@@ -361,7 +352,7 @@ class CartServiceUnitTest {
     @Test
     void incrementProductQuantity_nonNullCartIdAndNonNullCartItemId_expectInt() {
         //Arrange
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.of(new Cart()));
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.of(new Cart()));
         when(cartRepositoryMock.incrementProductQuantity(any(Cart.class), anyLong(), anyInt())).thenReturn(10);
         //originalQuantity = 5;
         //Act
@@ -373,7 +364,7 @@ class CartServiceUnitTest {
     @Test
     void incrementProductQuantity_nullCartIdAndNonNullCartItemId_expectNullIdException() {
         //Arrange
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.of(new Cart()));
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.of(new Cart()));
         int incrementedQuantity = 5;
         //Act
         assertThrows(NullIdException.class, () -> cartService.incrementProductQuantity(null, 1L, incrementedQuantity));
@@ -382,7 +373,7 @@ class CartServiceUnitTest {
     @Test
     void incrementProductQuantity_nonNullCartIdAndNullCartItemId_expectNullIdException() {
         //Arrange
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.of(new Cart()));
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.of(new Cart()));
         int incrementedQuantity = 5;
         //Act
         assertThrows(NullIdException.class, () -> cartService.incrementProductQuantity(1L, null, incrementedQuantity));
@@ -391,7 +382,7 @@ class CartServiceUnitTest {
     @Test
     void incrementProductQuantity_notExistingCart_expectHibernateException() {
         //Arrange
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.empty());
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.empty());
         int incrementedQuantity = 5;
         //Act
         assertThrows(HibernateException.class, () -> cartService.incrementProductQuantity(1L, 1L, incrementedQuantity));
@@ -400,7 +391,7 @@ class CartServiceUnitTest {
     @Test
     void decrementProductQuantity_nonNullCartIdAndNonNullCartItemId_expectInt() {
         //Arrange
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.of(new Cart()));
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.of(new Cart()));
         when(cartRepositoryMock.decrementProductQuantity(any(Cart.class), anyLong(), anyInt())).thenReturn(0);
         //originalQuantity = 5;
         //Act
@@ -412,7 +403,7 @@ class CartServiceUnitTest {
     @Test
     void decrementProductQuantity_nullCartIdAndNonNullCartItemId_expectNullIdException() {
         //Arrange
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.of(new Cart()));
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.of(new Cart()));
         int decrementedQuantity = 5;
         //Act
         assertThrows(NullIdException.class, () -> cartService.decrementProductQuantity(null, 1L, decrementedQuantity));
@@ -421,7 +412,7 @@ class CartServiceUnitTest {
     @Test
     void decrementProductQuantity_nonNullCartIdAndNullCartItemId_expectNullIdException() {
         //Arrange
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.of(new Cart()));
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.of(new Cart()));
         int decrementedQuantity = 5;
         //Act
         assertThrows(NullIdException.class, () -> cartService.decrementProductQuantity(1L, null, decrementedQuantity));
@@ -430,7 +421,7 @@ class CartServiceUnitTest {
     @Test
     void decrementProductQuantity_notExistingCart_expectHibernateException() {
         //Arrange
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.empty());
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.empty());
         int decrementedQuantity = 5;
         //Act
         assertThrows(HibernateException.class, () -> cartService.decrementProductQuantity(1L, 1L, decrementedQuantity));
@@ -447,7 +438,7 @@ class CartServiceUnitTest {
         CartItem cartItem = new CartItem(10, product, cart);
         cartItems.add(cartItem);
         cart.setItems(cartItems);
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.of(cart));
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.of(cart));
         //Act
         Order order = cartService.showFinalOrder(anyLong());
         //Assert
@@ -465,7 +456,7 @@ class CartServiceUnitTest {
         CartItem cartItem = new CartItem(10, product, cart);
         cartItems.add(cartItem);
         cart.setItems(cartItems);
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.of(cart));
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.of(cart));
         //Act
         Order order = cartService.showFinalOrder(anyLong());
         //Assert
@@ -483,7 +474,7 @@ class CartServiceUnitTest {
     @Test
     void showFinalOrder_notExistingCart_expectHibernateException() {
         //Arrange
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.empty());
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.empty());
         //Act
         assertThrows(HibernateException.class, () -> cartService.showFinalOrder(anyLong()));
     }
@@ -496,7 +487,7 @@ class CartServiceUnitTest {
         cartItems.add(new CartItem());
         cart.setItems(cartItems);
         when(cartRepositoryMock.clearCart(any(Cart.class))).thenReturn(true);
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.of(cart));
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.of(cart));
         //Act
         Order order = cartService.submitFinalOrder(anyLong());
         //Assert
@@ -514,7 +505,7 @@ class CartServiceUnitTest {
     @Test
     void submitFinalOrder_notExistingCart_expectHibernateException() {
         //Arrange
-        when(cartRepositoryMock.getById(anyLong())).thenReturn(Optional.empty());
+        when(cartRepositoryMock.findById(anyLong())).thenReturn(Optional.empty());
         //Act
         assertThrows(HibernateException.class, () -> cartService.submitFinalOrder(anyLong()));
     }
