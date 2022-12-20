@@ -20,7 +20,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 class CartServiceUnitTest {
-    private static final ICartRepository cartRepositoryMock = mock(CartRepository.class);
+    /*private static final ICartRepository cartRepositoryMock = mock(CartRepository.class);
     private static final CartService cartService = new CartService(cartRepositoryMock);
 
     @Test
@@ -509,4 +509,6 @@ class CartServiceUnitTest {
         //Act
         assertThrows(HibernateException.class, () -> cartService.submitFinalOrder(anyLong()));
     }
+
+     */
 }

@@ -45,7 +45,7 @@ import static org.hamcrest.Matchers.is;
 
 class AdminControllerAdminUnitTest {
 
-    private AdminService adminService;
+    /*private AdminService adminService;
     private UserAuthorizer userAuthorizer;
     private AdminValidator validator;
     private HashService hashService;
@@ -92,16 +92,7 @@ class AdminControllerAdminUnitTest {
     }
     @Test
     void getAll_throwGetAdminException_getAdminsPage() throws Exception{
-        /*//Arrange
-        Model model = mock(Model.class);
-        when(userAuthorizer.authorizeAdmin(session)).thenReturn(true);
-        when(adminService.getAll()).thenThrow(GetAdminException.class);
-        when(model.addAttribute(any(),any())).thenReturn(model);
-        //Act
-        String page = adminController.getAll(session,model);
-        //Assert
-        verify(adminService,times(1)).getAll();
-        assertEquals(AdminViews.VIEW_ALL_ADMINS,page);*/
+
         when(userAuthorizer.authorizeAdmin(any(HttpSession.class))).thenReturn(true);
         when(adminService.getAll()).thenThrow(GetAdminException.class);
         mockMvc.perform(get("/admins/admins.htm"))
@@ -111,16 +102,7 @@ class AdminControllerAdminUnitTest {
     }
     @Test
     void getAll_getAdminsList_getAdminsPage() throws Exception{
-        /*//Arrange
-        Model model = mock(Model.class);
-        when(userAuthorizer.authorizeAdmin(session)).thenReturn(true);
-        List<Admin> admins= new ArrayList<>();
-        when(adminService.getAll()).thenReturn(admins);
-        //Act
-        String page = adminController.getAll(session,model);
-        //Assert
-        verify(adminService,times(1)).getAll();
-        assertEquals(AdminViews.VIEW_ALL_ADMINS,page);*/
+
         when(userAuthorizer.authorizeAdmin(any(HttpSession.class))).thenReturn(true);
         List<Admin> admins = new ArrayList<>();
         admins.add(admin);
@@ -443,5 +425,5 @@ class AdminControllerAdminUnitTest {
         String page = adminController.setAdminPassword("29019280192",session);
         //Assert
         assertEquals("redirect:/admins/home.htm",page);
-    }
+    }*/
 }
