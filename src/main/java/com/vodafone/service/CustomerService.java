@@ -4,12 +4,14 @@ import com.vodafone.exception.NullIdException;
 import com.vodafone.exception.customer.IncompleteUserAttributesException;
 import com.vodafone.exception.customer.NullCustomerException;
 import com.vodafone.model.Customer;
+import com.vodafone.model.UserStatus;
 import com.vodafone.repository.customer.ICustomerRepository;
 import lombok.AllArgsConstructor;
 import org.hibernate.HibernateException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -51,7 +53,9 @@ public class CustomerService {
         if (!customer.isPresent()) {
             throw new HibernateException("Customer not found with email provided");
         }
-        return customerRepository.updateStatusActivated(customer.get());
+        customer.get().setUserStatus(UserStatus.ACTIVATED);
+        customerRepository.save(customer.get());
+        return customer.get().getUserStatus() == UserStatus.ACTIVATED;
     }
 
     public boolean delete(Long id) {
@@ -104,7 +108,13 @@ public class CustomerService {
         if (!customer.isPresent()) {
             throw new HibernateException("Customer not found with provided email");
         }
-        return customerRepository.resetPassword(customer.get(), password);
+        //update customer's password
+        customer.get().setPassword(password);
+        //update customer's status to activated
+        customer.get().setUserStatus(UserStatus.ACTIVATED);
+        customer.get().setLoginAttempts(3);
+        customerRepository.save(customer.get());
+        return Objects.equals(customer.get().getPassword(), password);
     }
 
     public boolean expireOtp(String userName) {
@@ -114,7 +124,9 @@ public class CustomerService {
         if (!customer.isPresent()) {
             throw new HibernateException("Customer not found with provided username");
         }
-        return this.customerRepository.expireOtp(customer.get());
+        customer.get().setCode(null);
+        customerRepository.save(customer.get());
+        return customer.get().getCode() == null;
     }
 
 }

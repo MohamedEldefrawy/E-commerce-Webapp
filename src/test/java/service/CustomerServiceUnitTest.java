@@ -1,28 +1,5 @@
 package service;
 
-import com.vodafone.exception.NullIdException;
-import com.vodafone.exception.customer.IncompleteUserAttributesException;
-import com.vodafone.exception.customer.NullCustomerException;
-import com.vodafone.model.Customer;
-import com.vodafone.model.Role;
-import com.vodafone.model.UserStatus;
-import com.vodafone.repository.customer.CustomerRepository;
-import com.vodafone.repository.customer.ICustomerRepository;
-import com.vodafone.service.CustomerService;
-import com.vodafone.service.HashService;
-import org.hibernate.HibernateException;
-import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
 class CustomerServiceUnitTest {
     /*private static final ICustomerRepository customerRepositoryMock = mock(CustomerRepository.class);
     private static final HashService hashService = mock(HashService.class);
