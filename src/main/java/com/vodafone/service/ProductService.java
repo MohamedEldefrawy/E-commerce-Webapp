@@ -15,19 +15,19 @@ import java.util.Optional;
 public class ProductService {
     private IProductRepository productRepository;
 
-    public boolean create(Product product) throws CreateProductException {
+    public Long create(Product product) throws CreateProductException {
         try {
-            this.productRepository.save(product);
-            return true;
+            Product createdProduct = this.productRepository.save(product);
+            return createdProduct.getId();
         } catch (IllegalArgumentException e) {
             throw new CreateProductException("Failed to create new product");
         }
     }
 
-    public boolean update(Product updatedProduct) throws GetProductException {
+    public Long update(Product updatedProduct) throws GetProductException {
         try {
-            this.productRepository.save(updatedProduct);
-            return true;
+            Product updaatedProduct = this.productRepository.save(updatedProduct);
+            return updaatedProduct.getId();
         } catch (IllegalArgumentException e) {
             throw new GetProductException("No product found with id: " + updatedProduct.getId());
         }

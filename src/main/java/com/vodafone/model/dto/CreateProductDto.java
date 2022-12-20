@@ -1,7 +1,7 @@
 package com.vodafone.model.dto;
 
 import lombok.*;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -29,6 +29,6 @@ public class CreateProductDto {
     @Min(value = 1)
     private int inStock;
 
-    private CommonsMultipartFile image;
+    private MultipartFile image;
 
 }
