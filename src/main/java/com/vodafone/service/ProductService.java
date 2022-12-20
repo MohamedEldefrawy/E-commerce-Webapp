@@ -3,7 +3,7 @@ package com.vodafone.service;
 import com.vodafone.exception.product.CreateProductException;
 import com.vodafone.exception.product.GetProductException;
 import com.vodafone.model.Product;
-import com.vodafone.repository.product.IProductRepository;
+import com.vodafone.repository.product.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +13,7 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class ProductService {
-    private IProductRepository productRepository;
+    private ProductRepository productRepository;
 
     public Long create(Product product) throws CreateProductException {
         try {
@@ -71,7 +71,7 @@ public class ProductService {
     }
 
     public List<Product> getAvailableProducts() {
-        Optional<List<Product>> optionalProducts = this.productRepository.findAllByDeletedEquals(false);
+        Optional<List<Product>> optionalProducts = this.productRepository.findAllByDeletedIsFalse();
         if (optionalProducts.isPresent() && !optionalProducts.get().isEmpty())
             return optionalProducts.get();
 
