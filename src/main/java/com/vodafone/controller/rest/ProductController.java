@@ -1,5 +1,6 @@
 package com.vodafone.controller.rest;
 
+import com.vodafone.exception.FileStorageException;
 import com.vodafone.exception.product.CreateProductException;
 import com.vodafone.exception.product.GetProductException;
 import com.vodafone.model.Product;
@@ -7,8 +8,8 @@ import com.vodafone.model.dto.CreateProductDto;
 import com.vodafone.model.dto.UpdateProductDto;
 import com.vodafone.model.response.CreateProductResponse;
 import com.vodafone.model.response.DeleteProductResponse;
-import com.vodafone.service.FileStorageService;
 import com.vodafone.service.ProductService;
+import com.vodafone.service.file.FileStorageService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 
@@ -83,16 +83,16 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<CreateProductResponse> create(@RequestBody CreateProductDto createProductDto) {
         Product newProduct = new Product();
-        String fileName = fileStorageService.storeFile(createProductDto.getImage());
+        try {
+            fileStorageService.store(createProductDto.getImage());
+            newProduct.setImage(createProductDto.getImage().getOriginalFilename());
+        } catch (FileStorageException e) {
+            logger.warn(e.getMessage());
+        }
 
-        ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/downloadFile/")
-                .path(fileName)
-                .toUriString();
 
         newProduct.setName(createProductDto.getName());
         newProduct.setCategory(createProductDto.getCategory());
-        newProduct.setImage(createProductDto.getImage().getOriginalFilename());
         newProduct.setPrice(createProductDto.getPrice());
         newProduct.setInStock(createProductDto.getInStock());
         newProduct.setDescription(createProductDto.getDescription());
@@ -108,19 +108,20 @@ public class ProductController {
     @PutMapping("{id}")
     public ResponseEntity<CreateProductResponse> update(@PathVariable Long id, @RequestBody UpdateProductDto updateProductDto) {
 
-        String fileName = fileStorageService.storeFile(updateProductDto.getImage());
-
-        ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/downloadFile/")
-                .path(fileName)
-                .toUriString();
-
         Product updatedProduct = new Product();
+
+        try {
+            fileStorageService.store(updateProductDto.getImage());
+            updatedProduct.setImage(updateProductDto.getImage().getOriginalFilename());
+
+        } catch (FileStorageException e) {
+            logger.warn(e.getMessage());
+        }
+
 
         updatedProduct.setId(id);
         updatedProduct.setName(updateProductDto.getName());
         updatedProduct.setCategory(updateProductDto.getCategory());
-        updatedProduct.setImage(updateProductDto.getImage().getOriginalFilename());
         updatedProduct.setPrice(updateProductDto.getPrice());
         updatedProduct.setInStock(updateProductDto.getInStock());
         updatedProduct.setDescription(updateProductDto.getDescription());
