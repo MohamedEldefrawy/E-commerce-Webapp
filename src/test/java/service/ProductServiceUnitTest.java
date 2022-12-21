@@ -3,7 +3,7 @@ package service;
 import com.vodafone.exception.product.CreateProductException;
 import com.vodafone.exception.product.GetProductException;
 import com.vodafone.model.Product;
-import com.vodafone.repository.product.IProductRepository;
+import com.vodafone.repository.product.ProductRepository;
 import com.vodafone.service.ProductService;
 import org.junit.jupiter.api.Test;
 
